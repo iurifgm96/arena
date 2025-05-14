@@ -123,14 +123,14 @@
       const checkboxId = `chk_${key}`;
       div.innerHTML += `<div style="margin-bottom: 4px;">
         <input type="checkbox" id="${checkboxId}" checked>
-        <span class="circle-icon" style="background:${data.color};"></span>
+        <span class="circle-icon" style="background:${data.color}; border: 1px solid #333;"></span>
         ${data.name}
       </div>`;
     }
     div.innerHTML += `<div class="legend-scale">
       <hr>
       <strong>Tamanho do marcador:</strong><br>
-      <div><span class="circle-icon" style="width:6px; height:6px; background:#999;"></span> Sem prémio</div>
+      <div><span class="circle-icon" style="width:12px; height:12px; border: 2px solid #999; background:transparent;"></span> Sem prémio</div>
       <div><span class="circle-icon" style="width:10px; height:10px; background:#999;"></span> Prémio médio</div>
       <div><span class="circle-icon" style="width:14px; height:14px; background:#999;"></span> Grande prémio</div>
     </div>`;
@@ -147,12 +147,14 @@
   for (let key in tournaments) {
     const data = tournaments[key];
     const radius = calculateRadius(data.prize);
+    const isNoPrize = data.prize === 0;
 
     const marker = L.circleMarker(data.coords, {
       color: data.color,
-      fillColor: data.color,
+      fillColor: isNoPrize ? '#ffffff' : data.color,
       radius: radius,
-      fillOpacity: 0.9
+      fillOpacity: isNoPrize ? 0.1 : 0.9,
+      weight: 2
     }).bindPopup(data.content)
       .bindTooltip(data.name, { permanent: true, direction: 'right' })
       .openTooltip();
