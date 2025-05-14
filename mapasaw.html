@@ -9,7 +9,7 @@
   <style>
     body.dark-mode { background: #121212; color: #e0e0e0; }
     #map { height: 100vh; width: 100%; }
-    
+
     /* Estilos gerais */
     .legend {
       background: white;
@@ -19,6 +19,7 @@
       border-radius: 6px;
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
       max-width: 250px;
+      display: none;
     }
 
     .dark-mode .legend {
@@ -67,6 +68,23 @@
       border-radius: 4px;
     }
 
+    /* Menu no mobile */
+    #menuButton {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #333;
+      color: white;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .legend-content {
+      display: none;
+    }
+
     /* Responsividade para telas menores que 768px */
     @media (max-width: 768px) {
       #map { height: 80vh; }
@@ -94,6 +112,15 @@
 
       .content {
         font-size: 12px;
+      }
+
+      .legend {
+        display: none; /* Oculta a legenda inicialmente no mobile */
+      }
+
+      /* Menu */
+      #menuButton {
+        display: block; /* Mostra o botão no mobile */
       }
     }
 
@@ -129,6 +156,8 @@
 </head>
 <body>
 <div id="map"></div>
+<button id="menuButton">Abrir Legenda</button> <!-- Botão para abrir/fechar a legenda -->
+
 <script>
   if (document.body.classList.contains('dark')) document.body.classList.add('dark-mode');
 
@@ -285,6 +314,12 @@
       const content = this.nextElementSibling;
       content.style.display = (content.style.display === 'none') ? 'block' : 'none';
     });
+  });
+
+  // Botão de abrir/fechar a legenda no mobile
+  document.getElementById('menuButton').addEventListener('click', () => {
+    const legend = document.querySelector('.legend');
+    legend.style.display = (legend.style.display === 'none' || legend.style.display === '') ? 'block' : 'none';
   });
 
   setTimeout(() => map.fitBounds(bounds), 100);
