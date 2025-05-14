@@ -1,102 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <style>
-        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }
-        .custom-tooltip {
-            background: white;
-            color: black;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            box-shadow: 0 0 2px rgba(0,0,0,0.3);
-        }
-        .empty-icon {
-            background: transparent;
-            border: none;
-        }
-    </style>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
-
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script>
+        L_NO_TOUCH = false;
+        L_DISABLE_3D = false;
+    </script>
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@master/folium/templates/leaflet_heat.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+        #map_9e139fb2406424656c1a1a8959f91419 {
+            position: relative;
+            width: 100.0%;
+            height: 100.0%;
+            left: 0.0%;
+            top: 0.0%;
+        }
+    </style>
 </head>
 <body>
-<div id="map"></div>
+    <div class="folium-map" id="map_9e139fb2406424656c1a1a8959f91419"></div>
+</body>
 <script>
-    var map = L.map('map').setView([40.0, 20.0], 2);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-        maxZoom: 18
-    }).addTo(map);
-
-    const eventos = [
-        {
-            nome: "IEM Katowice 2025",
-            coords: [50.2649, 19.0238],
-            info: "Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500"
-        },
-        {
-            nome: "PGL Cluj-Napoca 2025",
-            coords: [46.7712, 23.6236],
-            info: "Local: Cluj-Napoca, Roménia<br>Data: 2025-02-21<br>Classificação: 5º - 8º<br>Prémio: $62,500"
-        },
-        {
-            nome: "ESL Pro League Season 21",
-            coords: [35.8997, 14.5146],
-            info: "Local: Malta<br>Data: 2025-03-10<br>Classificação: 12º - 14º<br>Prémio: $10,500"
-        },
-        {
-            nome: "IEM Melbourne 2025",
-            coords: [-37.8136, 144.9631],
-            info: "Local: Melbourne, Austrália<br>Data: 2025-04-22<br>Classificação: 13º - 16º<br>Prémio: $4,000"
-        },
-        {
-            nome: "MESA Nomadic Masters Spring 2025",
-            coords: [47.8864, 106.9057],
-            info: "Local: Ulan Bator, Mongólia<br>Data: 2025-05-01<br>Classificação: 7º - 8º<br>Prémio: $0"
-        }
-    ];
-
-    eventos.forEach(evento => {
-        L.marker(evento.coords, {
-            icon: L.divIcon({ className: 'empty-icon' })
-        })
-        .addTo(map)
-        .bindPopup(`<b>${evento.nome}</b><br>${evento.info}`)
-        .bindTooltip(`${evento.nome}`, {
-            permanent: true,
-            direction: 'top',
-            offset: [0, -10],
-            className: 'custom-tooltip'
-        });
+    var map_9e139fb2406424656c1a1a8959f91419 = L.map("map_9e139fb2406424656c1a1a8959f91419", {
+        center: [40.0, 20.0],
+        crs: L.CRS.EPSG3857,
+        zoom: 2,
+        zoomControl: true,
+        preferCanvas: false,
     });
 
-    // Heat map (optional)
-    var heatMap = L.heatLayer([
-        [50.2649, 19.0238, 2500],
-        [46.7712, 23.6236, 62500],
-        [35.8997, 14.5146, 10500],
-        [-37.8136, 144.9631, 4000],
-        [47.8864, 106.9057, 0]
-    ], {
-        radius: 25,
-        blur: 15,
-        maxZoom: 10,
-        minOpacity: 0.5
-    }).addTo(map);
+    var tile_layer_8fe6186b20999d02b0641f53a40e8a84 = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "Data by © <a href=\"http://openstreetmap.org\">OpenStreetMap</a>, under <a href=\"http://www.openstreetmap.org/copyright\">ODbL</a>.",
+        detectRetina: false,
+        maxNativeZoom: 18,
+        maxZoom: 18,
+        minZoom: 0,
+        noWrap: false,
+        opacity: 1,
+        subdomains: "abc",
+        tms: false
+    }).addTo(map_9e139fb2406424656c1a1a8959f91419);
+
+    function addMarker(lat, lon, title, content) {
+        var marker = L.circleMarker([lat, lon], {
+            color: "blue",
+            fillColor: "blue",
+            fillOpacity: 0.7,
+            radius: 7,
+            weight: 3
+        }).addTo(map_9e139fb2406424656c1a1a8959f91419);
+
+        marker.bindTooltip(title, {permanent: true, direction: 'top'});
+        marker.bindPopup(content);
+    }
+
+    addMarker(50.2649, 19.0238, "IEM Katowice 2025", `<b>IEM Katowice 2025</b><br>Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500`);
+    addMarker(46.7712, 23.6236, "PGL Cluj-Napoca 2025", `<b>PGL Cluj-Napoca 2025</b><br>Local: Cluj-Napoca, Roménia<br>Data: 2025-02-21<br>Classificação: 5º - 8º<br>Prémio: $62,500`);
+    addMarker(59.3293, 18.0686, "ESL Pro League Season 21", `<b>ESL Pro League Season 21</b><br>Local: Estocolmo, Suécia<br>Data: 2025-03-10<br>Classificação: 12º - 14º<br>Prémio: $10,500`);
+    addMarker(-37.8136, 144.9631, "IEM Melbourne 2025", `<b>IEM Melbourne 2025</b><br>Local: Melbourne, Austrália<br>Data: 2025-04-22<br>Classificação: 13º - 16º<br>Prémio: $4,000`);
+    addMarker(47.8864, 106.9057, "MESA Nomadic Masters Spring 2025", `<b>MESA Nomadic Masters Spring 2025</b><br>Local: Ulan Bator, Mongólia<br>Data: 2025-05-01<br>Classificação: 7º - 8º<br>Prémio: $0`);
+
+    var heat_map_69aebe50e8980cc4d719eb306f03b528 = L.heatLayer(
+        [[50.2649, 19.0238, 2500], [46.7712, 23.6236, 62500], [59.3293, 18.0686, 10500], [-37.8136, 144.9631, 4000], [47.8864, 106.9057, 0]],
+        {blur: 15, maxZoom: 10, minOpacity: 0.5, radius: 25}
+    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
 </script>
-</body>
 </html>
