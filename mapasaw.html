@@ -19,7 +19,10 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
       max-width: 250px;
     }
-    .legend.dark-mode { background: #2c2c2c; color: #e0e0e0; }
+    .dark-mode .legend {
+      background: #2c2c2c;
+      color: #e0e0e0;
+    }
     .circle-icon {
       display: inline-block;
       width: 10px;
@@ -49,115 +52,149 @@
 <body>
 <div id="map"></div>
 <script>
-const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-if (prefersDark) document.body.classList.add('dark-mode');
+  if (document.body.classList.contains('dark')) document.body.classList.add('dark-mode');
 
-const map = L.map('map');
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18,
-  attribution: '© OpenStreetMap'
-}).addTo(map);
-
-const cityCoords = {
-  porto: [41.1496, -8.6109],
-  krakow: [50.0647, 19.9450],
-  madrid: [40.4168, -3.7038],
-  bucharest: [44.4268, 26.1025],
-  cluj: [46.7694, 23.5899],
-  frankfurt: [50.1109, 8.6821],
-  stockholm: [59.3293, 18.0686],
-  dubai: [25.276987, 55.296249],
-  melbourne: [-37.8136, 144.9631],
-  beijing: [39.9042, 116.4074],
-  ulaanbaatar: [47.8864, 106.9057]
-};
-
-const tournaments = [
-  { name: "IEM Katowice 2025", location: "krakow", prize: "$2500", color: "red", position: "21º-24º", date: "29 Jan - 9 Fev" },
-  { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "blue", position: "5º-8º", date: "14 - 23 Fev" },
-  { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "green", position: "12º-14º", date: "1 - 16 Mar" },
-  { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "orange", position: "13º-16º", date: "21 - 27 Abr" },
-  { name: "MRQ (BLAST)", location: "frankfurt", prize: null, color: "purple", position: "N/A", date: "Abril" },
-  { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "brown", position: "7º-8º", date: "30 Abr - 4 Mai" }
-];
-
-const bounds = [];
-tournaments.forEach(t => {
-  const coord = cityCoords[t.location];
-  if (!coord) return;
-  bounds.push(coord);
-
-  const prizeValue = t.prize ? parseInt(t.prize.replace(/\D/g, '')) : 0;
-  const radius = t.prize ? 6 + prizeValue / 15000 : 6;
-
-  const marker = L.circleMarker(coord, {
-    radius: radius,
-    color: t.color,
-    fillColor: t.color,
-    fillOpacity: t.prize ? 0.8 : 0,
-    weight: 2
+  const map = L.map('map');
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap'
   }).addTo(map);
 
-  marker.bindPopup(`<b>${t.name}</b><br><b>Data:</b> ${t.date}<br><b>Localização:</b> ${t.location.charAt(0).toUpperCase() + t.location.slice(1)}<br><b>Posição:</b> ${t.position}<br><b>Prémio:</b> ${t.prize || "Sem prémio"}`);
-  marker.bindTooltip(t.name, { permanent: true, direction: 'top', className: 'label-tooltip' });
-});
+  const cityCoords = {
+    porto: [41.1496, -8.6109],
+    krakow: [50.0647, 19.9450],
+    madrid: [40.4168, -3.7038],
+    bucharest: [44.4268, 26.1025],
+    cluj: [46.7694, 23.5899],
+    frankfurt: [50.1109, 8.6821],
+    stockholm: [59.3293, 18.0686],
+    dubai: [25.276987, 55.296249],
+    melbourne: [-37.8136, 144.9631],
+    beijing: [39.9042, 116.4074],
+    ulaanbaatar: [47.8864, 106.9057]
+  };
 
-// Rotas omitidas para brevidade, assumimos que permanecem como já estão
+  const tournaments = [
+    { name: "IEM Katowice 2025", location: "krakow", prize: "$2500", color: "red", position: "21º-24º", date: "29 Jan - 9 Fev" },
+    { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "blue", position: "5º-8º", date: "14 - 23 Fev" },
+    { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "green", position: "12º-14º", date: "1 - 16 Mar" },
+    { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "orange", position: "13º-16º", date: "21 - 27 Abr" },
+    { name: "MRQ (BLAST)", location: "frankfurt", prize: null, color: "purple", position: "N/A", date: "Abril" },
+    { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "brown", position: "7º-8º", date: "30 Abr - 4 Mai" }
+  ];
 
-const legendControl = L.control({ position: 'bottomright' });
-legendControl.onAdd = function () {
-  const div = L.DomUtil.create('div', 'legend' + (prefersDark ? ' dark-mode' : ''));
-  div.innerHTML = `
-    <div class="collapsible">Torneios</div>
-    <div class="content">
-      <div><span class="circle-icon" style="background:red"></span> IEM Katowice</div>
-      <div><span class="circle-icon" style="background:blue"></span> PGL Cluj-Napoca</div>
-      <div><span class="circle-icon" style="background:green"></span> ESL Pro League</div>
-      <div><span class="circle-icon" style="background:orange"></span> IEM Melbourne</div>
-      <div><span class="circle-icon" style="background:purple"></span> MRQ (BLAST)</div>
-      <div><span class="circle-icon" style="background:brown"></span> MESA Nomadic</div>
-      <div style="margin-top:5px;">
-        <span class="circle-icon" style="background:black; opacity:0.8;"></span> Bola preenchida: com prémio<br>
-        <span class="circle-icon" style="border:2px solid black; background:transparent;"></span> Bola vazia: sem prémio
-      </div>
-    </div>
-    <hr>
-    <div class="collapsible">Rotas</div>
-    <div class="content" id="routeLegend"></div>
-  `;
-  return div;
-};
-legendControl.addTo(map);
+  const bounds = [];
+  tournaments.forEach(t => {
+    const coord = cityCoords[t.location];
+    if (!coord) return;
+    bounds.push(coord);
 
-function initRouteLegend() {
-  const container = document.getElementById('routeLegend');
-  for (let key in routeLayers) {
-    const checkboxId = `route_${key}`;
-    container.innerHTML += `<div><label><input type="checkbox" id="${checkboxId}"> <span class="circle-icon" style="background:${colors[key]};"></span>${key.toUpperCase()} (${calculateTotalKm(routes[key])} km)</label></div>`;
-  }
-  for (let key in routeLayers) {
-    document.getElementById(`route_${key}`).addEventListener('change', function (e) {
-      if (e.target.checked) {
-        routeLayers[key].addTo(map);
-      } else {
-        map.removeLayer(routeLayers[key]);
-      }
+    const prizeValue = t.prize ? parseInt(t.prize.replace(/\D/g, '')) : 0;
+    const radius = t.prize ? 6 + prizeValue / 15000 : 6;
+
+    const marker = L.circleMarker(coord, {
+      radius: radius,
+      color: t.color,
+      fillColor: t.color,
+      fillOpacity: t.prize ? 0.8 : 0,
+      weight: 2
+    }).addTo(map);
+
+    marker.bindPopup(`
+      <b>${t.name}</b><br>
+      <b>Data:</b> ${t.date}<br>
+      <b>Localização:</b> ${t.location.charAt(0).toUpperCase() + t.location.slice(1)}<br>
+      <b>Posição:</b> ${t.position}<br>
+      <b>Prémio:</b> ${t.prize || "Sem prémio"}
+    `);
+
+    marker.bindTooltip(t.name, {
+      permanent: true,
+      direction: 'top',
+      className: 'label-tooltip'
     });
-  }
-}
-
-initRouteLegend();
-
-const collapsibles = document.querySelectorAll(".collapsible");
-collapsibles.forEach(btn => {
-  btn.addEventListener("click", function() {
-    this.classList.toggle("active");
-    const content = this.nextElementSibling;
-    content.style.display = content.style.display === "none" ? "block" : "none";
   });
-});
 
-map.fitBounds(bounds);
+  const routes = {};
+  const routeLayers = {};
+  const colors = {
+    katowice: 'red',
+    cluj: 'blue',
+    esl: 'green',
+    melbourne: 'orange',
+    mrq: 'purple',
+    mesa: 'brown'
+  };
+
+  const legendControl = L.control({ position: 'bottomright' });
+  legendControl.onAdd = function () {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = `
+      <div class="collapsible">Torneios</div>
+      <div class="content">
+        <div><span class="circle-icon" style="background:red"></span> IEM Katowice</div>
+        <div><span class="circle-icon" style="background:blue"></span> PGL Cluj-Napoca</div>
+        <div><span class="circle-icon" style="background:green"></span> ESL Pro League</div>
+        <div><span class="circle-icon" style="background:orange"></span> IEM Melbourne</div>
+        <div><span class="circle-icon" style="background:purple"></span> MRQ (BLAST)</div>
+        <div><span class="circle-icon" style="background:brown"></span> MESA Nomadic</div>
+        <div style="margin-top:5px;">
+          <span class="circle-icon" style="background:black; opacity:0.8;"></span> Com prémio<br>
+          <span class="circle-icon" style="border:2px solid black; background:transparent;"></span> Sem prémio
+        </div>
+      </div>
+      <hr>
+      <div class="collapsible">Rotas</div>
+      <div class="content" id="routeLegend"></div>
+    `;
+    return div;
+  };
+  legendControl.addTo(map);
+
+  function calculateTotalKm(route) {
+    let total = 0;
+    for (let i = 1; i < route.length; i++) {
+      const [lat1, lon1] = route[i - 1];
+      const [lat2, lon2] = route[i];
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      total += R * c;
+    }
+    return Math.round(total);
+  }
+
+  function initRouteLegend() {
+    const container = document.getElementById('routeLegend');
+    for (let key in routeLayers) {
+      const checkboxId = `route_${key}`;
+      container.innerHTML += `<div><label><input type="checkbox" id="${checkboxId}"> <span class="circle-icon" style="background:${colors[key]};"></span>${key.toUpperCase()} (${calculateTotalKm(routes[key])} km)</label></div>`;
+    }
+    for (let key in routeLayers) {
+      document.getElementById(`route_${key}`).addEventListener('change', function (e) {
+        if (e.target.checked) {
+          routeLayers[key].addTo(map);
+        } else {
+          map.removeLayer(routeLayers[key]);
+        }
+      });
+    }
+  }
+
+  initRouteLegend();
+
+  document.querySelectorAll(".collapsible").forEach(btn => {
+    btn.addEventListener("click", function () {
+      const content = this.nextElementSibling;
+      content.style.display = content.style.display === "none" ? "block" : "none";
+    });
+  });
+
+  map.fitBounds(bounds);
 </script>
 </body>
 </html>
