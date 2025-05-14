@@ -1,35 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
   <meta charset="utf-8" />
-  <title>Mapa Interativo - SAW Torneios</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Interativo - SAW Torneios</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    body.dark-mode { background: #121212; color: #e0e0e0; }
-    #map { height: 100vh; width: 100%; }
-
-    /* Estilos gerais */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    #map { 
+      height: 100vh;
+      width: 100%; 
+    }
     .legend {
       background: white;
       padding: 10px;
       line-height: 1.3em;
       font-size: 12px;
       border-radius: 6px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 250px;
-      display: none; /* Inicialmente oculto */
-      position: absolute;
+      position: fixed;
       bottom: 20px;
       right: 20px;
-      z-index: 1000; /* A legenda fica acima do mapa, mas abaixo dos popups */
-      overflow-y: auto; /* Permite rolagem se a legenda for muito grande */
-    }
-
-    .dark-mode .legend {
-      background: #2c2c2c;
-      color: #e0e0e0;
+      z-index: 1000;
+      overflow-y: auto;
+      display: none; /* Inicialmente oculta */
     }
 
     .circle-icon {
@@ -84,10 +84,13 @@
       border-radius: 6px;
       cursor: pointer;
       z-index: 1000;
+      font-size: 14px;
+      border: none;
     }
 
-    .legend-content {
-      display: none;
+    #menuButton.light {
+      background: #f4f4f4;
+      color: #333;
     }
 
     /* Responsividade para telas menores que 768px */
@@ -120,16 +123,14 @@
       }
 
       .legend {
-        display: none; /* Oculta a legenda inicialmente no mobile */
+        display: none;
       }
 
-      /* Menu */
       #menuButton {
-        display: block; /* Mostra o botão no mobile */
+        display: block;
       }
     }
 
-    /* Ajuste para telas muito pequenas */
     @media (max-width: 480px) {
       .legend {
         font-size: 8px;
@@ -161,7 +162,7 @@
     /* Ajustes para telas pequenas (desktop) */
     @media (max-width: 1024px) {
       .legend {
-        max-height: 400px; /* Limita a altura da legenda para não ocupar muito espaço */
+        max-height: 400px;
         width: 200px;
         font-size: 11px;
       }
@@ -192,176 +193,178 @@
   </style>
 </head>
 <body>
-<div id="map"></div>
-<button id="menuButton">Abrir Legenda</button> <!-- Botão de abrir legenda -->
 
-<script>
-  if (document.body.classList.contains('dark')) document.body.classList.add('dark-mode');
+  <div id="map"></div>
 
-  const map = L.map('map');
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
+  <button id="menuButton" class="light">Abrir Legenda</button> <!-- Botão de abrir legenda -->
 
-  const cityCoords = {
-    porto: [41.1496, -8.6109],
-    krakow: [50.0647, 19.9450],
-    madrid: [40.4168, -3.7038],
-    bucharest: [44.4268, 26.1025],
-    cluj: [46.7694, 23.5899],
-    frankfurt: [50.1109, 8.6821],
-    stockholm: [59.3293, 18.0686],
-    dubai: [25.276987, 55.296249],
-    melbourne: [-37.8136, 144.9631],
-    beijing: [39.9042, 116.4074],
-    ulaanbaatar: [47.8864, 106.9057]
-  };
+  <script>
+    const map = L.map('map').setView([41.1496, -8.6109], 6);  // Definir a posição inicial do mapa
 
-  const cityNames = {
-    porto: "Porto",
-    krakow: "Cracóvia",
-    madrid: "Madrid",
-    bucharest: "Bucareste",
-    cluj: "Cluj-Napoca",
-    frankfurt: "Frankfurt",
-    stockholm: "Estocolmo",
-    dubai: "Dubai",
-    melbourne: "Melbourne",
-    beijing: "Pequim",
-    ulaanbaatar: "Ulaanbaatar"
-  };
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-  const tournaments = [
-    { name: "IEM Katowice 2025", location: "krakow", prize: "$2500", color: "#ff0000", position: "21º-24º", date: "29 Jan - 9 Fev" },
-    { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "#0000ff", position: "5º-8º", date: "14 - 23 Fev" },
-    { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "#00ff00", position: "12º-14º", date: "1 - 16 Mar" },
-    { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "#ffa500", position: "13º-16º", date: "21 - 27 Abr" },
-    { name: "MRQ (online jogado em Frankfurt)", location: "frankfurt", prize: null, color: "#800080", position: "N/A", date: "Abril" },
-    { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "#8B4513", position: "7º-8º", date: "30 Abr - 4 Mai" }
-  ];
+    const cityCoords = {
+      porto: [41.1496, -8.6109],
+      krakow: [50.0647, 19.9450],
+      madrid: [40.4168, -3.7038],
+      bucharest: [44.4268, 26.1025],
+      cluj: [46.7694, 23.5899],
+      frankfurt: [50.1109, 8.6821],
+      stockholm: [59.3293, 18.0686],
+      dubai: [25.276987, 55.296249],
+      melbourne: [-37.8136, 144.9631],
+      beijing: [39.9042, 116.4074],
+      ulaanbaatar: [47.8864, 106.9057]
+    };
 
-  const bounds = [];
-  tournaments.forEach(t => {
-    const coord = cityCoords[t.location];
-    if (!coord) return;
-    bounds.push(coord);
+    const cityNames = {
+      porto: "Porto",
+      krakow: "Cracóvia",
+      madrid: "Madrid",
+      bucharest: "Bucareste",
+      cluj: "Cluj-Napoca",
+      frankfurt: "Frankfurt",
+      stockholm: "Estocolmo",
+      dubai: "Dubai",
+      melbourne: "Melbourne",
+      beijing: "Pequim",
+      ulaanbaatar: "Ulaanbaatar"
+    };
 
-    const hasPrize = !!t.prize;
-    let radius = 8; 
-    if (t.prize) {
-      const prizeValue = parseInt(t.prize.replace('$', '').replace(',', ''));
-      if (prizeValue > 50000) {
-        radius = 12;
-      } else if (prizeValue > 10000) {
-        radius = 10;
+    const tournaments = [
+      { name: "IEM Katowice 2025", location: "krakow", prize: "$2500", color: "#ff0000", position: "21º-24º", date: "29 Jan - 9 Fev" },
+      { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "#0000ff", position: "5º-8º", date: "14 - 23 Fev" },
+      { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "#00ff00", position: "12º-14º", date: "1 - 16 Mar" },
+      { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "#ffa500", position: "13º-16º", date: "21 - 27 Abr" },
+      { name: "MRQ (online jogado em Frankfurt)", location: "frankfurt", prize: null, color: "#800080", position: "N/A", date: "Abril" },
+      { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "#8B4513", position: "7º-8º", date: "30 Abr - 4 Mai" }
+    ];
+
+    const bounds = [];
+    tournaments.forEach(t => {
+      const coord = cityCoords[t.location];
+      if (!coord) return;
+      bounds.push(coord);
+
+      const hasPrize = !!t.prize;
+      let radius = 8; 
+      if (t.prize) {
+        const prizeValue = parseInt(t.prize.replace('$', '').replace(',', ''));
+        if (prizeValue > 50000) {
+          radius = 12;
+        } else if (prizeValue > 10000) {
+          radius = 10;
+        }
+      }
+
+      const marker = L.circleMarker(coord, {
+        radius: radius,
+        color: t.color,
+        fillColor: t.color,
+        fillOpacity: hasPrize ? 0.9 : 0,
+        weight: 2
+      }).addTo(map);
+
+      marker.bindPopup(
+        `<b>${t.name}</b><br>` +
+        `<b>Data:</b> ${t.date}<br>` +
+        `<b>Localização:</b> ${cityNames[t.location]}<br>` +
+        `<b>Posição:</b> ${t.position}<br>` +
+        `<b>Prémio:</b> ${t.prize || "Sem prémio"}`
+      );
+
+      marker.bindTooltip(t.name, {
+        permanent: true,
+        direction: 'auto',
+        offset: [0, -(radius + 5)],
+        className: 'label-tooltip',
+        interactive: true
+      });
+    });
+
+    const routeDefinitions = [
+      { name: "IEM Katowice", points: ["porto", "krakow", "porto"], distance: "3.600 km" },
+      { name: "PGL Cluj-Napoca", points: ["porto", "madrid", "bucharest", "cluj", "bucharest", "madrid", "porto"], distance: "7.800 km" },
+      { name: "ESL Pro League S21", points: ["porto", "frankfurt", "stockholm", "porto"], distance: "6.500 km" },
+      { name: "MRQ BLAST.tv Major Austin + IEM Melbourne + MESA Nomadic Masters", points: ["porto", "frankfurt", "dubai", "melbourne", "beijing", "ulaanbaatar", "frankfurt", "porto"], distance: "39.000 km" }
+    ];
+
+    const routeLayers = {};
+
+    routeDefinitions.forEach((route, index) => {
+      const latlngs = route.points.map(p => cityCoords[p]);
+      const polyline = L.polyline(latlngs, {
+        color: '#ff0000',
+        weight: 2,
+        dashArray: '4, 6'
+      }).bindPopup(`
+        <b>${route.name}</b><br>
+        <b>Distância:</b> ${route.distance}<br>
+        <b>Cidades por onde passaram:</b><br>
+        ${route.points.map(p => cityNames[p]).join(' → ')}
+      `).addTo(map);
+
+      routeLayers[route.name] = polyline;
+    });
+
+    const legendControl = L.control({ position: 'bottomright' });
+    legendControl.onAdd = function () {
+      const div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = `
+        <div class="collapsible">Torneios</div>
+        <div class="content">
+          ${tournaments.map(t => `
+            <div><span class="circle-icon" style="background:${t.prize ? t.color : 'transparent'}; border: 2px solid ${t.color};"></span>${t.name}</div>
+          `).join('')}
+          <div style="margin-top:8px;"><span class="circle-icon" style="background:#000;"></span> Com prémio</div>
+          <div><span class="circle-icon" style="background:transparent; border: 2px solid #000;"></span> Sem prémio</div>
+        </div>
+        <div class="collapsible">Rotas</div>
+        <div class="content">
+          ${routeDefinitions.map(r => `
+            <div>
+              <label><input type="checkbox" checked onchange="toggleRoute('${r.name}')"> ${r.name} (${r.distance})</label>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      return div;
+    };
+    legendControl.addTo(map);
+
+    function toggleRoute(name) {
+      const layer = routeLayers[name];
+      if (map.hasLayer(layer)) {
+        map.removeLayer(layer);
+      } else {
+        layer.addTo(map);
       }
     }
 
-    const marker = L.circleMarker(coord, {
-      radius: radius,
-      color: t.color,
-      fillColor: t.color,
-      fillOpacity: hasPrize ? 0.9 : 0,
-      weight: 2
-    }).addTo(map);
-
-    marker.bindPopup(
-      `<b>${t.name}</b><br>` +
-      `<b>Data:</b> ${t.date}<br>` +
-      `<b>Localização:</b> ${cityNames[t.location]}<br>` +
-      `<b>Posição:</b> ${t.position}<br>` +
-      `<b>Prémio:</b> ${t.prize || "Sem prémio"}`
-    );
-
-    marker.bindTooltip(t.name, {
-      permanent: true,
-      direction: 'auto',
-      offset: [0, -(radius + 5)],
-      className: 'label-tooltip',
-      interactive: true
+    // Abrir legenda ao clicar no botão
+    document.getElementById("menuButton").addEventListener('click', () => {
+      const legend = document.querySelector('.legend');
+      const button = document.getElementById("menuButton");
+      legend.style.display = 'block';
+      button.style.display = 'none'; // Esconde o botão depois de abrir a legenda
     });
-  });
 
-  const routeDefinitions = [
-    { name: "IEM Katowice", points: ["porto", "krakow", "porto"], distance: "3.600 km" },
-    { name: "PGL Cluj-Napoca", points: ["porto", "madrid", "bucharest", "cluj", "bucharest", "madrid", "porto"], distance: "7.800 km" },
-    { name: "ESL Pro League S21", points: ["porto", "frankfurt", "stockholm", "porto"], distance: "6.500 km" },
-    { name: "MRQ BLAST.tv Major Austin + IEM Melbourne + MESA Nomadic Masters", points: ["porto", "frankfurt", "dubai", "melbourne", "beijing", "ulaanbaatar", "frankfurt", "porto"], distance: "39.000 km" }
-  ];
-
-  const routeLayers = {};
-
-  routeDefinitions.forEach((route, index) => {
-    const latlngs = route.points.map(p => cityCoords[p]);
-    const polyline = L.polyline(latlngs, {
-      color: '#ff0000',
-      weight: 2,
-      dashArray: '4, 6'
-    }).bindPopup(`
-      <b>${route.name}</b><br>
-      <b>Distância:</b> ${route.distance}<br>
-      <b>Cidades por onde passaram:</b><br>
-      ${route.points.map(p => cityNames[p]).join(' → ')}
-    `).addTo(map);
-
-    routeLayers[route.name] = polyline;
-  });
-
-  const legendControl = L.control({ position: 'bottomright' });
-  legendControl.onAdd = function () {
-    const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = `
-      <div class="collapsible">Torneios</div>
-      <div class="content">
-        ${tournaments.map(t => `
-          <div><span class="circle-icon" style="background:${t.prize ? t.color : 'transparent'}; border: 2px solid ${t.color};"></span>${t.name}</div>
-        `).join('')}
-        <div style="margin-top:8px;"><span class="circle-icon" style="background:#000;"></span> Com prémio</div>
-        <div><span class="circle-icon" style="background:transparent; border: 2px solid #000;"></span> Sem prémio</div>
-      </div>
-      <div class="collapsible">Rotas</div>
-      <div class="content">
-        ${routeDefinitions.map(r => `
-          <div>
-            <label><input type="checkbox" checked onchange="toggleRoute('${r.name}')"> ${r.name} (${r.distance})</label>
-          </div>
-        `).join('')}
-      </div>
-    `;
-    return div;
-  };
-  legendControl.addTo(map);
-
-  function toggleRoute(name) {
-    const layer = routeLayers[name];
-    if (map.hasLayer(layer)) {
-      map.removeLayer(layer);
-    } else {
-      layer.addTo(map);
-    }
-  }
-
-  document.querySelectorAll('.collapsible').forEach(item => {
-    item.classList.remove('active');
-    const content = item.nextElementSibling;
-    content.style.display = 'block';
-    item.addEventListener('click', function () {
-      this.classList.toggle('active');
-      const content = this.nextElementSibling;
-      content.style.display = (content.style.display === 'none') ? 'block' : 'none';
+    // Fechar a legenda ao clicar nas categorias
+    document.querySelectorAll('.collapsible').forEach(collapsible => {
+      collapsible.addEventListener('click', () => {
+        const content = collapsible.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
     });
-  });
 
-  // Abrir legenda ao clicar no botão
-  document.getElementById('menuButton').addEventListener('click', () => {
-    const menuButton = document.getElementById('menuButton');
-    const legend = document.querySelector('.legend');
-    menuButton.style.display = 'none'; // Oculta o botão
-    legend.style.display = 'block'; // Exibe a legenda
-  });
+  </script>
 
-  setTimeout(() => map.fitBounds(bounds), 100);
-</script>
 </body>
 </html>
