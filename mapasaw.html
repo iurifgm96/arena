@@ -82,4 +82,62 @@
 
     var popup_5b0ea60c9aa7414c2fd0735568d46816 = L.popup({"maxWidth": 300});
     var html_ea9ab99829fce3e7bfa9c6bb6b569f25 = $(`<div style="width: 100%; height: 100%;">
-        <b>IEM Katowice 2025</b><br>Local: Katow
+        <b>IEM Katowice 2025</b><br>Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500<br><br>
+        <b>Rota dos Voos:</b><br>Porto -> Katowice -> Porto
+    </div>`)[0];
+    popup_5b0ea60c9aa7414c2fd0735568d46816.setContent(html_ea9ab99829fce3e7bfa9c6bb6b569f25);
+    circle_marker_6c4876bd7afd02952032b3977ed2d55f.bindPopup(popup_5b0ea60c9aa7414c2fd0735568d46816);
+
+    // MRQ -> Frankfurt -> Dubai -> Melbourne -> Pequim -> Ulaanbaatar -> Frankfurt -> Porto
+    var routes = [
+        // Porto -> Frankfurt
+        [[40.0, 20.0], [50.1109, 8.6821]], 
+        // Frankfurt -> Dubai
+        [[50.1109, 8.6821], [25.276987, 55.296249]], 
+        // Dubai -> Melbourne
+        [[25.276987, 55.296249], [37.8136, 144.9631]], 
+        // Melbourne -> Pequim
+        [[37.8136, 144.9631], [39.9042, 116.4074]], 
+        // Pequim -> Ulaanbaatar
+        [[39.9042, 116.4074], [47.9202, 106.9197]], 
+        // Ulaanbaatar -> Frankfurt
+        [[47.9202, 106.9197], [50.1109, 8.6821]], 
+        // Frankfurt -> Porto
+        [[50.1109, 8.6821], [40.0, 20.0]]
+    ];
+
+    // Adicionar polilinhas com cores distintas para cada voo
+    routes.forEach(function(route, index) {
+        var polyline = L.polyline(route, {
+            color: index === 0 ? 'blue' :
+                   index === 1 ? 'green' :
+                   index === 2 ? 'red' :
+                   index === 3 ? 'purple' :
+                   index === 4 ? 'orange' : 'black',
+            weight: 4,
+            opacity: 0.7
+        }).addTo(map_9e139fb2406424656c1a1a8959f91419);
+    });
+
+    // Popup para o MRQ + IEM Melbourne
+    var circle_marker_mrq = L.circleMarker([37.8136, 144.9631], {
+        "bubblingMouseEvents": true,
+        "color": "green",
+        "fill": true,
+        "fillColor": "green",
+        "fillOpacity": 0.7,
+        "radius": 7,
+        "stroke": true,
+        "weight": 3
+    }).addTo(map_9e139fb2406424656c1a1a8959f91419);
+
+    var popup_mrq = L.popup({"maxWidth": 300});
+    var html_mrq = $(`<div style="width: 100%; height: 100%;">
+        <b>MRQ / IEM Melbourne 2025</b><br>Local: Melbourne, Austrália<br>Data: 2025-03-15<br>Classificação: 9º<br>Prémio: $10,000<br><br>
+        <b>Rota dos Voos:</b><br>Porto -> Frankfurt -> Dubai -> Melbourne -> Pequim -> Ulaanbaatar -> Frankfurt -> Porto
+    </div>`)[0];
+    popup_mrq.setContent(html_mrq);
+    circle_marker_mrq.bindPopup(popup_mrq);
+
+</script>
+</html>
