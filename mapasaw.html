@@ -1,98 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <script>
-        L_NO_TOUCH = false;
-        L_DISABLE_3D = false;
-    </script>
-    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
-    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <meta charset="UTF-8">
+    <title>Torneios da SAW em 2025</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <style>
-        #map_9e139fb2406424656c1a1a8959f91419 {
-            position: relative;
-            width: 100.0%;
-            height: 100.0%;
-            left: 0.0%;
-            top: 0.0%;
-        }
-    </style>
     <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@master/folium/templates/leaflet_heat.min.js"></script>
+
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }
+    </style>
 </head>
 <body>
-    <div class="folium-map" id="map_9e139fb2406424656c1a1a8959f91419"></div>
-</body>
+<div id="map"></div>
+
 <script>
-    var map_9e139fb2406424656c1a1a8959f91419 = L.map(
-        "map_9e139fb2406424656c1a1a8959f91419",
+    var map = L.map('map').setView([40.0, 20.0], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Dados © <a href="https://openstreetmap.org">OpenStreetMap</a>, sob <a href="https://www.openstreetmap.org/copyright">ODbL</a>'
+    }).addTo(map);
+
+    const torneios = [
         {
-            center: [40.0, 20.0],
-            crs: L.CRS.EPSG3857,
-            zoom: 2,
-            zoomControl: true,
-            preferCanvas: false,
+            nome: "IEM Katowice 2025",
+            local: "Katowice, Polónia",
+            data: "2025-01-30",
+            classificacao: "21º - 24º",
+            premio: "$2,500",
+            coords: [50.2649, 19.0238]
+        },
+        {
+            nome: "PGL Cluj-Napoca 2025",
+            local: "Cluj-Napoca, Roménia",
+            data: "2025-02-21",
+            classificacao: "5º - 8º",
+            premio: "$62,500",
+            coords: [46.7712, 23.6236]
+        },
+        {
+            nome: "ESL Pro League Season 21",
+            local: "Malta",
+            data: "2025-03-10",
+            classificacao: "12º - 14º",
+            premio: "$10,500",
+            coords: [35.8997, 14.5146]
+        },
+        {
+            nome: "IEM Melbourne 2025",
+            local: "Melbourne, Austrália",
+            data: "2025-04-22",
+            classificacao: "13º - 16º",
+            premio: "$4,000",
+            coords: [-37.8136, 144.9631]
+        },
+        {
+            nome: "MESA Nomadic Masters Spring 2025",
+            local: "Ulan Bator, Mongólia",
+            data: "2025-05-01",
+            classificacao: "7º - 8º",
+            premio: "$0",
+            coords: [47.8864, 106.9057]
         }
-    );
+    ];
 
-    var tile_layer_8fe6186b20999d02b0641f53a40e8a84 = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+    // Criar marcadores e tooltips
+    torneios.forEach(torneio => {
+        // Marcador principal com popup
+        const marcador = L.circleMarker(torneio.coords, {
+            color: "blue",
+            fillColor: "blue",
+            fillOpacity: 0.7,
+            radius: 7,
+            weight: 3
+        }).addTo(map);
 
-    var circle_marker_6c4876bd7afd02952032b3977ed2d55f = L.circleMarker(
-        [50.2649, 19.0238],
-        {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "radius": 7, "stroke": true, "weight": 3}
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-    var label_1 = L.marker([50.2649, 19.0238]).addTo(map_9e139fb2406424656c1a1a8959f91419)
-        .bindTooltip("IEM Katowice 2025")
-        .openTooltip();
+        const conteudo = `<b>${torneio.nome}</b><br>Local: ${torneio.local}<br>Data: ${torneio.data}<br>Classificação: ${torneio.classificacao}<br>Prémio: ${torneio.premio}`;
 
-    var circle_marker_83998fd7b9d65bb42724d17f9265b70d = L.circleMarker(
-        [46.7712, 23.6236],
-        {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "radius": 7, "stroke": true, "weight": 3}
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-    var label_2 = L.marker([46.7712, 23.6236]).addTo(map_9e139fb2406424656c1a1a8959f91419)
-        .bindTooltip("PGL Cluj-Napoca 2025")
-        .openTooltip();
+        marcador.bindPopup(conteudo);
 
-    var circle_marker_1b02c8f2f495a2bb6bc5e0711d430cfd = L.circleMarker(
-        [35.8997, 14.5146],
-        {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "radius": 7, "stroke": true, "weight": 3}
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-    var label_3 = L.marker([35.8997, 14.5146]).addTo(map_9e139fb2406424656c1a1a8959f91419)
-        .bindTooltip("ESL Pro League Season 21")
-        .openTooltip();
+        // Marcador invisível com tooltip permanente
+        L.marker(torneio.coords, { opacity: 0 })
+            .addTo(map)
+            .bindTooltip(torneio.nome, {
+                permanent: true,
+                direction: 'top',
+                className: 'map-tooltip'
+            })
+            .openTooltip();
+    });
 
-    var circle_marker_c15b41cfa7c8c3b355cc7ead1c2369db = L.circleMarker(
-        [-37.8136, 144.9631],
-        {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "radius": 7, "stroke": true, "weight": 3}
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-    var label_4 = L.marker([-37.8136, 144.9631]).addTo(map_9e139fb2406424656c1a1a8959f91419)
-        .bindTooltip("IEM Melbourne 2025")
-        .openTooltip();
+    // Camada de calor
+    const heatData = torneios.map(t => [...t.coords, parseFloat(t.premio.replace(/[^\d]/g, '')) || 0]);
 
-    var circle_marker_61634f45b96c17ffdc4fe1dd93862111 = L.circleMarker(
-        [47.8864, 106.9057],
-        {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "radius": 7, "stroke": true, "weight": 3}
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-    var label_5 = L.marker([47.8864, 106.9057]).addTo(map_9e139fb2406424656c1a1a8959f91419)
-        .bindTooltip("MESA Nomadic Masters Spring 2025")
-        .openTooltip();
-
-    var heat_map_69aebe50e8980cc4d719eb306f03b528 = L.heatLayer(
-        [[50.2649, 19.0238, 2500], [46.7712, 23.6236, 62500], [35.8997, 14.5146, 10500], [-37.8136, 144.9631, 4000], [47.8864, 106.9057, 0]],
-        {"blur": 15, "maxZoom": 10, "minOpacity": 0.5, "radius": 25}
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+    L.heatLayer(heatData, {
+        radius: 25,
+        blur: 15,
+        maxZoom: 10,
+        minOpacity: 0.5
+    }).addTo(map);
 </script>
+</body>
 </html>
