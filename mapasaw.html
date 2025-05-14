@@ -24,6 +24,7 @@
       bottom: 20px;
       right: 20px;
       z-index: 1000; /* A legenda fica acima do mapa, mas abaixo dos popups */
+      overflow-y: auto; /* Permite rolagem se a legenda for muito grande */
     }
 
     .dark-mode .legend {
@@ -155,6 +156,33 @@
       }
 
       #map { height: 70vh; }
+    }
+
+    /* Ajustes para telas pequenas (desktop) */
+    @media (max-width: 1024px) {
+      .legend {
+        max-height: 400px; /* Limita a altura da legenda para não ocupar muito espaço */
+        width: 200px;
+        font-size: 11px;
+      }
+
+      .legend .collapsible {
+        font-size: 13px;
+        padding: 6px;
+      }
+
+      .legend .content {
+        font-size: 11px;
+      }
+
+      .circle-icon {
+        width: 9px;
+        height: 9px;
+      }
+
+      .label-tooltip {
+        font-size: 9px;
+      }
     }
 
     /* Garantir que os popups ficam sempre sobre a legenda */
