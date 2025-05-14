@@ -29,6 +29,7 @@
       height: 12px;
       border-radius: 50%;
       margin-right: 6px;
+      vertical-align: middle;
     }
   </style>
 </head>
@@ -123,7 +124,7 @@
       const checkboxId = `chk_${key}`;
       div.innerHTML += `<div style="margin-bottom: 4px;">
         <input type="checkbox" id="${checkboxId}" checked>
-        <span class="circle-icon" style="background:${data.color}; border: 1px solid #333;"></span>
+        <span class="circle-icon" style="background:${data.prize === 0 ? 'transparent' : data.color}; border: 2px solid ${data.color};"></span>
         ${data.name}
       </div>`;
     }
@@ -131,8 +132,9 @@
       <hr>
       <strong>Tamanho do marcador:</strong><br>
       <div><span class="circle-icon" style="width:12px; height:12px; border: 2px solid #999; background:transparent;"></span> Sem prémio</div>
-      <div><span class="circle-icon" style="width:10px; height:10px; background:#999;"></span> Prémio médio</div>
-      <div><span class="circle-icon" style="width:14px; height:14px; background:#999;"></span> Grande prémio</div>
+      <div><span class="circle-icon" style="width:12px; height:12px; background:#999;"></span> Prémio pequeno</div>
+      <div><span class="circle-icon" style="width:16px; height:16px; background:#999;"></span> Prémio médio</div>
+      <div><span class="circle-icon" style="width:20px; height:20px; background:#999;"></span> Grande prémio</div>
     </div>`;
     return div;
   };
@@ -141,7 +143,9 @@
 
   function calculateRadius(prize) {
     if (prize === 0) return 6;
-    return Math.min(6 + Math.log(prize), 14);
+    if (prize < 5000) return 8;
+    if (prize < 20000) return 12;
+    return 16;
   }
 
   for (let key in tournaments) {
@@ -156,8 +160,7 @@
       fillOpacity: isNoPrize ? 0.1 : 0.9,
       weight: 2
     }).bindPopup(data.content)
-      .bindTooltip(data.name, { permanent: true, direction: 'right' })
-      .openTooltip();
+      .bindTooltip(data.name, { permanent: false, direction: 'top', offset: [0, -10] });
 
     layers[key] = L.layerGroup([marker]).addTo(map);
     bounds.push(data.coords);
