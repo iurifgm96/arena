@@ -8,7 +8,9 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     body.dark-mode { background: #121212; color: #e0e0e0; }
-    #map { height: 100vh; }
+    #map { height: 100vh; width: 100%; }
+    
+    /* Estilos gerais */
     .legend {
       background: white;
       padding: 10px;
@@ -18,10 +20,12 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
       max-width: 250px;
     }
+
     .dark-mode .legend {
       background: #2c2c2c;
       color: #e0e0e0;
     }
+
     .circle-icon {
       display: inline-block;
       width: 10px;
@@ -30,6 +34,7 @@
       margin-right: 6px;
       vertical-align: middle;
     }
+
     .collapsible {
       cursor: pointer;
       padding: 5px;
@@ -38,17 +43,21 @@
       margin: 5px 0;
       border: 1px solid #ddd;
     }
+
     .collapsible:hover {
       background-color: #e1e1e1;
     }
+
     .content {
       display: block;
       padding: 5px;
       border-top: 1px solid #ddd;
     }
+
     .active .content {
       display: none;
     }
+
     .label-tooltip {
       background: white;
       color: black;
@@ -56,6 +65,65 @@
       font-weight: bold;
       border: 1px solid gray;
       border-radius: 4px;
+    }
+
+    /* Responsividade para telas menores que 768px */
+    @media (max-width: 768px) {
+      #map { height: 80vh; }
+
+      .legend {
+        max-width: 100%;
+        font-size: 10px;
+        padding: 8px;
+      }
+
+      .collapsible {
+        font-size: 14px;
+        padding: 4px;
+      }
+
+      .circle-icon {
+        width: 8px;
+        height: 8px;
+      }
+
+      .label-tooltip {
+        font-size: 10px;
+        padding: 2px 3px;
+      }
+
+      .content {
+        font-size: 12px;
+      }
+    }
+
+    /* Ajuste para telas muito pequenas */
+    @media (max-width: 480px) {
+      .legend {
+        font-size: 8px;
+        padding: 6px;
+      }
+
+      .circle-icon {
+        width: 6px;
+        height: 6px;
+      }
+
+      .collapsible {
+        font-size: 12px;
+        padding: 3px;
+      }
+
+      .label-tooltip {
+        font-size: 8px;
+        padding: 2px 4px;
+      }
+
+      .content {
+        font-size: 10px;
+      }
+
+      #map { height: 70vh; }
     }
   </style>
 </head>
@@ -103,7 +171,7 @@
     { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "#0000ff", position: "5º-8º", date: "14 - 23 Fev" },
     { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "#00ff00", position: "12º-14º", date: "1 - 16 Mar" },
     { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "#ffa500", position: "13º-16º", date: "21 - 27 Abr" },
-    { name: "MRQ (online jogado em Frankfurt)", location: "frankfurt", prize: null, color: "#800080", position: "9º-11º", date: "Abril" },
+    { name: "MRQ (online jogado em Frankfurt)", location: "frankfurt", prize: null, color: "#800080", position: "N/A", date: "Abril" },
     { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "#8B4513", position: "7º-8º", date: "30 Abr - 4 Mai" }
   ];
 
@@ -140,19 +208,10 @@
       `<b>Prémio:</b> ${t.prize || "Sem prémio"}`
     );
 
-    // To avoid overlap, we will dynamically adjust the position
-    let offsetX = 0;
-    let offsetY = -(radius + 5); 
-
-    // Logic to adjust the tooltip position if overlap is detected
-    if (t.name === "MRQ (online jogado em Frankfurt)") {
-      offsetY = -(radius + 20); // Moving this further down for better spacing
-    }
-
     marker.bindTooltip(t.name, {
       permanent: true,
       direction: 'auto',
-      offset: [offsetX, offsetY], // Dynamically adjusting the position
+      offset: [0, -(radius + 5)],
       className: 'label-tooltip',
       interactive: true
     });
