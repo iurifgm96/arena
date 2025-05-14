@@ -1,112 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Mapa de Torneios - SAW</title>
-  <style>
-    html, body { height: 100%; margin: 0; }
-    #map { height: 100%; }
-    .leaflet-control-layers-expanded { width: 200px; }
-  </style>
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-  />
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }
+        .custom-tooltip {
+            background: white;
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+        .empty-icon {
+            background: transparent;
+            border: none;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@master/folium/templates/leaflet_heat.min.js"></script>
 </head>
 <body>
 <div id="map"></div>
 <script>
-  const map = L.map('map').setView([41.1496, -8.6109], 2);
+    var map = L.map('map').setView([40.0, 20.0], 2);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+        maxZoom: 18
+    }).addTo(map);
 
-  const eventos = [
-    {
-      nome: "IEM Katowice 2025",
-      coords: [50.2649, 19.0238],
-      info: "Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500"
-    },
-    {
-      nome: "PGL Cluj-Napoca 2025",
-      coords: [46.7712, 23.6236],
-      info: "Local: Cluj-Napoca, Roménia<br>Data: 2025-02-21<br>Classificação: 5º - 8º<br>Prémio: $62,500"
-    },
-    {
-      nome: "ESL Pro League S21",
-      coords: [35.8997, 14.5146],
-      info: "Local: Malta<br>Data: 2025-03-10<br>Classificação: 12º - 14º<br>Prémio: $10,500"
-    },
-    {
-      nome: "IEM Melbourne 2025",
-      coords: [-37.8136, 144.9631],
-      info: "Local: Melbourne, Austrália<br>Data: 2025-04-22<br>Classificação: 13º - 16º<br>Prémio: $4,000"
-    },
-    {
-      nome: "MESA Nomadic Masters Spring",
-      coords: [47.8864, 106.9057],
-      info: "Local: Ulaanbaatar, Mongólia<br>Data: 2025-05-01<br>Classificação: 7º - 8º<br>Prémio: $0"
-    },
-    {
-      nome: "MRQ (BLAST Qualifier)",
-      coords: [39.9042, 116.4074],
-      info: "Local: Pequim (jogado online na rota para Ulaanbaatar)<br>Data: 2025-04<br>Classificação: -<br>Prémio: Qualificação"
-    }
-  ];
+    const eventos = [
+        {
+            nome: "IEM Katowice 2025",
+            coords: [50.2649, 19.0238],
+            info: "Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500"
+        },
+        {
+            nome: "PGL Cluj-Napoca 2025",
+            coords: [46.7712, 23.6236],
+            info: "Local: Cluj-Napoca, Roménia<br>Data: 2025-02-21<br>Classificação: 5º - 8º<br>Prémio: $62,500"
+        },
+        {
+            nome: "ESL Pro League Season 21",
+            coords: [35.8997, 14.5146],
+            info: "Local: Malta<br>Data: 2025-03-10<br>Classificação: 12º - 14º<br>Prémio: $10,500"
+        },
+        {
+            nome: "IEM Melbourne 2025",
+            coords: [-37.8136, 144.9631],
+            info: "Local: Melbourne, Austrália<br>Data: 2025-04-22<br>Classificação: 13º - 16º<br>Prémio: $4,000"
+        },
+        {
+            nome: "MESA Nomadic Masters Spring 2025",
+            coords: [47.8864, 106.9057],
+            info: "Local: Ulan Bator, Mongólia<br>Data: 2025-05-01<br>Classificação: 7º - 8º<br>Prémio: $0"
+        }
+    ];
 
-  eventos.forEach(evento => {
-    const marker = L.marker(evento.coords)
-      .addTo(map)
-      .bindPopup(`<b>${evento.nome}</b><br>${evento.info}`)
-      .bindTooltip(`<b>${evento.nome}</b>`, {
-        permanent: true,
-        direction: 'top',
-        offset: [0, -10]
-      });
-  });
-
-  // Coordenadas
-  const coordsDict = {
-    "Porto": [41.1496, -8.6109],
-    "Krakow": [50.0647, 19.9450],
-    "Madrid": [40.4168, -3.7038],
-    "Bucharest": [44.4268, 26.1025],
-    "Cluj": [46.7712, 23.6236],
-    "Frankfurt": [50.1109, 8.6821],
-    "Stockholm": [59.3293, 18.0686],
-    "Dubai": [25.276987, 55.296249],
-    "Melbourne": [-37.8136, 144.9631],
-    "Pequim": [39.9042, 116.4074],
-    "Ulaanbaatar": [47.8864, 106.9057]
-  };
-
-  const viagens = [
-    { nome: "Katowice", trajetos: [["Porto", "Krakow"], ["Krakow", "Porto"]], cor: "red" },
-    { nome: "Cluj", trajetos: [["Porto", "Madrid"], ["Madrid", "Bucharest"], ["Bucharest", "Cluj"], ["Cluj", "Bucharest"], ["Bucharest", "Madrid"], ["Madrid", "Porto"]], cor: "blue" },
-    { nome: "Pro League", trajetos: [["Porto", "Frankfurt"], ["Frankfurt", "Stockholm"], ["Stockholm", "Porto"]], cor: "green" },
-    { nome: "MRQ + Melbourne + MESA", trajetos: [["Porto", "Frankfurt"], ["Frankfurt", "Dubai"], ["Dubai", "Melbourne"], ["Melbourne", "Pequim"], ["Pequim", "Ulaanbaatar"], ["Ulaanbaatar", "Frankfurt"], ["Frankfurt", "Porto"]], cor: "purple" }
-  ];
-
-  const camadasDeRotas = {}; // para layers de controlo
-
-  viagens.forEach((viagem, i) => {
-    const grupo = L.layerGroup();
-    viagem.trajetos.forEach(([from, to]) => {
-      L.polyline([coordsDict[from], coordsDict[to]], {
-        color: viagem.cor,
-        weight: 3,
-        opacity: 0.7,
-        dashArray: '6,4'
-      }).addTo(grupo);
+    eventos.forEach(evento => {
+        L.marker(evento.coords, {
+            icon: L.divIcon({ className: 'empty-icon' })
+        })
+        .addTo(map)
+        .bindPopup(`<b>${evento.nome}</b><br>${evento.info}`)
+        .bindTooltip(`${evento.nome}`, {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -10],
+            className: 'custom-tooltip'
+        });
     });
-    camadasDeRotas[`Rotas ${viagem.nome}`] = grupo;
-    grupo.addTo(map); // ativar por padrão
-  });
 
-  // Controlo de camadas
-  L.control.layers(null, camadasDeRotas, { collapsed: false }).addTo(map);
+    // Heat map (optional)
+    var heatMap = L.heatLayer([
+        [50.2649, 19.0238, 2500],
+        [46.7712, 23.6236, 62500],
+        [35.8997, 14.5146, 10500],
+        [-37.8136, 144.9631, 4000],
+        [47.8864, 106.9057, 0]
+    ], {
+        radius: 25,
+        blur: 15,
+        maxZoom: 10,
+        minOpacity: 0.5
+    }).addTo(map);
 </script>
 </body>
 </html>
