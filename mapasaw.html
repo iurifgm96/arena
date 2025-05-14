@@ -19,7 +19,11 @@
       border-radius: 6px;
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
       max-width: 250px;
-      display: none;
+      display: none; /* Inicialmente oculto */
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
     }
 
     .dark-mode .legend {
@@ -71,8 +75,8 @@
     /* Menu no mobile */
     #menuButton {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      bottom: 20px;
+      right: 20px;
       background: #333;
       color: white;
       padding: 8px;
@@ -156,7 +160,7 @@
 </head>
 <body>
 <div id="map"></div>
-<button id="menuButton">Abrir Legenda</button> <!-- Botão para abrir/fechar a legenda -->
+<button id="menuButton">Abrir Legenda</button> <!-- Botão de abrir legenda -->
 
 <script>
   if (document.body.classList.contains('dark')) document.body.classList.add('dark-mode');
@@ -316,10 +320,12 @@
     });
   });
 
-  // Botão de abrir/fechar a legenda no mobile
+  // Abrir legenda ao clicar no botão
   document.getElementById('menuButton').addEventListener('click', () => {
+    const menuButton = document.getElementById('menuButton');
     const legend = document.querySelector('.legend');
-    legend.style.display = (legend.style.display === 'none' || legend.style.display === '') ? 'block' : 'none';
+    menuButton.style.display = 'none'; // Oculta o botão
+    legend.style.display = 'block'; // Exibe a legenda
   });
 
   setTimeout(() => map.fitBounds(bounds), 100);
