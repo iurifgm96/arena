@@ -65,30 +65,7 @@
         }
     ).addTo(map_9e139fb2406424656c1a1a8959f91419);
 
-    // IEM Katowice
-    var circle_marker_6c4876bd7afd02952032b3977ed2d55f = L.circleMarker(
-        [50.2649, 19.0238],
-        {
-            "bubblingMouseEvents": true,
-            "color": "blue",
-            "fill": true,
-            "fillColor": "blue",
-            "fillOpacity": 0.7,
-            "radius": 7,
-            "stroke": true,
-            "weight": 3
-        }
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-
-    var popup_5b0ea60c9aa7414c2fd0735568d46816 = L.popup({"maxWidth": 300});
-    var html_ea9ab99829fce3e7bfa9c6bb6b569f25 = $(`<div style="width: 100%; height: 100%;">
-        <b>IEM Katowice 2025</b><br>Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500<br><br>
-        <b>Rota dos Voos:</b><br>Porto -> Katowice -> Porto
-    </div>`)[0];
-    popup_5b0ea60c9aa7414c2fd0735568d46816.setContent(html_ea9ab99829fce3e7bfa9c6bb6b569f25);
-    circle_marker_6c4876bd7afd02952032b3977ed2d55f.bindPopup(popup_5b0ea60c9aa7414c2fd0735568d46816);
-
-    // Rotas do MRQ e IEM Melbourne (Online, Dubai, Melbourne, Pequim, Ulaanbaatar, Frankfurt, Porto)
+    // Criando as rotas do MRQ e IEM Melbourne
     var routes = [
         // Porto -> Frankfurt (online)
         [[40.0, 20.0], [50.1109, 8.6821]], 
@@ -119,17 +96,40 @@
         }).addTo(map_9e139fb2406424656c1a1a8959f91419);
     });
 
-    // Adicionar legenda nos popups para o MRQ (online em Frankfurt)
+    // IEM Katowice Popup
+    var circle_marker_6c4876bd7afd02952032b3977ed2d55f = L.circleMarker(
+        [50.2649, 19.0238],
+        {
+            "bubblingMouseEvents": true,
+            "color": "blue",
+            "fill": true,
+            "fillColor": "blue",
+            "fillOpacity": 0.7,
+            "radius": 7,
+            "stroke": true,
+            "weight": 3
+        }
+    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+
+    var popup_5b0ea60c9aa7414c2fd0735568d46816 = L.popup({"maxWidth": 300});
+    var html_ea9ab99829fce3e7bfa9c6bb6b569f25 = $(`<div style="width: 100%; height: 100%;">
+        <b>IEM Katowice 2025</b><br>Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500<br><br>
+        <b>Rota dos Voos:</b><br>Porto -> Katowice -> Porto
+    </div>`)[0];
+    popup_5b0ea60c9aa7414c2fd0735568d46816.setContent(html_ea9ab99829fce3e7bfa9c6bb6b569f25);
+    circle_marker_6c4876bd7afd02952032b3977ed2d55f.bindPopup(popup_5b0ea60c9aa7414c2fd0735568d46816);
+
+    // Adicionar legenda para MRQ - BLAST
     var popup_mrq = L.popup({"maxWidth": 300});
     var html_mrq = $(`<div style="width: 100%; height: 100%;">
         <b>MRQ - BLAST</b><br>Local: Online (Frankfurt)<br>Data: 2025-01-15<br>Classificação: 9º<br>Prémio: $10,000<br><br>
-        <b>Rota dos Voos:</b><br>Porto -> Frankfurt (online) -> Dubai -> Melbourne -> Pequim -> Ulaanbaatar -> Frankfurt -> Porto
+        <b>Rota dos Voos:</b><br>Porto -> Frankfurt -> Dubai -> Melbourne -> Pequim -> Ulaanbaatar -> Frankfurt -> Porto
     </div>`)[0];
     popup_mrq.setContent(html_mrq);
     var marker_mrq = L.marker([50.1109, 8.6821]).addTo(map_9e139fb2406424656c1a1a8959f91419);
     marker_mrq.bindPopup(popup_mrq);
 
-    // Heatmap para visualização adicional
+    // Heatmap para visualização adicional (se necessário)
     var heat_map_69aebe50e8980cc4d719eb306f03b528 = L.heatLayer(
         [[50.2649, 19.0238, 2500], [46.7712, 23.6236, 62500], [37.8136, 144.9631, 10500]],
         {"blur": 15, "maxZoom": 10, "minOpacity": 0.5, "radius": 25}
