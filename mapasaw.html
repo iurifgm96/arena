@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <script>
@@ -7,137 +7,49 @@
         L_DISABLE_3D = false;
     </script>
 
-    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
-    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
-
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
+    </style>
+    <style>#map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }</style>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-heat/0.2.0/leaflet-heat.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-    <style>
-        #map_9e139fb2406424656c1a1a8959f91419 {
-            position: relative;
-            width: 100.0%;
-            height: 100.0%;
-            left: 0.0%;
-            top: 0.0%;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@master/folium/templates/leaflet_heat.min.js"></script>
 </head>
+
 <body>
     <div class="folium-map" id="map_9e139fb2406424656c1a1a8959f91419" ></div>
 </body>
 
 <script>
-    var map_9e139fb2406424656c1a1a8959f91419 = L.map(
-        "map_9e139fb2406424656c1a1a8959f91419",
-        {
-            center: [40.0, 20.0],
-            crs: L.CRS.EPSG3857,
-            zoom: 2,
-            zoomControl: true,
-            preferCanvas: false,
-        }
-    );
-
-    var tile_layer_8fe6186b20999d02b0641f53a40e8a84 = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-            "attribution": "Data by &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>, under <a href=\"http://www.openstreetmap.org/copyright\">ODbL</a>.",
-            "detectRetina": false,
-            "maxNativeZoom": 18,
-            "maxZoom": 18,
-            "minZoom": 0,
-            "noWrap": false,
-            "opacity": 1,
-            "subdomains": "abc",
-            "tms": false
-        }
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-
-    // IEM Katowice Popup
-    var circle_marker_6c4876bd7afd02952032b3977ed2d55f = L.circleMarker(
-        [50.2649, 19.0238],
-        {
-            "bubblingMouseEvents": true,
-            "color": "blue",
-            "fill": true,
-            "fillColor": "blue",
-            "fillOpacity": 0.7,
-            "radius": 7,
-            "stroke": true,
-            "weight": 3
-        }
-    ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-
-    var popup_5b0ea60c9aa7414c2fd0735568d46816 = L.popup({"maxWidth": 300});
-    var html_ea9ab99829fce3e7bfa9c6bb6b569f25 = $(`<div style="width: 100%; height: 100%;">
-        <b>IEM Katowice 2025</b><br>Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500<br><br>
-        <b>Rota dos Voos:</b><br>Porto -> Katowice -> Porto
-    </div>`)[0];
-    popup_5b0ea60c9aa7414c2fd0735568d46816.setContent(html_ea9ab99829fce3e7bfa9c6bb6b569f25);
-    circle_marker_6c4876bd7afd02952032b3977ed2d55f.bindPopup(popup_5b0ea60c9aa7414c2fd0735568d46816);
-
-    // MRQ -> Frankfurt -> Dubai -> Melbourne -> Pequim -> Ulaanbaatar -> Frankfurt -> Porto
-    var routes = [
-        // Porto -> Frankfurt
-        [[40.0, 20.0], [50.1109, 8.6821]], 
-        // Frankfurt -> Dubai
-        [[50.1109, 8.6821], [25.276987, 55.296249]], 
-        // Dubai -> Melbourne
-        [[25.276987, 55.296249], [37.8136, 144.9631]], 
-        // Melbourne -> Pequim
-        [[37.8136, 144.9631], [39.9042, 116.4074]], 
-        // Pequim -> Ulaanbaatar
-        [[39.9042, 116.4074], [47.9202, 106.9197]], 
-        // Ulaanbaatar -> Frankfurt
-        [[47.9202, 106.9197], [50.1109, 8.6821]], 
-        // Frankfurt -> Porto
-        [[50.1109, 8.6821], [40.0, 20.0]]
-    ];
-
-    // Adicionar polilinhas com cores distintas para cada voo
-    routes.forEach(function(route, index) {
-        var polyline = L.polyline(route, {
-            color: index === 0 ? 'blue' :
-                   index === 1 ? 'green' :
-                   index === 2 ? 'red' :
-                   index === 3 ? 'purple' :
-                   index === 4 ? 'orange' : 'black',
-            weight: 4,
-            opacity: 0.7
-        }).addTo(map_9e139fb2406424656c1a1a8959f91419);
+    var map_9e139fb2406424656c1a1a8959f91419 = L.map("map_9e139fb2406424656c1a1a8959f91419", {
+        center: [40.0, 20.0],
+        zoom: 2,
+        zoomControl: true
     });
 
-    // Popup para o MRQ + IEM Melbourne
-    var circle_marker_mrq = L.circleMarker([37.8136, 144.9631], {
-        "bubblingMouseEvents": true,
-        "color": "green",
-        "fill": true,
-        "fillColor": "green",
-        "fillOpacity": 0.7,
-        "radius": 7,
-        "stroke": true,
-        "weight": 3
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "Data by OpenStreetMap",
+        maxZoom: 18
     }).addTo(map_9e139fb2406424656c1a1a8959f91419);
 
-    var popup_mrq = L.popup({"maxWidth": 300});
-    var html_mrq = $(`<div style="width: 100%; height: 100%;">
-        <b>MRQ / IEM Melbourne 2025</b><br>Local: Melbourne, Austrália<br>Data: 2025-03-15<br>Classificação: 9º<br>Prémio: $10,000<br><br>
-        <b>Rota dos Voos:</b><br>Porto -> Frankfurt -> Dubai -> Melbourne -> Pequim -> Ulaanbaatar -> Frankfurt -> Porto
-    </div>`)[0];
-    popup_mrq.setContent(html_mrq);
-    circle_marker_mrq.bindPopup(popup_mrq);
+    // Popups dos torneios
+    var popup_1 = L.popup().setContent("<b>IEM Katowice 2025</b><br>Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500");
+    var popup_2 = L.popup().setContent("<b>PGL Cluj-Napoca 2025</b><br>Local: Cluj-Napoca, Roménia<br>Data: 2025-02-21<br>Classificação: 5º - 8º<br>Prémio: $62,500");
+    var popup_3 = L.popup().setContent("<b>ESL Pro League Season 21</b><br>Local: Estocolmo, Suécia<br>Data: 2025-03-10<br>Classificação: 12º - 14º<br>Prémio: $10,500");
 
+    // Marcadores dos torneios
+    L.marker([50.2649, 19.0238]).addTo(map_9e139fb2406424656c1a1a8959f91419).bindPopup(popup_1);
+    L.marker([46.7712, 23.6236]).addTo(map_9e139fb2406424656c1a1a8959f91419).bindPopup(popup_2);
+    L.marker([59.3293, 18.0686]).addTo(map_9e139fb2406424656c1a1a8959f91419).bindPopup(popup_3);
 </script>
+
 </html>
