@@ -16,6 +16,20 @@
       border-radius: 6px;
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
+    .legend-scale {
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .legend-scale div {
+      margin: 2px 0;
+    }
+    .circle-icon {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
   </style>
 </head>
 <body>
@@ -33,6 +47,7 @@
       name: "Intel Extreme Masters Katowice 2025",
       coords: [50.0647, 19.9450],
       color: 'red',
+      prize: 2500,
       content: `<b>Intel Extreme Masters Katowice 2025</b><br>
                 Local: Kraków, Polónia<br>
                 Data: 30 de janeiro de 2025<br>
@@ -43,6 +58,7 @@
       name: "PGL Cluj-Napoca 2025",
       coords: [46.7694, 23.5899],
       color: 'blue',
+      prize: 62500,
       content: `<b>PGL Cluj-Napoca 2025</b><br>
                 Fase de Grupos: Bucareste, Roménia<br>
                 Playoffs: Cluj-Napoca, Roménia<br>
@@ -54,6 +70,7 @@
       name: "ESL Pro League Season 21",
       coords: [59.3293, 18.0686],
       color: 'green',
+      prize: 10500,
       content: `<b>ESL Pro League Season 21</b><br>
                 Local: Estocolmo, Suécia<br>
                 Data: 10 de março de 2025<br>
@@ -64,6 +81,7 @@
       name: "BLAST.tv Austin MRQ (Frankfurt)",
       coords: [50.1109, 8.6821],
       color: 'orange',
+      prize: 0,
       content: `<b>BLAST.tv Austin MRQ 2025</b><br>
                 Local: Frankfurt, Alemanha (Online)<br>
                 Data: 16 de abril de 2025<br>
@@ -73,6 +91,7 @@
       name: "IEM Melbourne 2025",
       coords: [-37.8136, 144.9631],
       color: 'purple',
+      prize: 4000,
       content: `<b>IEM Melbourne 2025</b><br>
                 Local: Melbourne, Austrália<br>
                 Data: 22 de abril de 2025<br>
@@ -83,6 +102,7 @@
       name: "MESA Nomadic Masters 2025",
       coords: [47.8864, 106.9057],
       color: 'brown',
+      prize: 0,
       content: `<b>MESA Nomadic Masters Spring 2025</b><br>
                 Local: Ulaanbaatar, Mongólia<br>
                 Data: 1 de maio de 2025<br>
@@ -99,19 +119,39 @@
     const div = L.DomUtil.create('div', 'legend');
     div.innerHTML = '<strong>Mostrar/Ocultar Torneios</strong><br>';
     for (let key in tournaments) {
+      const data = tournaments[key];
       const checkboxId = `chk_${key}`;
-      div.innerHTML += `<input type="checkbox" id="${checkboxId}" checked> ${tournaments[key].name}<br>`;
+      div.innerHTML += `<div style="margin-bottom: 4px;">
+        <input type="checkbox" id="${checkboxId}" checked>
+        <span class="circle-icon" style="background:${data.color};"></span>
+        ${data.name}
+      </div>`;
     }
+    div.innerHTML += `<div class="legend-scale">
+      <hr>
+      <strong>Tamanho do marcador:</strong><br>
+      <div><span class="circle-icon" style="width:6px; height:6px; background:#999;"></span> Sem prémio</div>
+      <div><span class="circle-icon" style="width:10px; height:10px; background:#999;"></span> Prémio médio</div>
+      <div><span class="circle-icon" style="width:14px; height:14px; background:#999;"></span> Grande prémio</div>
+    </div>`;
     return div;
   };
 
   legendControl.addTo(map);
 
+  function calculateRadius(prize) {
+    if (prize === 0) return 6;
+    return Math.min(6 + Math.log(prize), 14);
+  }
+
   for (let key in tournaments) {
     const data = tournaments[key];
+    const radius = calculateRadius(data.prize);
+
     const marker = L.circleMarker(data.coords, {
       color: data.color,
-      radius: 8,
+      fillColor: data.color,
+      radius: radius,
       fillOpacity: 0.9
     }).bindPopup(data.content)
       .bindTooltip(data.name, { permanent: true, direction: 'right' })
@@ -121,7 +161,6 @@
     bounds.push(data.coords);
   }
 
-  // Ajusta o zoom para mostrar todos os pontos
   map.fitBounds(bounds);
 
   for (let key in tournaments) {
