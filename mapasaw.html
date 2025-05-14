@@ -23,7 +23,7 @@
       position: absolute;
       bottom: 20px;
       right: 20px;
-      z-index: 1000;
+      z-index: 1000; /* A legenda fica acima do mapa, mas abaixo dos popups */
     }
 
     .dark-mode .legend {
@@ -155,6 +155,11 @@
       }
 
       #map { height: 70vh; }
+    }
+
+    /* Garantir que os popups ficam sempre sobre a legenda */
+    .leaflet-popup {
+      z-index: 2000 !important;
     }
   </style>
 </head>
