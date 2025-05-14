@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
   <meta charset="utf-8" />
-  <title>Mapa Interativo - SAW Torneios</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Interativo - SAW Torneios</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.polyline.snakeanim@1.0.0/leaflet.polyline.snakeanim.min.js"></script>
   <style>
-    #map { height: 100vh; }
+    #map { 
+      height: 100vh; /* Garantir que o mapa tenha altura */
+      width: 100%; /* Garantir que o mapa ocupe toda a largura */
+    }
     .legend {
       background: white;
       padding: 10px;
