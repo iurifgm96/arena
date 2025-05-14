@@ -84,12 +84,26 @@
     ulaanbaatar: [47.8864, 106.9057]
   };
 
+  const cityNames = {
+    porto: "Porto",
+    krakow: "Cracóvia",
+    madrid: "Madrid",
+    bucharest: "Bucareste",
+    cluj: "Cluj-Napoca",
+    frankfurt: "Frankfurt",
+    stockholm: "Estocolmo",
+    dubai: "Dubai",
+    melbourne: "Melbourne",
+    beijing: "Pequim",
+    ulaanbaatar: "Ulaanbaatar"
+  };
+
   const tournaments = [
     { name: "IEM Katowice 2025", location: "krakow", prize: "$2500", color: "#ff0000", position: "21º-24º", date: "29 Jan - 9 Fev" },
     { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "#0000ff", position: "5º-8º", date: "14 - 23 Fev" },
     { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "#00ff00", position: "12º-14º", date: "1 - 16 Mar" },
     { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "#ffa500", position: "13º-16º", date: "21 - 27 Abr" },
-    { name: "MRQ (online jogado em Frankfurt)", location: "frankfurt", prize: null, color: "#800080", position: "N/A", date: "Abril" },
+    { name: "MRQ (online jogado em Frankfurt)", location: "frankfurt", prize: null, color: "#800080", position: "9º-11º", date: "Abril" },
     { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "#8B4513", position: "7º-8º", date: "30 Abr - 4 Mai" }
   ];
 
@@ -100,8 +114,18 @@
     bounds.push(coord);
 
     const hasPrize = !!t.prize;
+    let radius = 8; 
+    if (t.prize) {
+      const prizeValue = parseInt(t.prize.replace('$', '').replace(',', ''));
+      if (prizeValue > 50000) {
+        radius = 12;
+      } else if (prizeValue > 10000) {
+        radius = 10;
+      }
+    }
+
     const marker = L.circleMarker(coord, {
-      radius: 8,
+      radius: radius,
       color: t.color,
       fillColor: t.color,
       fillOpacity: hasPrize ? 0.9 : 0,
@@ -111,15 +135,26 @@
     marker.bindPopup(
       `<b>${t.name}</b><br>` +
       `<b>Data:</b> ${t.date}<br>` +
-      `<b>Localização:</b> ${t.location.charAt(0).toUpperCase() + t.location.slice(1)}<br>` +
+      `<b>Localização:</b> ${cityNames[t.location]}<br>` +
       `<b>Posição:</b> ${t.position}<br>` +
       `<b>Prémio:</b> ${t.prize || "Sem prémio"}`
     );
 
+    // To avoid overlap, we will dynamically adjust the position
+    let offsetX = 0;
+    let offsetY = -(radius + 5); 
+
+    // Logic to adjust the tooltip position if overlap is detected
+    if (t.name === "MRQ (online jogado em Frankfurt)") {
+      offsetY = -(radius + 20); // Moving this further down for better spacing
+    }
+
     marker.bindTooltip(t.name, {
       permanent: true,
-      direction: 'top',
-      className: 'label-tooltip'
+      direction: 'auto',
+      offset: [offsetX, offsetY], // Dynamically adjusting the position
+      className: 'label-tooltip',
+      interactive: true
     });
   });
 
@@ -142,7 +177,7 @@
       <b>${route.name}</b><br>
       <b>Distância:</b> ${route.distance}<br>
       <b>Cidades por onde passaram:</b><br>
-      ${route.points.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' → ')}
+      ${route.points.map(p => cityNames[p]).join(' → ')}
     `).addTo(map);
 
     routeLayers[route.name] = polyline;
