@@ -21,7 +21,7 @@
 <body>
 <div id="map"></div>
 <script>
-  const map = L.map('map').setView([48.5, 15], 3.5);
+  const map = L.map('map');
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
@@ -32,6 +32,7 @@
     katowice: {
       name: "Intel Extreme Masters Katowice 2025",
       coords: [50.0647, 19.9450],
+      color: 'red',
       content: `<b>Intel Extreme Masters Katowice 2025</b><br>
                 Local: Kraków, Polónia<br>
                 Data: 30 de janeiro de 2025<br>
@@ -41,6 +42,7 @@
     cluj: {
       name: "PGL Cluj-Napoca 2025",
       coords: [46.7694, 23.5899],
+      color: 'blue',
       content: `<b>PGL Cluj-Napoca 2025</b><br>
                 Fase de Grupos: Bucareste, Roménia<br>
                 Playoffs: Cluj-Napoca, Roménia<br>
@@ -51,6 +53,7 @@
     esl: {
       name: "ESL Pro League Season 21",
       coords: [59.3293, 18.0686],
+      color: 'green',
       content: `<b>ESL Pro League Season 21</b><br>
                 Local: Estocolmo, Suécia<br>
                 Data: 10 de março de 2025<br>
@@ -60,6 +63,7 @@
     mrq: {
       name: "BLAST.tv Austin MRQ (Frankfurt)",
       coords: [50.1109, 8.6821],
+      color: 'orange',
       content: `<b>BLAST.tv Austin MRQ 2025</b><br>
                 Local: Frankfurt, Alemanha (Online)<br>
                 Data: 16 de abril de 2025<br>
@@ -68,6 +72,7 @@
     melbourne: {
       name: "IEM Melbourne 2025",
       coords: [-37.8136, 144.9631],
+      color: 'purple',
       content: `<b>IEM Melbourne 2025</b><br>
                 Local: Melbourne, Austrália<br>
                 Data: 22 de abril de 2025<br>
@@ -77,6 +82,7 @@
     mesa: {
       name: "MESA Nomadic Masters 2025",
       coords: [47.8864, 106.9057],
+      color: 'brown',
       content: `<b>MESA Nomadic Masters Spring 2025</b><br>
                 Local: Ulaanbaatar, Mongólia<br>
                 Data: 1 de maio de 2025<br>
@@ -85,6 +91,8 @@
   };
 
   const layers = {};
+  const bounds = [];
+
   const legendControl = L.control({ position: 'topright' });
 
   legendControl.onAdd = function () {
@@ -100,9 +108,21 @@
   legendControl.addTo(map);
 
   for (let key in tournaments) {
-    const marker = L.marker(tournaments[key].coords).bindPopup(tournaments[key].content);
+    const data = tournaments[key];
+    const marker = L.circleMarker(data.coords, {
+      color: data.color,
+      radius: 8,
+      fillOpacity: 0.9
+    }).bindPopup(data.content)
+      .bindTooltip(data.name, { permanent: true, direction: 'right' })
+      .openTooltip();
+
     layers[key] = L.layerGroup([marker]).addTo(map);
+    bounds.push(data.coords);
   }
+
+  // Ajusta o zoom para mostrar todos os pontos
+  map.fitBounds(bounds);
 
   for (let key in tournaments) {
     document.getElementById(`chk_${key}`).addEventListener('change', function (e) {
