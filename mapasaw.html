@@ -1,55 +1,118 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html>
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <script>
-        L_NO_TOUCH = false;
-        L_DISABLE_3D = false;
-    </script>
-
-    <style>
-        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
-    </style>
-    <style>#map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }</style>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@master/folium/templates/leaflet_heat.min.js"></script>
+  <meta charset="utf-8" />
+  <title>Mapa Interativo - SAW Torneios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    #map { height: 100vh; }
+    .legend {
+      background: white;
+      padding: 10px;
+      line-height: 1.5em;
+      font-size: 14px;
+      border-radius: 6px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
-
 <body>
-    <div class="folium-map" id="map_9e139fb2406424656c1a1a8959f91419" ></div>
-</body>
-
+<div id="map"></div>
 <script>
-    var map_9e139fb2406424656c1a1a8959f91419 = L.map("map_9e139fb2406424656c1a1a8959f91419", {
-        center: [40.0, 20.0],
-        zoom: 2,
-        zoomControl: true
+  const map = L.map('map').setView([48.5, 15], 3.5);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  const tournaments = {
+    katowice: {
+      name: "Intel Extreme Masters Katowice 2025",
+      coords: [50.0647, 19.9450],
+      content: `<b>Intel Extreme Masters Katowice 2025</b><br>
+                Local: Kraków, Polónia<br>
+                Data: 30 de janeiro de 2025<br>
+                Classificação: 21º - 24º<br>
+                Prémio: $2.500`
+    },
+    cluj: {
+      name: "PGL Cluj-Napoca 2025",
+      coords: [46.7694, 23.5899],
+      content: `<b>PGL Cluj-Napoca 2025</b><br>
+                Fase de Grupos: Bucareste, Roménia<br>
+                Playoffs: Cluj-Napoca, Roménia<br>
+                Data: 14-23 fevereiro 2025<br>
+                Classificação: 5º - 8º<br>
+                Prémio: $62.500`
+    },
+    esl: {
+      name: "ESL Pro League Season 21",
+      coords: [59.3293, 18.0686],
+      content: `<b>ESL Pro League Season 21</b><br>
+                Local: Estocolmo, Suécia<br>
+                Data: 10 de março de 2025<br>
+                Classificação: 12º - 14º<br>
+                Prémio: $10.500`
+    },
+    mrq: {
+      name: "BLAST.tv Austin MRQ (Frankfurt)",
+      coords: [50.1109, 8.6821],
+      content: `<b>BLAST.tv Austin MRQ 2025</b><br>
+                Local: Frankfurt, Alemanha (Online)<br>
+                Data: 16 de abril de 2025<br>
+                Classificação: 9º - 11º`
+    },
+    melbourne: {
+      name: "IEM Melbourne 2025",
+      coords: [-37.8136, 144.9631],
+      content: `<b>IEM Melbourne 2025</b><br>
+                Local: Melbourne, Austrália<br>
+                Data: 22 de abril de 2025<br>
+                Classificação: 13º - 16º<br>
+                Prémio: $4.000`
+    },
+    mesa: {
+      name: "MESA Nomadic Masters 2025",
+      coords: [47.8864, 106.9057],
+      content: `<b>MESA Nomadic Masters Spring 2025</b><br>
+                Local: Ulaanbaatar, Mongólia<br>
+                Data: 1 de maio de 2025<br>
+                Classificação: 7º - 8º`
+    }
+  };
+
+  const layers = {};
+  const legendControl = L.control({ position: 'topright' });
+
+  legendControl.onAdd = function () {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = '<strong>Mostrar/Ocultar Torneios</strong><br>';
+    for (let key in tournaments) {
+      const checkboxId = `chk_${key}`;
+      div.innerHTML += `<input type="checkbox" id="${checkboxId}" checked> ${tournaments[key].name}<br>`;
+    }
+    return div;
+  };
+
+  legendControl.addTo(map);
+
+  for (let key in tournaments) {
+    const marker = L.marker(tournaments[key].coords).bindPopup(tournaments[key].content);
+    layers[key] = L.layerGroup([marker]).addTo(map);
+  }
+
+  for (let key in tournaments) {
+    document.getElementById(`chk_${key}`).addEventListener('change', function (e) {
+      if (e.target.checked) {
+        layers[key].addTo(map);
+      } else {
+        map.removeLayer(layers[key]);
+      }
     });
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "Data by OpenStreetMap",
-        maxZoom: 18
-    }).addTo(map_9e139fb2406424656c1a1a8959f91419);
-
-    // Popups dos torneios
-    var popup_1 = L.popup().setContent("<b>IEM Katowice 2025</b><br>Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500");
-    var popup_2 = L.popup().setContent("<b>PGL Cluj-Napoca 2025</b><br>Local: Cluj-Napoca, Roménia<br>Data: 2025-02-21<br>Classificação: 5º - 8º<br>Prémio: $62,500");
-    var popup_3 = L.popup().setContent("<b>ESL Pro League Season 21</b><br>Local: Estocolmo, Suécia<br>Data: 2025-03-10<br>Classificação: 12º - 14º<br>Prémio: $10,500");
-
-    // Marcadores dos torneios
-    L.marker([50.2649, 19.0238]).addTo(map_9e139fb2406424656c1a1a8959f91419).bindPopup(popup_1);
-    L.marker([46.7712, 23.6236]).addTo(map_9e139fb2406424656c1a1a8959f91419).bindPopup(popup_2);
-    L.marker([59.3293, 18.0686]).addTo(map_9e139fb2406424656c1a1a8959f91419).bindPopup(popup_3);
+  }
 </script>
-
+</body>
 </html>
