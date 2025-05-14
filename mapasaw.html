@@ -65,7 +65,7 @@
         }
     ).addTo(map_9e139fb2406424656c1a1a8959f91419);
 
-    // Markers and routes for the map
+    // Marker for IEM Katowice
     var circle_marker_6c4876bd7afd02952032b3977ed2d55f = L.circleMarker(
         [50.2649, 19.0238],
         {
@@ -85,25 +85,37 @@
     popup_5b0ea60c9aa7414c2fd0735568d46816.setContent(html_ea9ab99829fce3e7bfa9c6bb6b569f25);
     circle_marker_6c4876bd7afd02952032b3977ed2d55f.bindPopup(popup_5b0ea60c9aa7414c2fd0735568d46816);
 
-    // Additional route markers
+    // Define the routes with different colors for each leg
     var routes = [
         [[40.0, 20.0], [50.2649, 19.0238]], // Porto to Katowice
-        [[50.2649, 19.0238], [46.7712, 23.6236]], // Katowice to Bucharest
-        [[46.7712, 23.6236], [35.8997, 14.5146]], // Bucharest to Stockholm
+        [[50.2649, 19.0238], [46.7712, 23.6236]], // Katowice to Bucharest (ESL Pro League)
+        [[46.7712, 23.6236], [59.3293, 18.0686]], // Bucharest to Stockholm (ESL Pro League)
+        [[40.0, 20.0], [50.2649, 19.0238]], // MRQ route (Frankfurt - Online)
+        [[50.2649, 19.0238], [25.276987, 55.296249]], // Dubai
+        [[25.276987, 55.296249], [37.8136, 144.9631]], // Dubai to Melbourne
+        [[37.8136, 144.9631], [39.9042, 116.4074]], // Melbourne to Beijing
+        [[39.9042, 116.4074], [47.9202, 106.9197]], // Beijing to Ulaanbaatar
+        [[47.9202, 106.9197], [50.1109, 8.6821]], // Ulaanbaatar to Frankfurt
+        [[50.1109, 8.6821], [40.0, 20.0]] // Frankfurt to Porto
     ];
 
+    // Draw the routes with different colors for each leg
     routes.forEach(function(route, index) {
         var polyline = L.polyline(route, {
-            color: index === 0 ? 'blue' : (index === 1 ? 'green' : 'red'),
+            color: index === 0 ? 'blue' :
+                   index === 1 ? 'green' :
+                   index === 2 ? 'red' :
+                   index === 3 ? 'purple' :
+                   index === 4 ? 'orange' : 'black',
             weight: 4,
             opacity: 0.7
         }).addTo(map_9e139fb2406424656c1a1a8959f91419);
     });
 
+    // Add heat layer for additional visual representation
     var heat_map_69aebe50e8980cc4d719eb306f03b528 = L.heatLayer(
-        [[50.2649, 19.0238, 2500], [46.7712, 23.6236, 62500], [35.8997, 14.5146, 10500]],
+        [[50.2649, 19.0238, 2500], [46.7712, 23.6236, 62500], [37.8136, 144.9631, 10500]],
         {"blur": 15, "maxZoom": 10, "minOpacity": 0.5, "radius": 25}
     ).addTo(map_9e139fb2406424656c1a1a8959f91419);
-
 </script>
 </html>
