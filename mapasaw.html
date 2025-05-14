@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_9e139fb2406424656c1a1a8959f91419 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@master/folium/templates/leaflet_heat.min.js"></script>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_9e139fb2406424656c1a1a8959f91419" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_9e139fb2406424656c1a1a8959f91419 = L.map(
+                "map_9e139fb2406424656c1a1a8959f91419",
+                {
+                    center: [40.0, 20.0],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 2,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_8fe6186b20999d02b0641f53a40e8a84 = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+        
+    
+            var circle_marker_6c4876bd7afd02952032b3977ed2d55f = L.circleMarker(
+                [50.2649, 19.0238],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+        
+    
+        var popup_5b0ea60c9aa7414c2fd0735568d46816 = L.popup({"maxWidth": 300});
+
+        
+            var html_ea9ab99829fce3e7bfa9c6bb6b569f25 = $(`<div id="html_ea9ab99829fce3e7bfa9c6bb6b569f25" style="width: 100.0%; height: 100.0%;"><b>IEM Katowice 2025</b><br>Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500</div>`)[0];
+            popup_5b0ea60c9aa7414c2fd0735568d46816.setContent(html_ea9ab99829fce3e7bfa9c6bb6b569f25);
+        
+
+        circle_marker_6c4876bd7afd02952032b3977ed2d55f.bindPopup(popup_5b0ea60c9aa7414c2fd0735568d46816)
+        ;
+
+        
+    
+    
+            var circle_marker_83998fd7b9d65bb42724d17f9265b70d = L.circleMarker(
+                [46.7712, 23.6236],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+        
+    
+        var popup_96bee0fb770cef402bd2402e75b4e119 = L.popup({"maxWidth": 300});
+
+        
+            var html_4fb45a011e8f9c014d2aa74e256de710 = $(`<div id="html_4fb45a011e8f9c014d2aa74e256de710" style="width: 100.0%; height: 100.0%;"><b>PGL Cluj-Napoca 2025</b><br>Local: Cluj-Napoca, Roménia<br>Data: 2025-02-21<br>Classificação: 5º - 8º<br>Prémio: $62,500</div>`)[0];
+            popup_96bee0fb770cef402bd2402e75b4e119.setContent(html_4fb45a011e8f9c014d2aa74e256de710);
+        
+
+        circle_marker_83998fd7b9d65bb42724d17f9265b70d.bindPopup(popup_96bee0fb770cef402bd2402e75b4e119)
+        ;
+
+        
+    
+    
+            var circle_marker_1b02c8f2f495a2bb6bc5e0711d430cfd = L.circleMarker(
+                [35.8997, 14.5146],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+        
+    
+        var popup_b4659a0650f7474d2f67baa4196595db = L.popup({"maxWidth": 300});
+
+        
+            var html_c6f654cfd3336ee7ebada19bf737cb6e = $(`<div id="html_c6f654cfd3336ee7ebada19bf737cb6e" style="width: 100.0%; height: 100.0%;"><b>ESL Pro League Season 21</b><br>Local: Malta<br>Data: 2025-03-10<br>Classificação: 12º - 14º<br>Prémio: $10,500</div>`)[0];
+            popup_b4659a0650f7474d2f67baa4196595db.setContent(html_c6f654cfd3336ee7ebada19bf737cb6e);
+        
+
+        circle_marker_1b02c8f2f495a2bb6bc5e0711d430cfd.bindPopup(popup_b4659a0650f7474d2f67baa4196595db)
+        ;
+
+        
+    
+    
+            var circle_marker_c15b41cfa7c8c3b355cc7ead1c2369db = L.circleMarker(
+                [-37.8136, 144.9631],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+        
+    
+        var popup_bccee9ffce432c23390f62fff801e63a = L.popup({"maxWidth": 300});
+
+        
+            var html_6d63e14630b28c7d30851e3f3c3896f7 = $(`<div id="html_6d63e14630b28c7d30851e3f3c3896f7" style="width: 100.0%; height: 100.0%;"><b>IEM Melbourne 2025</b><br>Local: Melbourne, Austrália<br>Data: 2025-04-22<br>Classificação: 13º - 16º<br>Prémio: $4,000</div>`)[0];
+            popup_bccee9ffce432c23390f62fff801e63a.setContent(html_6d63e14630b28c7d30851e3f3c3896f7);
+        
+
+        circle_marker_c15b41cfa7c8c3b355cc7ead1c2369db.bindPopup(popup_bccee9ffce432c23390f62fff801e63a)
+        ;
+
+        
+    
+    
+            var circle_marker_61634f45b96c17ffdc4fe1dd93862111 = L.circleMarker(
+                [47.8864, 106.9057],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+        
+    
+        var popup_5ffb42ad536b3a950ea0c5449757d278 = L.popup({"maxWidth": 300});
+
+        
+            var html_903b011080cfb472608bed8795e641c5 = $(`<div id="html_903b011080cfb472608bed8795e641c5" style="width: 100.0%; height: 100.0%;"><b>MESA Nomadic Masters Spring 2025</b><br>Local: Ulan Bator, Mongólia<br>Data: 2025-05-01<br>Classificação: 7º - 8º<br>Prémio: $0</div>`)[0];
+            popup_5ffb42ad536b3a950ea0c5449757d278.setContent(html_903b011080cfb472608bed8795e641c5);
+        
+
+        circle_marker_61634f45b96c17ffdc4fe1dd93862111.bindPopup(popup_5ffb42ad536b3a950ea0c5449757d278)
+        ;
+
+        
+    
+    
+            var heat_map_69aebe50e8980cc4d719eb306f03b528 = L.heatLayer(
+                [[50.2649, 19.0238, 2500], [46.7712, 23.6236, 62500], [35.8997, 14.5146, 10500], [-37.8136, 144.9631, 4000], [47.8864, 106.9057, 0]],
+                {"blur": 15, "maxZoom": 10, "minOpacity": 0.5, "radius": 25}
+            ).addTo(map_9e139fb2406424656c1a1a8959f91419);
+        
+</script>
+</html>
