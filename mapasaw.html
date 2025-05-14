@@ -2,101 +2,111 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Mapa de Torneios 2025</title>
-
+    <title>Mapa de Torneios - SAW</title>
+    <style>html, body { width: 100%; height: 100%; margin: 0; padding: 0; }</style>
+    <style>#map { position:absolute; top:0; bottom:0; right:0; left:0; }</style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css" />
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@master/folium/templates/leaflet_heat.min.js"></script>
-
-    <style>
-        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
 </head>
 <body>
 <div id="map"></div>
-
 <script>
-    var map = L.map('map').setView([40.0, 20.0], 2);
+    const map = L.map('map').setView([41.1496, -8.6109], 2);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Dados © <a href="https://openstreetmap.org">OpenStreetMap</a>, sob <a href="https://www.openstreetmap.org/copyright">ODbL</a>'
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    const torneios = [
+    const eventos = [
         {
             nome: "IEM Katowice 2025",
-            local: "Katowice, Polónia",
-            data: "2025-01-30",
-            classificacao: "21º - 24º",
-            premio: "$2,500",
-            coords: [50.2649, 19.0238]
+            coords: [50.2649, 19.0238],
+            info: "Local: Katowice, Polónia<br>Data: 2025-01-30<br>Classificação: 21º - 24º<br>Prémio: $2,500"
         },
         {
             nome: "PGL Cluj-Napoca 2025",
-            local: "Cluj-Napoca, Roménia",
-            data: "2025-02-21",
-            classificacao: "5º - 8º",
-            premio: "$62,500",
-            coords: [46.7712, 23.6236]
+            coords: [46.7712, 23.6236],
+            info: "Local: Cluj-Napoca, Roménia<br>Data: 2025-02-21<br>Classificação: 5º - 8º<br>Prémio: $62,500"
         },
         {
-            nome: "ESL Pro League Season 21",
-            local: "Malta",
-            data: "2025-03-10",
-            classificacao: "12º - 14º",
-            premio: "$10,500",
-            coords: [35.8997, 14.5146]
+            nome: "ESL Pro League S21",
+            coords: [35.8997, 14.5146],
+            info: "Local: Malta<br>Data: 2025-03-10<br>Classificação: 12º - 14º<br>Prémio: $10,500"
         },
         {
             nome: "IEM Melbourne 2025",
-            local: "Melbourne, Austrália",
-            data: "2025-04-22",
-            classificacao: "13º - 16º",
-            premio: "$4,000",
-            coords: [-37.8136, 144.9631]
+            coords: [-37.8136, 144.9631],
+            info: "Local: Melbourne, Austrália<br>Data: 2025-04-22<br>Classificação: 13º - 16º<br>Prémio: $4,000"
         },
         {
-            nome: "MESA Nomadic Masters Spring 2025",
-            local: "Ulan Bator, Mongólia",
-            data: "2025-05-01",
-            classificacao: "7º - 8º",
-            premio: "$0",
-            coords: [47.8864, 106.9057]
+            nome: "MESA Nomadic Masters Spring",
+            coords: [47.8864, 106.9057],
+            info: "Local: Ulaanbaatar, Mongólia<br>Data: 2025-05-01<br>Classificação: 7º - 8º<br>Prémio: $0"
+        },
+        {
+            nome: "MRQ (BLAST Qualifier)",
+            coords: [39.9042, 116.4074],
+            info: "Local: Pequim (jogado online na rota para Ulaanbaatar)<br>Data: 2025-04<br>Classificação: -<br>Prémio: Qualificação"
         }
     ];
 
-    // Criar marcadores com tooltip permanente e popup
-    torneios.forEach(torneio => {
-        const conteudo = `<b>${torneio.nome}</b><br>Local: ${torneio.local}<br>Data: ${torneio.data}<br>Classificação: ${torneio.classificacao}<br>Prémio: ${torneio.premio}`;
-
-        const marcador = L.circleMarker(torneio.coords, {
+    eventos.forEach(evento => {
+        const marker = L.circleMarker(evento.coords, {
+            radius: 7,
             color: "blue",
             fillColor: "blue",
             fillOpacity: 0.7,
-            radius: 7,
             weight: 3
         }).addTo(map);
 
-        marcador.bindPopup(conteudo);
-        marcador.bindTooltip(torneio.nome, {
-            permanent: true,
-            direction: 'top',
-            className: 'map-tooltip'
-        });
+        marker.bindPopup(`<b>${evento.nome}</b><br>${evento.info}`);
+
+        // Adiciona label permanente
+        L.marker(evento.coords, {
+            icon: L.divIcon({
+                className: 'label',
+                html: `<b>${evento.nome}</b>`,
+                iconSize: [100, 20]
+            })
+        }).addTo(map);
     });
 
-    // Camada de calor com base nos prémios
-    const heatData = torneios.map(t => [...t.coords, parseFloat(t.premio.replace(/[^\d]/g, '')) || 0]);
+    // Coordenadas para voos
+    const rotas = [
+        ["Porto", [41.1496, -8.6109]],
+        ["Krakow", [50.0647, 19.9450]],
+        ["Madrid", [40.4168, -3.7038]],
+        ["Bucharest", [44.4268, 26.1025]],
+        ["Cluj", [46.7712, 23.6236]],
+        ["Frankfurt", [50.1109, 8.6821]],
+        ["Stockholm", [59.3293, 18.0686]],
+        ["Dubai", [25.276987, 55.296249]],
+        ["Melbourne", [-37.8136, 144.9631]],
+        ["Pequim", [39.9042, 116.4074]],
+        ["Ulaanbaatar", [47.8864, 106.9057]],
+    ];
 
-    L.heatLayer(heatData, {
-        radius: 25,
-        blur: 15,
-        maxZoom: 10,
-        minOpacity: 0.5
-    }).addTo(map);
+    const coordsDict = Object.fromEntries(rotas);
+
+    const viagens = [
+        ["Porto", "Krakow"], ["Krakow", "Porto"],
+        ["Porto", "Madrid"], ["Madrid", "Bucharest"], ["Bucharest", "Cluj"],
+        ["Cluj", "Bucharest"], ["Bucharest", "Madrid"], ["Madrid", "Porto"],
+        ["Porto", "Frankfurt"], ["Frankfurt", "Stockholm"], ["Stockholm", "Porto"],
+        ["Porto", "Frankfurt"], ["Frankfurt", "Dubai"], ["Dubai", "Melbourne"],
+        ["Melbourne", "Pequim"], ["Pequim", "Ulaanbaatar"],
+        ["Ulaanbaatar", "Frankfurt"], ["Frankfurt", "Porto"]
+    ];
+
+    viagens.forEach(([from, to]) => {
+        L.polyline([coordsDict[from], coordsDict[to]], {
+            color: 'red',
+            weight: 2,
+            opacity: 0.6,
+            dashArray: '5,5'
+        }).addTo(map);
+    });
 </script>
 </body>
 </html>
