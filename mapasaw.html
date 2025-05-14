@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Torneios da SAW em 2025</title>
+    <title>Mapa de Torneios 2025</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -68,9 +68,10 @@
         }
     ];
 
-    // Criar marcadores e tooltips
+    // Criar marcadores com tooltip permanente e popup
     torneios.forEach(torneio => {
-        // Marcador principal com popup
+        const conteudo = `<b>${torneio.nome}</b><br>Local: ${torneio.local}<br>Data: ${torneio.data}<br>Classificação: ${torneio.classificacao}<br>Prémio: ${torneio.premio}`;
+
         const marcador = L.circleMarker(torneio.coords, {
             color: "blue",
             fillColor: "blue",
@@ -79,22 +80,15 @@
             weight: 3
         }).addTo(map);
 
-        const conteudo = `<b>${torneio.nome}</b><br>Local: ${torneio.local}<br>Data: ${torneio.data}<br>Classificação: ${torneio.classificacao}<br>Prémio: ${torneio.premio}`;
-
         marcador.bindPopup(conteudo);
-
-        // Marcador invisível com tooltip permanente
-        L.marker(torneio.coords, { opacity: 0 })
-            .addTo(map)
-            .bindTooltip(torneio.nome, {
-                permanent: true,
-                direction: 'top',
-                className: 'map-tooltip'
-            })
-            .openTooltip();
+        marcador.bindTooltip(torneio.nome, {
+            permanent: true,
+            direction: 'top',
+            className: 'map-tooltip'
+        });
     });
 
-    // Camada de calor
+    // Camada de calor com base nos prémios
     const heatData = torneios.map(t => [...t.coords, parseFloat(t.premio.replace(/[^\d]/g, '')) || 0]);
 
     L.heatLayer(heatData, {
