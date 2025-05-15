@@ -47,10 +47,10 @@
             pointer-events: none;
             transition: left 1s ease;
             z-index: 10;
-            display: flex; /* Para centralizar o emoji */
+            display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2rem; /* Tamanho do emoji */
+            font-size: 2rem;
         }
 
         .buttons {
@@ -96,29 +96,27 @@
                 top: -40px;
                 width: 40px;
                 height: 40px;
-                font-size: 1.5rem; /* Ajusta o tamanho do emoji no mobile */
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
     <div id="rulerContainer">
-        <div id="plane">
-            ✈️
-        </div>
+        <div id="plane">✈️</div>
         <script>
             const tickStep = 10000;
-            const maxKm = 50000;
+            const tickMaxKm = 50000;
             const container = document.currentScript.parentElement;
 
-            for (let km = 0; km <= maxKm; km += tickStep) {
+            for (let km = 0; km <= tickMaxKm; km += tickStep) {
                 const tick = document.createElement("div");
                 tick.className = "tick";
-                tick.style.left = `${(km / maxKm) * 100}%`;
+                tick.style.left = `${(km / tickMaxKm) * 100}%`;
 
                 const label = document.createElement("div");
                 label.className = "tick-label";
-                label.style.left = `${(km / maxKm) * 100}%`;
+                label.style.left = `${(km / tickMaxKm) * 100}%`;
                 label.textContent = `${km.toLocaleString()} km`;
 
                 container.appendChild(tick);
@@ -138,26 +136,31 @@
     <div id="total">Total: 0 km</div>
 
     <script>
-        const distances = document.querySelectorAll('.route-btn[data-distance]');
+        const distanceButtons = Array.from(document.querySelectorAll('.route-btn[data-distance]'));
         const plane = document.getElementById('plane');
         const totalDisplay = document.getElementById('total');
         const selectAllBtn = document.getElementById('selectAll');
-
         const maxKm = 50000;
 
         function updateTotal() {
             let sum = 0;
-            distances.forEach(btn => {
+            distanceButtons.forEach(btn => {
                 if (btn.classList.contains('selected')) {
                     sum += parseInt(btn.dataset.distance, 10);
                 }
             });
             totalDisplay.textContent = `Total: ${sum.toLocaleString()} km`;
 
-            const rulerWidth = document.getElementById('rulerContainer').offsetWidth;
+            const ruler = document.getElementById('rulerContainer');
+            const rulerWidth = ruler.offsetWidth;
+            const planeWidth = plane.offsetWidth;
             const leftPosition = (sum / maxKm) * rulerWidth;
-            const safeLeft = Math.min(Math.max(leftPosition, 10), rulerWidth - 60);
+            const safeLeft = Math.min(Math.max(leftPosition, 0), rulerWidth - planeWidth);
             plane.style.left = `${safeLeft}px`;
+
+            // Atualiza texto do botão de selecionar tudo
+            const allSelected = distanceButtons.every(btn => btn.classList.contains('selected'));
+            selectAllBtn.textContent = allSelected ? 'Desmarcar todas as rotas' : 'Selecionar todas as rotas';
         }
 
         function handleRouteButtonClick() {
@@ -165,20 +168,21 @@
             updateTotal();
         }
 
-        distances.forEach(btn => {
+        distanceButtons.forEach(btn => {
             btn.addEventListener('click', handleRouteButtonClick);
         });
 
         selectAllBtn.addEventListener('click', () => {
-            const allSelected = [...distances].every(btn => btn.classList.contains('selected'));
-            distances.forEach(btn => {
+            const allSelected = distanceButtons.every(btn => btn.classList.contains('selected'));
+            distanceButtons.forEach(btn => {
                 btn.classList.toggle('selected', !allSelected);
             });
             updateTotal();
         });
 
-        // Inicializa
-        window.addEventListener('load', updateTotal);
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(updateTotal, 100);
+        });
     </script>
 </body>
 </html>
