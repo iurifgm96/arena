@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Viagens dos SAW - Quilómetros Percorridos</title>
+  <style>
+    :root {
+      --bg-light: #fdfdfd;
+      --bg-dark: #121212;
+      --text-light: #000;
+      --text-dark: #e0e0e0;
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #1e1e1e;
+      --border-radius: 8px;
+      --btn-bg: #f5f5f5;
+      --btn-bg-hover: #ebebeb;
+      --btn-text: #111;
+      --btn-border-color: #bbb;
+      --btn-selected-bg: #1a73e8;
+      --btn-selected-text: #fff;
+      --ruler-border: #aaa;
+      --tick-color: #666;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-dark);
+      }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto 60px;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .ruler {
+      position: relative;
+      height: 100px;
+      margin: 40px auto 20px;
+      border-top: 3px solid var(--ruler-border);
+      max-width: 100%;
+      user-select: none;
+    }
+
+    .tick {
+      position: absolute;
+      top: -10px;
+      width: 2px;
+      height: 20px;
+      background: var(--tick-color);
+    }
+
+    .tick-label {
+      position: absolute;
+      top: 22px;
+      font-size: 12px;
+      white-space: nowrap;
+      user-select: none;
+      color: var(--text-light);
+      transform: translateX(-50%);
+    }
+
+    .plane {
+      position: absolute;
+      top: -60px;
+      width: 40px;
+      height: 40px;
+      pointer-events: none;
+      transition: left 1s ease;
+    }
+
+    .plane img {
+      width: 100%;
+      height: auto;
+    }
+
+    .events {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 20px 0 10px;
+    }
+
+    .btn {
+      cursor: pointer;
+      border-radius: var(--border-radius);
+      background-color: var(--btn-bg);
+      border: 1px solid var(--btn-border-color);
+      color: var(--btn-text);
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      user-select: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background-color: var(--btn-bg-hover);
+    }
+
+    .btn.selected {
+      background-color: var(--btn-selected-bg);
+      color: var(--btn-selected-text);
+    }
+
+    .summary {
+      margin-top: 16px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="ruler" id="ruler">
+      <div class="plane" id="plane">
+        <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo">
+      </div>
+    </div>
+
+    <div class="events" id="buttons">
+      <button class="btn" data-km="3600" style="background-color:#dceeff">IEM Katowice<br><strong>3.600 km</strong></button>
+      <button class="btn" data-km="7800" style="background-color:#ffe9d6">PGL Cluj-Napoca<br><strong>7.800 km</strong></button>
+      <button class="btn" data-km="6500" style="background-color:#e5f7e3">ESL Pro League S21<br><strong>6.500 km</strong></button>
+      <button class="btn" data-km="39000" style="background-color:#ffe5e5">MRQ - IEM Melbourne + MESA<br><strong>39.000 km</strong></button>
+    </div>
+
+    <div class="events">
+      <button class="btn" id="selectAllBtn">Selecionar todas as rotas</button>
+    </div>
+
+    <div class="summary" id="summary">Total: 0 km</div>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll('#buttons .btn');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const totalEl = document.getElementById('summary');
+    const plane = document.getElementById('plane');
+    const ruler = document.getElementById('ruler');
+    const maxKm = 58000;
+
+    const step = 5000;
+    for (let i = 0; i <= maxKm; i += step) {
+      const percent = (i / maxKm) * 100;
+      const tick = document.createElement('div');
+      tick.className = 'tick';
+      tick.style.left = `${percent}%`;
+
+      const label = document.createElement('div');
+      label.className = 'tick-label';
+      label.style.left = `${percent}%`;
+      label.textContent = `${i.toLocaleString()} km`;
+
+      ruler.appendChild(tick);
+      ruler.appendChild(label);
+    }
+
+    let selected = new Set();
+
+    function update() {
+      let sum = 0;
+      selected.forEach(i => {
+        sum += parseInt(buttons[i].dataset.km);
+      });
+      totalEl.textContent = `Total: ${sum.toLocaleString()} km`;
+      const percent = sum > 0 ? Math.min(sum / maxKm, 1) * 100 : 0;
+      plane.style.left = `calc(${percent}% - 20px)`;
+    }
+
+    buttons.forEach((btn, i) => {
+      btn.addEventListener('click', () => {
+        if (selected.has(i)) {
+          selected.delete(i);
+          btn.classList.remove('selected');
+        } else {
+          selected.add(i);
+          btn.classList.add('selected');
+        }
+        update();
+      });
+    });
+
+    selectAllBtn.addEventListener('click', () => {
+      if (selected.size === buttons.length) {
+        selected.clear();
+        buttons.forEach(btn => btn.classList.remove('selected'));
+      } else {
+        selected = new Set(Array.from(buttons.keys()));
+        buttons.forEach(btn => btn.classList.add('selected'));
+      }
+      update();
+    });
+
+    update();
+  </script>
+</body>
+</html>
