@@ -10,15 +10,12 @@
       --bg-dark: transparent;
       --text-light: #000;
       --text-dark: #e0e0e0;
-      --card-bg-light: #ffffff;
-      --card-bg-dark: #1e1e1e;
       --border-radius: 8px;
-      --btn-bg-hover: #f0f0f0;
-      --btn-border-color: #999;
+      --btn-border-color: #888;
       --btn-selected-bg: #444;
       --btn-selected-text: #fff;
       --ruler-border: #ccc;
-      --tick-color: #888;
+      --tick-color: #666;
     }
 
     body {
@@ -37,15 +34,16 @@
 
     .container {
       max-width: 900px;
-      margin: 30px auto 0;
-      padding: 0 20px 20px;
+      margin: 60px auto 20px;
+      padding: 0 20px;
       text-align: center;
     }
 
+    /* RÉGUA HORIZONTAL (DESKTOP) */
     .ruler {
       position: relative;
-      height: 120px;
-      margin: 100px auto 10px;
+      height: 140px;
+      margin: 100px auto 20px;
       border-top: 2px solid var(--ruler-border);
       max-width: 100%;
       min-width: 600px;
@@ -73,7 +71,7 @@
 
     .plane {
       position: absolute;
-      top: -60px;
+      top: -70px;
       width: 40px;
       height: 40px;
       pointer-events: none;
@@ -83,14 +81,60 @@
     .plane img {
       width: 100%;
       height: auto;
+      display: block;
     }
 
+    /* RÉGUA VERTICAL (MOBILE) */
+    .ruler-vertical {
+      display: none;
+      margin: 20px auto 20px;
+      border-left: 2px solid var(--ruler-border);
+      height: 300px;
+      max-width: 100px;
+      position: relative;
+      user-select: none;
+    }
+
+    .tick-vertical {
+      position: absolute;
+      left: -10px;
+      width: 20px;
+      height: 2px;
+      background: var(--tick-color);
+    }
+
+    .tick-label-vertical {
+      position: absolute;
+      left: 24px;
+      font-size: 12px;
+      color: var(--tick-color);
+      white-space: nowrap;
+      user-select: none;
+      transform: translateY(50%);
+    }
+
+    .plane-vertical {
+      position: absolute;
+      left: -55px;
+      width: 40px;
+      height: 40px;
+      pointer-events: none;
+      transition: top 1s ease;
+    }
+
+    .plane-vertical img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* BOTÕES */
     .events {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin: 8px 0 0;
+      margin-top: 10px;
     }
 
     .btn {
@@ -99,17 +143,22 @@
       background-color: transparent;
       border: 2px solid var(--btn-border-color);
       color: inherit;
-      padding: 6px 10px;
+      padding: 6px 14px;
       font-size: 0.85rem;
       font-weight: 500;
       user-select: none;
       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
       text-align: center;
-      min-width: 140px;
+      min-width: 150px;
+      max-width: 160px;
+      white-space: normal;
+      line-height: 1.2;
     }
 
     .btn:hover {
-      background-color: var(--btn-bg-hover);
+      background-color: var(--btn-selected-bg);
+      color: var(--btn-selected-text);
+      border-color: var(--btn-selected-bg);
     }
 
     .btn.selected {
@@ -118,66 +167,76 @@
       border-color: var(--btn-selected-bg);
     }
 
+    /* BOTÃO SELECIONAR TODAS */
+    #selectAllBtn {
+      border-color: #555;
+      color: inherit;
+      min-width: 170px;
+      font-weight: 600;
+    }
+    #selectAllBtn:hover {
+      background-color: #555;
+      color: white;
+      border-color: #555;
+    }
+    #selectAllBtn.selected {
+      background-color: #555;
+      color: white;
+      border-color: #555;
+    }
+
+    /* SUMÁRIO */
     .summary {
       margin-top: 12px;
       font-size: 1rem;
       font-weight: 500;
       color: var(--tick-color);
+      user-select: none;
     }
 
+    /* MARGEM REDUZIDA PARA O TEXTO ABAIXO */
+    .container.no-bottom-margin {
+      margin-bottom: 10px;
+    }
+
+    /* RESPONSIVO */
     @media (max-width: 600px) {
       .ruler {
         display: none;
       }
-
-      .mobile-progress {
+      .ruler-vertical {
         display: block;
-        position: relative;
-        width: 100%;
-        height: 8px;
-        background-color: #ddd;
-        margin: 80px auto 10px;
-        border-radius: 4px;
-        overflow: hidden;
       }
-
-      .mobile-progress .progress-bar {
-        position: absolute;
-        height: 100%;
-        background-color: #444;
-        width: 0;
-        transition: width 1s ease;
+      .events {
+        gap: 8px;
+        justify-content: flex-start;
       }
-
-      .plane {
-        top: -30px;
-        left: 0;
-        width: 30px;
-        height: 30px;
-      }
-
-      .tick,
-      .tick-label {
-        display: none;
+      .btn {
+        min-width: auto;
+        max-width: 130px;
+        padding: 6px 10px;
+        font-size: 0.9rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container no-bottom-margin">
+    <!-- RÉGUA HORIZONTAL -->
     <div class="ruler" id="ruler">
       <div class="plane" id="plane">
         <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo" />
       </div>
     </div>
 
-    <div class="mobile-progress" id="mobileProgress" style="display: none">
-      <div class="progress-bar" id="progressBar"></div>
-      <div class="plane" id="planeMobile" style="top: -40px;">
+    <!-- RÉGUA VERTICAL -->
+    <div class="ruler-vertical" id="rulerVertical">
+      <div class="plane-vertical" id="planeVertical">
         <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo" />
       </div>
     </div>
 
+    <!-- BOTÕES -->
     <div class="events" id="buttons">
       <button class="btn" data-km="3600">IEM Katowice<br><strong>3.600 km</strong></button>
       <button class="btn" data-km="7800">PGL Cluj-Napoca<br><strong>7.800 km</strong></button>
@@ -185,10 +244,12 @@
       <button class="btn" data-km="39000">MRQ - IEM Melbourne + MESA<br><strong>39.000 km</strong></button>
     </div>
 
-    <div class="events">
+    <!-- BOTÃO SELECIONAR TODAS -->
+    <div class="events" style="margin-top: 6px;">
       <button class="btn" id="selectAllBtn">Selecionar todas as rotas</button>
     </div>
 
+    <!-- SUMÁRIO -->
     <div class="summary" id="summary">Total: 0 km</div>
   </div>
 
@@ -198,29 +259,37 @@
     const totalEl = document.getElementById('summary');
     const plane = document.getElementById('plane');
     const ruler = document.getElementById('ruler');
+    const planeVertical = document.getElementById('planeVertical');
+    const rulerVertical = document.getElementById('rulerVertical');
     const maxKm = 58000;
 
-    const mobileProgress = document.getElementById('mobileProgress');
-    const progressBar = document.getElementById('progressBar');
-    const planeMobile = document.getElementById('planeMobile');
+    let selected = new Set();
 
+    // Criar ticks para régua horizontal
     const step = 5000;
     for (let i = 0; i <= maxKm; i += step) {
       const percent = (i / maxKm) * 100;
+      // Horizontal ticks
       const tick = document.createElement('div');
       tick.className = 'tick';
       tick.style.left = `${percent}%`;
-
       const label = document.createElement('div');
       label.className = 'tick-label';
       label.style.left = `${percent}%`;
       label.textContent = `${i.toLocaleString()} km`;
-
       ruler.appendChild(tick);
       ruler.appendChild(label);
+      // Vertical ticks
+      const vTick = document.createElement('div');
+      vTick.className = 'tick-vertical';
+      vTick.style.top = `${(percent)}%`;
+      const vLabel = document.createElement('div');
+      vLabel.className = 'tick-label-vertical';
+      vLabel.style.top = `${(percent)}%`;
+      vLabel.textContent = `${i.toLocaleString()} km`;
+      rulerVertical.appendChild(vTick);
+      rulerVertical.appendChild(vLabel);
     }
-
-    let selected = new Set();
 
     function update() {
       let sum = 0;
@@ -228,10 +297,13 @@
         sum += parseInt(buttons[i].dataset.km);
       });
       totalEl.textContent = `Total: ${sum.toLocaleString()} km`;
+
       const percent = sum > 0 ? Math.min(sum / maxKm, 1) * 100 : 0;
+
+      // Atualiza posição horizontal do avião
       plane.style.left = `calc(${percent}% - 20px)`;
-      progressBar.style.width = `${percent}%`;
-      planeMobile.style.left = `calc(${percent}% - 15px)`;
+      // Atualiza posição vertical do avião (inverte eixo para bottom-up)
+      planeVertical.style.top = `calc(${percent}% - 20px)`;
     }
 
     buttons.forEach((btn, i) => {
@@ -251,27 +323,29 @@
       if (selected.size === buttons.length) {
         selected.clear();
         buttons.forEach(btn => btn.classList.remove('selected'));
+        selectAllBtn.classList.remove('selected');
       } else {
         selected = new Set(Array.from(buttons.keys()));
         buttons.forEach(btn => btn.classList.add('selected'));
+        selectAllBtn.classList.add('selected');
       }
       update();
     });
 
-    function checkMobileView() {
+    function checkView() {
       const isMobile = window.innerWidth <= 600;
       if (isMobile) {
         ruler.style.display = 'none';
-        mobileProgress.style.display = 'block';
+        rulerVertical.style.display = 'block';
       } else {
         ruler.style.display = 'block';
-        mobileProgress.style.display = 'none';
+        rulerVertical.style.display = 'none';
       }
     }
 
-    window.addEventListener('resize', checkMobileView);
+    window.addEventListener('resize', checkView);
     window.addEventListener('load', () => {
-      checkMobileView();
+      checkView();
       update();
     });
   </script>
