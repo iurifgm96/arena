@@ -160,11 +160,13 @@
             plane.style.left = `${safeLeft}px`;
         }
 
+        function handleRouteButtonClick() {
+            this.classList.toggle('selected');
+            updateTotal();
+        }
+
         distances.forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.classList.toggle('selected');
-                updateTotal();
-            });
+            btn.addEventListener('click', handleRouteButtonClick);
         });
 
         selectAllBtn.addEventListener('click', () => {
@@ -176,9 +178,7 @@
         });
 
         // Inicializa
-        window.addEventListener('load', () => {
-            updateTotal();
-        });
+        window.addEventListener('load', updateTotal);
     </script>
 </body>
 </html>
