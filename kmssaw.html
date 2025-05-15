@@ -5,269 +5,299 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Viagens dos SAW - Quilómetros Percorridos</title>
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: white;
-    color: #333;
-    text-align: center;
-  }
-
-  .container {
-    max-width: 900px;
-    margin: 60px auto;
-    padding: 0 20px;
-  }
-
-  /* RÉGUA DESKTOP */
-  #rulerContainer {
-    position: relative;
-    max-width: 900px;
-    min-width: 600px;
-    height: 140px;
-    margin: 50px auto 20px;
-    border-top: 2px solid #ccc;
-    overflow-x: auto;
-    padding: 0 40px;
-  }
-
-  #ruler {
-    position: relative;
-    width: 58000px; /* base no max km */
-    height: 100%;
-  }
-
-  .tick {
-    position: absolute;
-    top: -10px;
-    width: 2px;
-    height: 20px;
-    background: #888;
-  }
-
-  .tick-label {
-    position: absolute;
-    top: 22px;
-    font-size: 12px;
-    color: #888;
-    white-space: nowrap;
-    user-select: none;
-    transform: translateX(-50%);
-  }
-
-  /* LOGO SAW desktop */
-  #plane {
-    position: absolute;
-    top: -70px;
-    width: 40px;
-    height: 40px;
-    pointer-events: none;
-    transition: left 1s ease;
-    z-index: 10;
-  }
-  #plane img {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  /* MOBILE PROGRESS */
-  #mobileProgress {
-    display: none;
-    position: relative;
-    width: 100%;
-    height: 8px;
-    background-color: #ddd;
-    margin: 80px auto 20px;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  #progressBar {
-    position: absolute;
-    height: 100%;
-    background-color: #444;
-    width: 0;
-    transition: width 1s ease;
-  }
-
-  #planeMobile {
-    position: absolute;
-    top: -40px;
-    width: 30px;
-    height: 30px;
-    pointer-events: none;
-    transition: left 1s ease;
-  }
-  #planeMobile img {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  /* BOTOES */
-  .events {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 10px 0 0;
-  }
-
-  button.btn {
-    cursor: pointer;
-    border-radius: 8px;
-    background-color: transparent;
-    border: 2px solid #999;
-    color: inherit;
-    padding: 6px 12px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    user-select: none;
-    min-width: 140px;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-  }
-  button.btn:hover {
-    background-color: #eee;
-  }
-  button.btn.selected {
-    background-color: #666;
-    color: white;
-    border-color: #666;
-  }
-
-  #summary {
-    margin-top: 15px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #666;
-  }
-
-  /* RESPONSIVO MOBILE */
-  @media (max-width: 600px) {
-    #rulerContainer {
-      display: none;
+    :root {
+        --bg-light: transparent;
+        --bg-dark: transparent;
+        --text-light: #000;
+        --text-dark: #e0e0e0;
+        --btn-bg-hover: #f0f0f0;
+        --btn-border-color: #999;
+        --btn-selected-bg: #666;
+        --btn-selected-text: #fff;
+        --ruler-border: #ccc;
+        --tick-color: #888;
     }
-    #mobileProgress {
-      display: block;
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-light);
+        color: var(--text-light);
     }
-  }
+
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 60px auto 0;
+        padding: 0 20px;
+        text-align: center;
+    }
+
+    /* RÉGUA DESKTOP */
+    .ruler-container {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        min-width: 600px; /* Ajustei a largura mínima para melhor visualização inicial */
+        height: 140px;
+        margin: 100px auto 20px;
+        border-top: 2px solid var(--ruler-border);
+        overflow-x: auto;
+        padding: 0 30px; /* espaço lateral para logo */
+    }
+
+    .ruler {
+        position: relative;
+        height: 100%;
+        width: 58000px; /* Mantive a largura proporcional, mas agora o container tem min-width */
+        user-select: none;
+    }
+
+    .tick {
+        position: absolute;
+        top: -10px;
+        width: 2px;
+        height: 20px;
+        background: var(--tick-color);
+    }
+
+    .tick-label {
+        position: absolute;
+        top: 22px;
+        font-size: 12px;
+        color: var(--tick-color);
+        white-space: nowrap;
+        user-select: none;
+        transform: translateX(-50%);
+    }
+
+    /* LOGO SAW (avião) desktop */
+    .plane {
+        position: absolute;
+        top: -70px;
+        width: 40px;
+        height: 40px;
+        pointer-events: none;
+        transition: left 1s ease;
+        z-index: 10;
+        left: calc(2% - 20px); /* Posição inicial ligeiramente à esquerda do início da régua */
+    }
+    .plane img {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    /* PROGRESSO MOBILE */
+    .mobile-progress {
+        display: none;
+        position: relative;
+        width: 100%;
+        height: 8px;
+        background-color: #ddd;
+        margin: 80px auto 10px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .mobile-progress .progress-bar {
+        position: absolute;
+        height: 100%;
+        background-color: #444;
+        width: 0;
+        transition: width 1s ease;
+    }
+
+    .plane-mobile {
+        position: absolute;
+        top: -40px;
+        width: 30px;
+        height: 30px;
+        pointer-events: none;
+        transition: left 1s ease;
+        left: calc(2% - 15px); /* Posição inicial semelhante à da régua */
+    }
+
+    /* Botões */
+    .events {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 8px 0 0;
+    }
+
+    .btn {
+        cursor: pointer;
+        border-radius: 8px;
+        background-color: transparent;
+        border: 2px solid var(--btn-border-color);
+        color: inherit;
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        user-select: none;
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        text-align: center;
+        min-width: 140px;
+    }
+
+    .btn:hover {
+        background-color: var(--btn-bg-hover);
+    }
+
+    .btn.selected {
+        background-color: var(--btn-selected-bg);
+        color: var(--btn-selected-text);
+        border-color: var(--btn-selected-bg);
+    }
+
+    .summary {
+        margin-top: 12px;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--tick-color);
+    }
+
+    /* RESPONSIVO MOBILE */
+    @media (max-width: 600px) {
+        .ruler-container {
+            display: none;
+        }
+        .mobile-progress {
+            display: block;
+        }
+    }
 </style>
 </head>
 <body>
-  <div class="container">
-    <div id="rulerContainer">
-      <div id="plane">
-        <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
-      </div>
-      <div id="ruler"></div>
-    </div>
+    <div class="container">
+        <div class="ruler-container" id="rulerContainer">
+            <div class="plane" id="plane">
+                <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
+            </div>
+            <div class="ruler" id="ruler"></div>
+        </div>
 
-    <div id="mobileProgress">
-      <div id="progressBar"></div>
-      <div id="planeMobile">
-        <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
-      </div>
-    </div>
+        <div class="mobile-progress" id="mobileProgress">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="plane-mobile" id="planeMobile">
+                <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
+            </div>
+        </div>
 
-    <div class="events" id="buttons">
-      <button class="btn" data-km="3600">IEM Katowice<br><strong>3.600 km</strong></button>
-      <button class="btn" data-km="7800">PGL Cluj-Napoca<br><strong>7.800 km</strong></button>
-      <button class="btn" data-km="6500">ESL Pro League S21<br><strong>6.500 km</strong></button>
-      <button class="btn" data-km="39000">MRQ - IEM Melbourne + MESA<br><strong>39.000 km</strong></button>
-    </div>
+        <div class="events" id="buttons">
+            <button class="btn" data-km="3600">IEM Katowice<br><strong>3.600 km</strong></button>
+            <button class="btn" data-km="7800">PGL Cluj-Napoca<br><strong>7.800 km</strong></button>
+            <button class="btn" data-km="6500">ESL Pro League S21<br><strong>6.500 km</strong></button>
+            <button class="btn" data-km="39000">MRQ - IEM Melbourne + MESA<br><strong>39.000 km</strong></button>
+        </div>
 
-    <div class="events">
-      <button class="btn" id="selectAllBtn">Selecionar todas as rotas</button>
-    </div>
+        <div class="events" style="margin-top: 6px;">
+            <button class="btn" id="selectAllBtn">Selecionar todas as rotas</button>
+        </div>
 
-    <div id="summary">Total: 0 km</div>
-  </div>
+        <div class="summary" id="summary">Total: 0 km</div>
+    </div>
 
 <script>
-  const maxKm = 58000;
-  const ruler = document.getElementById('ruler');
-  const plane = document.getElementById('plane');
-  const buttons = document.querySelectorAll('#buttons .btn');
-  const selectAllBtn = document.getElementById('selectAllBtn');
-  const totalEl = document.getElementById('summary');
-  const mobileProgress = document.getElementById('mobileProgress');
-  const progressBar = document.getElementById('progressBar');
-  const planeMobile = document.getElementById('planeMobile');
+    const buttons = document.querySelectorAll('#buttons .btn');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const totalEl = document.getElementById('summary');
+    const plane = document.getElementById('plane');
+    const ruler = document.getElementById('ruler');
+    const maxKm = 58000;
 
-  // Criar ticks da régua (desktop)
-  const step = 5000;
-  for(let i=0; i<=maxKm; i+=step){
-    const percent = i / maxKm * 100;
-    const tick = document.createElement('div');
-    tick.className = 'tick';
-    tick.style.left = percent + '%';
-    const label = document.createElement('div');
-    label.className = 'tick-label';
-    label.style.left = percent + '%';
-    label.textContent = i.toLocaleString() + ' km';
-    ruler.appendChild(tick);
-    ruler.appendChild(label);
-  }
+    const mobileProgress = document.getElementById('mobileProgress');
+    const progressBar = document.getElementById('progressBar');
+    const planeMobile = document.getElementById('planeMobile');
 
-  let selected = new Set();
+    // Criar os ticks da régua (desktop)
+    const step = 5000;
+    for (let i = 0; i <= maxKm; i += step) {
+        const percent = (i / maxKm) * 100;
+        const tick = document.createElement('div');
+        tick.className = 'tick';
+        tick.style.left = `${percent}%`;
 
-  function update(){
-    let sum = 0;
-    selected.forEach(i=>{
-      sum += parseInt(buttons[i].dataset.km);
-    });
-    totalEl.textContent = 'Total: ' + sum.toLocaleString() + ' km';
+        const label = document.createElement('div');
+        label.className = 'tick-label';
+        label.style.left = `${percent}%`;
+        label.textContent = `${i.toLocaleString()} km`;
 
-    // Desktop: o logo não pode sair das extremidades da régua
-    const percent = sum > 0 ? Math.min(sum / maxKm, 1) * 100 : 0;
-    const safePercent = Math.min(Math.max(percent, 2), 98);
-    plane.style.left = `calc(${safePercent}% - 20px)`;
-
-    // Mobile
-    progressBar.style.width = percent + '%';
-    planeMobile.style.left = `calc(${percent}% - 15px)`;
-  }
-
-  buttons.forEach((btn, i)=>{
-    btn.addEventListener('click', ()=>{
-      if(selected.has(i)){
-        selected.delete(i);
-        btn.classList.remove('selected');
-      } else {
-        selected.add(i);
-        btn.classList.add('selected');
-      }
-      update();
-    });
-  });
-
-  selectAllBtn.addEventListener('click', ()=>{
-    if(selected.size === buttons.length){
-      selected.clear();
-      buttons.forEach(btn => btn.classList.remove('selected'));
-    } else {
-      selected = new Set(Array.from(buttons.keys()));
-      buttons.forEach(btn => btn.classList.add('selected'));
+        ruler.appendChild(tick);
+        ruler.appendChild(label);
     }
-    update();
-  });
 
-  function checkMobileView(){
-    if(window.innerWidth <= 600){
-      mobileProgress.style.display = 'block';
-      document.getElementById('rulerContainer').style.display = 'none';
-    } else {
-      mobileProgress.style.display = 'none';
-      document.getElementById('rulerContainer').style.display = 'block';
+    let selected = new Set();
+
+    function update() {
+        let sum = 0;
+        selected.forEach(i => {
+            sum += parseInt(buttons[i].dataset.km);
+        });
+        totalEl.textContent = `Total: ${sum.toLocaleString()} km`;
+
+        const percent = sum > 0 ? Math.min(sum / maxKm, 1) * 100 : 0;
+
+        // Desktop: posição do logo, com limites para não sair da régua
+        const leftPercent = Math.min(Math.max(percent, 2), 98);
+        plane.style.left = `calc(${leftPercent}% - 20px)`;
+
+        // Mobile
+        progressBar.style.width = `${percent}%`;
+        planeMobile.style.left = `calc(${percent}% - 15px)`;
     }
-  }
 
-  window.addEventListener('resize', checkMobileView);
-  window.addEventListener('load', () => {
-    checkMobileView();
-    update();
-  });
+    buttons.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+            if (selected.has(i)) {
+                selected.delete(i);
+                btn.classList.remove('selected');
+            } else {
+                selected.add(i);
+                btn.classList.add('selected');
+            }
+            update();
+        });
+    });
+
+    selectAllBtn.addEventListener('click', () => {
+        if (selected.size === buttons.length) {
+            selected.clear();
+            buttons.forEach(btn => btn.classList.remove('selected'));
+        } else {
+            selected = new Set(Array.from(buttons.keys()));
+            buttons.forEach(btn => btn.classList.add('selected'));
+        }
+        update();
+    });
+
+    function checkMobileView() {
+        const isMobile = window.innerWidth <= 600;
+        if (isMobile) {
+            mobileProgress.style.display = 'block';
+            document.getElementById('rulerContainer').style.display = 'none';
+        } else {
+            mobileProgress.style.display = 'none';
+            document.getElementById('rulerContainer').style.display = 'block';
+        }
+    }
+
+    window.addEventListener('resize', () => {
+        checkMobileView();
+    });
+
+    window.addEventListener('load', () => {
+        checkMobileView();
+        update();
+    });
 </script>
 </body>
 </html>
