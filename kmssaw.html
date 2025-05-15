@@ -55,12 +55,12 @@
         transition: left 1s ease;
         z-index: 10;
         display: flex;
-        justify-content: center;
+        justify-content: flex-end; /* ponta do avião fica na direita */
         align-items: center;
         font-size: 2.5rem;
         color: #999;
         user-select: none;
-        left: -40px;
+        left: -40px; /* inicial fora da régua */
     }
 
     .buttons {
@@ -72,7 +72,7 @@
     }
 
     .route-btn {
-        padding: 0.75rem 1.2rem;
+        padding: 0.6rem 1rem;
         border: 2px solid #999;
         border-radius: 10px;
         cursor: pointer;
@@ -81,6 +81,7 @@
         text-align: center;
         user-select: none;
         color: #fff;
+        font-size: 0.95rem;
     }
 
     .route-btn.selected {
@@ -103,18 +104,21 @@
         #rulerContainer {
             height: 60px;
             max-width: 100%;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
-        .tick {
-            height: 5px;
+        .tick, .tick.highlight {
+            display: none;
         }
 
-        .tick.highlight {
+        .tick.mobile {
+            display: block;
             height: 10px;
+            background-color: #888;
         }
 
-        .tick-label {
+        .tick-label.mobile {
+            display: block;
             font-size: 0.6rem;
             top: 14px;
         }
@@ -124,19 +128,20 @@
             width: 34px;
             height: 34px;
             font-size: 2rem;
+            justify-content: flex-end;
             left: -34px;
         }
 
         .buttons {
             flex-direction: column;
-            gap: 0.6rem;
+            gap: 0.4rem;
             margin-bottom: 1rem;
             width: 100%;
         }
 
         .route-btn, #selectAll {
-            font-size: 0.85rem;
-            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
             width: 100%;
             box-sizing: border-box;
             background-color: #444;
@@ -145,7 +150,7 @@
         }
 
         #total {
-            font-size: 1rem;
+            font-size: 0.95rem;
             text-align: center;
         }
     }
@@ -157,24 +162,26 @@
         <script>
             const container = document.currentScript.parentElement;
             const tickMaxKm = 60000;
-            const minorTickStep = 2500;
-            const labelTickStep = 10000;
-            const highlightStep = 5000;
+            const isMobile = window.innerWidth <= 600;
+
+            const minorTickStep = isMobile ? 20000 : 2500;
+            const labelTickStep = isMobile ? 20000 : 10000;
+            const highlightStep = isMobile ? 20000 : 5000;
 
             for (let km = 0; km <= tickMaxKm; km += minorTickStep) {
                 const tick = document.createElement("div");
                 tick.className = "tick";
-                tick.style.left = `${(km / tickMaxKm) * 100}%`;
-
+                if (isMobile) tick.classList.add("mobile");
                 if (km % highlightStep === 0) {
                     tick.classList.add('highlight');
                 }
-
+                tick.style.left = `${(km / tickMaxKm) * 100}%`;
                 container.appendChild(tick);
 
                 if (km % labelTickStep === 0) {
                     const label = document.createElement("div");
                     label.className = "tick-label";
+                    if (isMobile) label.classList.add("mobile");
                     label.style.left = `${(km / tickMaxKm) * 100}%`;
                     label.textContent = `${km.toLocaleString()} km`;
                     container.appendChild(label);
@@ -211,13 +218,15 @@
 
             const ruler = document.getElementById('rulerContainer');
             const rulerWidth = ruler.offsetWidth;
-            const planeWidth = plane.offsetWidth;
-            const leftPosition = (sum / maxKm) * rulerWidth;
 
-            let desiredLeft = leftPosition - planeWidth + 10;
+            const planeWidth = plane.offsetWidth;
+            // posição = posição do km no ruler - largura do avião (ponta do avião na direita)
+            const leftPosition = (sum / maxKm) * rulerWidth;
+            let desiredLeft = leftPosition - planeWidth;
+
             if (sum === 0) desiredLeft = -planeWidth;
 
-            const safeLeft = Math.min(Math.max(desiredLeft, -planeWidth), rulerWidth - planeWidth);
+            const safeLeft = Math.min(Math.max(desiredLeft, -planeWidth), rulerWidth);
             plane.style.left = `${safeLeft}px`;
 
             const allSelected = distanceButtons.every(btn => btn.classList.contains('selected'));
