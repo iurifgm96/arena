@@ -1,242 +1,175 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Viagens dos SAW - Quilómetros Percorridos</title>
-  <style>
-    :root {
-      --bg-light: transparent;
-      --bg-dark: transparent;
-      --text-light: #000;
-      --text-dark: #e0e0e0;
-      --border-radius: 8px;
-      --btn-border-color: #888;
-      --btn-selected-bg: #444;
-      --btn-selected-text: #fff;
-      --ruler-border: #ccc;
-      --tick-color: #666;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Viagens dos SAW - Quilómetros Percorridos</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: white;
+    color: #333;
+    text-align: center;
+  }
 
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-light);
-    }
+  .container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 20px;
+  }
 
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: var(--bg-dark);
-        color: var(--text-dark);
-      }
-    }
+  /* RÉGUA DESKTOP */
+  #rulerContainer {
+    position: relative;
+    max-width: 900px;
+    min-width: 600px;
+    height: 140px;
+    margin: 50px auto 20px;
+    border-top: 2px solid #ccc;
+    overflow-x: auto;
+    padding: 0 40px;
+  }
 
-    .container {
-      max-width: 900px;
-      margin: 60px auto 20px;
-      padding: 0 20px;
-      text-align: center;
-    }
+  #ruler {
+    position: relative;
+    width: 58000px; /* base no max km */
+    height: 100%;
+  }
 
-    /* RÉGUA HORIZONTAL (DESKTOP) */
-    .ruler {
-      position: relative;
-      height: 140px;
-      margin: 100px auto 20px;
-      border-top: 2px solid var(--ruler-border);
-      max-width: 100%;
-      min-width: 600px;
-      overflow-x: auto;
-      user-select: none;
-    }
+  .tick {
+    position: absolute;
+    top: -10px;
+    width: 2px;
+    height: 20px;
+    background: #888;
+  }
 
-    .tick {
-      position: absolute;
-      top: -10px;
-      width: 2px;
-      height: 20px;
-      background: var(--tick-color);
-    }
+  .tick-label {
+    position: absolute;
+    top: 22px;
+    font-size: 12px;
+    color: #888;
+    white-space: nowrap;
+    user-select: none;
+    transform: translateX(-50%);
+  }
 
-    .tick-label {
-      position: absolute;
-      top: 22px;
-      font-size: 12px;
-      color: var(--tick-color);
-      white-space: nowrap;
-      user-select: none;
-      transform: translateX(-50%);
-    }
+  /* LOGO SAW desktop */
+  #plane {
+    position: absolute;
+    top: -70px;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+    transition: left 1s ease;
+    z-index: 10;
+  }
+  #plane img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 
-    .plane {
-      position: absolute;
-      top: -70px;
-      width: 40px;
-      height: 40px;
-      pointer-events: none;
-      transition: left 1s ease;
-    }
+  /* MOBILE PROGRESS */
+  #mobileProgress {
+    display: none;
+    position: relative;
+    width: 100%;
+    height: 8px;
+    background-color: #ddd;
+    margin: 80px auto 20px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
 
-    .plane img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+  #progressBar {
+    position: absolute;
+    height: 100%;
+    background-color: #444;
+    width: 0;
+    transition: width 1s ease;
+  }
 
-    /* RÉGUA VERTICAL (MOBILE) */
-    .ruler-vertical {
+  #planeMobile {
+    position: absolute;
+    top: -40px;
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    transition: left 1s ease;
+  }
+  #planeMobile img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* BOTOES */
+  .events {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 10px 0 0;
+  }
+
+  button.btn {
+    cursor: pointer;
+    border-radius: 8px;
+    background-color: transparent;
+    border: 2px solid #999;
+    color: inherit;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    user-select: none;
+    min-width: 140px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  button.btn:hover {
+    background-color: #eee;
+  }
+  button.btn.selected {
+    background-color: #666;
+    color: white;
+    border-color: #666;
+  }
+
+  #summary {
+    margin-top: 15px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  /* RESPONSIVO MOBILE */
+  @media (max-width: 600px) {
+    #rulerContainer {
       display: none;
-      margin: 20px auto 20px;
-      border-left: 2px solid var(--ruler-border);
-      height: 300px;
-      max-width: 100px;
-      position: relative;
-      user-select: none;
     }
-
-    .tick-vertical {
-      position: absolute;
-      left: -10px;
-      width: 20px;
-      height: 2px;
-      background: var(--tick-color);
-    }
-
-    .tick-label-vertical {
-      position: absolute;
-      left: 24px;
-      font-size: 12px;
-      color: var(--tick-color);
-      white-space: nowrap;
-      user-select: none;
-      transform: translateY(50%);
-    }
-
-    .plane-vertical {
-      position: absolute;
-      left: -55px;
-      width: 40px;
-      height: 40px;
-      pointer-events: none;
-      transition: top 1s ease;
-    }
-
-    .plane-vertical img {
-      width: 100%;
-      height: auto;
+    #mobileProgress {
       display: block;
     }
-
-    /* BOTÕES */
-    .events {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .btn {
-      cursor: pointer;
-      border-radius: var(--border-radius);
-      background-color: transparent;
-      border: 2px solid var(--btn-border-color);
-      color: inherit;
-      padding: 6px 14px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      user-select: none;
-      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-      text-align: center;
-      min-width: 150px;
-      max-width: 160px;
-      white-space: normal;
-      line-height: 1.2;
-    }
-
-    .btn:hover {
-      background-color: var(--btn-selected-bg);
-      color: var(--btn-selected-text);
-      border-color: var(--btn-selected-bg);
-    }
-
-    .btn.selected {
-      background-color: var(--btn-selected-bg);
-      color: var(--btn-selected-text);
-      border-color: var(--btn-selected-bg);
-    }
-
-    /* BOTÃO SELECIONAR TODAS */
-    #selectAllBtn {
-      border-color: #555;
-      color: inherit;
-      min-width: 170px;
-      font-weight: 600;
-    }
-    #selectAllBtn:hover {
-      background-color: #555;
-      color: white;
-      border-color: #555;
-    }
-    #selectAllBtn.selected {
-      background-color: #555;
-      color: white;
-      border-color: #555;
-    }
-
-    /* SUMÁRIO */
-    .summary {
-      margin-top: 12px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--tick-color);
-      user-select: none;
-    }
-
-    /* MARGEM REDUZIDA PARA O TEXTO ABAIXO */
-    .container.no-bottom-margin {
-      margin-bottom: 10px;
-    }
-
-    /* RESPONSIVO */
-    @media (max-width: 600px) {
-      .ruler {
-        display: none;
-      }
-      .ruler-vertical {
-        display: block;
-      }
-      .events {
-        gap: 8px;
-        justify-content: flex-start;
-      }
-      .btn {
-        min-width: auto;
-        max-width: 130px;
-        padding: 6px 10px;
-        font-size: 0.9rem;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="container no-bottom-margin">
-    <!-- RÉGUA HORIZONTAL -->
-    <div class="ruler" id="ruler">
-      <div class="plane" id="plane">
-        <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo" />
+  <div class="container">
+    <div id="rulerContainer">
+      <div id="plane">
+        <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
+      </div>
+      <div id="ruler"></div>
+    </div>
+
+    <div id="mobileProgress">
+      <div id="progressBar"></div>
+      <div id="planeMobile">
+        <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
       </div>
     </div>
 
-    <!-- RÉGUA VERTICAL -->
-    <div class="ruler-vertical" id="rulerVertical">
-      <div class="plane-vertical" id="planeVertical">
-        <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo" />
-      </div>
-    </div>
-
-    <!-- BOTÕES -->
     <div class="events" id="buttons">
       <button class="btn" data-km="3600">IEM Katowice<br><strong>3.600 km</strong></button>
       <button class="btn" data-km="7800">PGL Cluj-Napoca<br><strong>7.800 km</strong></button>
@@ -244,110 +177,97 @@
       <button class="btn" data-km="39000">MRQ - IEM Melbourne + MESA<br><strong>39.000 km</strong></button>
     </div>
 
-    <!-- BOTÃO SELECIONAR TODAS -->
-    <div class="events" style="margin-top: 6px;">
+    <div class="events">
       <button class="btn" id="selectAllBtn">Selecionar todas as rotas</button>
     </div>
 
-    <!-- SUMÁRIO -->
-    <div class="summary" id="summary">Total: 0 km</div>
+    <div id="summary">Total: 0 km</div>
   </div>
 
-  <script>
-    const buttons = document.querySelectorAll('#buttons .btn');
-    const selectAllBtn = document.getElementById('selectAllBtn');
-    const totalEl = document.getElementById('summary');
-    const plane = document.getElementById('plane');
-    const ruler = document.getElementById('ruler');
-    const planeVertical = document.getElementById('planeVertical');
-    const rulerVertical = document.getElementById('rulerVertical');
-    const maxKm = 58000;
+<script>
+  const maxKm = 58000;
+  const ruler = document.getElementById('ruler');
+  const plane = document.getElementById('plane');
+  const buttons = document.querySelectorAll('#buttons .btn');
+  const selectAllBtn = document.getElementById('selectAllBtn');
+  const totalEl = document.getElementById('summary');
+  const mobileProgress = document.getElementById('mobileProgress');
+  const progressBar = document.getElementById('progressBar');
+  const planeMobile = document.getElementById('planeMobile');
 
-    let selected = new Set();
+  // Criar ticks da régua (desktop)
+  const step = 5000;
+  for(let i=0; i<=maxKm; i+=step){
+    const percent = i / maxKm * 100;
+    const tick = document.createElement('div');
+    tick.className = 'tick';
+    tick.style.left = percent + '%';
+    const label = document.createElement('div');
+    label.className = 'tick-label';
+    label.style.left = percent + '%';
+    label.textContent = i.toLocaleString() + ' km';
+    ruler.appendChild(tick);
+    ruler.appendChild(label);
+  }
 
-    // Criar ticks para régua horizontal
-    const step = 5000;
-    for (let i = 0; i <= maxKm; i += step) {
-      const percent = (i / maxKm) * 100;
-      // Horizontal ticks
-      const tick = document.createElement('div');
-      tick.className = 'tick';
-      tick.style.left = `${percent}%`;
-      const label = document.createElement('div');
-      label.className = 'tick-label';
-      label.style.left = `${percent}%`;
-      label.textContent = `${i.toLocaleString()} km`;
-      ruler.appendChild(tick);
-      ruler.appendChild(label);
-      // Vertical ticks
-      const vTick = document.createElement('div');
-      vTick.className = 'tick-vertical';
-      vTick.style.top = `${(percent)}%`;
-      const vLabel = document.createElement('div');
-      vLabel.className = 'tick-label-vertical';
-      vLabel.style.top = `${(percent)}%`;
-      vLabel.textContent = `${i.toLocaleString()} km`;
-      rulerVertical.appendChild(vTick);
-      rulerVertical.appendChild(vLabel);
-    }
+  let selected = new Set();
 
-    function update() {
-      let sum = 0;
-      selected.forEach(i => {
-        sum += parseInt(buttons[i].dataset.km);
-      });
-      totalEl.textContent = `Total: ${sum.toLocaleString()} km`;
-
-      const percent = sum > 0 ? Math.min(sum / maxKm, 1) * 100 : 0;
-
-      // Atualiza posição horizontal do avião
-      plane.style.left = `calc(${percent}% - 20px)`;
-      // Atualiza posição vertical do avião (inverte eixo para bottom-up)
-      planeVertical.style.top = `calc(${percent}% - 20px)`;
-    }
-
-    buttons.forEach((btn, i) => {
-      btn.addEventListener('click', () => {
-        if (selected.has(i)) {
-          selected.delete(i);
-          btn.classList.remove('selected');
-        } else {
-          selected.add(i);
-          btn.classList.add('selected');
-        }
-        update();
-      });
+  function update(){
+    let sum = 0;
+    selected.forEach(i=>{
+      sum += parseInt(buttons[i].dataset.km);
     });
+    totalEl.textContent = 'Total: ' + sum.toLocaleString() + ' km';
 
-    selectAllBtn.addEventListener('click', () => {
-      if (selected.size === buttons.length) {
-        selected.clear();
-        buttons.forEach(btn => btn.classList.remove('selected'));
-        selectAllBtn.classList.remove('selected');
+    // Desktop: o logo não pode sair das extremidades da régua
+    const percent = sum > 0 ? Math.min(sum / maxKm, 1) * 100 : 0;
+    const safePercent = Math.min(Math.max(percent, 2), 98);
+    plane.style.left = `calc(${safePercent}% - 20px)`;
+
+    // Mobile
+    progressBar.style.width = percent + '%';
+    planeMobile.style.left = `calc(${percent}% - 15px)`;
+  }
+
+  buttons.forEach((btn, i)=>{
+    btn.addEventListener('click', ()=>{
+      if(selected.has(i)){
+        selected.delete(i);
+        btn.classList.remove('selected');
       } else {
-        selected = new Set(Array.from(buttons.keys()));
-        buttons.forEach(btn => btn.classList.add('selected'));
-        selectAllBtn.classList.add('selected');
+        selected.add(i);
+        btn.classList.add('selected');
       }
       update();
     });
+  });
 
-    function checkView() {
-      const isMobile = window.innerWidth <= 600;
-      if (isMobile) {
-        ruler.style.display = 'none';
-        rulerVertical.style.display = 'block';
-      } else {
-        ruler.style.display = 'block';
-        rulerVertical.style.display = 'none';
-      }
+  selectAllBtn.addEventListener('click', ()=>{
+    if(selected.size === buttons.length){
+      selected.clear();
+      buttons.forEach(btn => btn.classList.remove('selected'));
+    } else {
+      selected = new Set(Array.from(buttons.keys()));
+      buttons.forEach(btn => btn.classList.add('selected'));
     }
+    update();
+  });
 
-    window.addEventListener('resize', checkView);
-    window.addEventListener('load', () => {
-      checkView();
-      update();
-    });
-  </script>
+  function checkMobileView(){
+    if(window.innerWidth <= 600){
+      mobileProgress.style.display = 'block';
+      document.getElementById('rulerContainer').style.display = 'none';
+    } else {
+      mobileProgress.style.display = 'none';
+      document.getElementById('rulerContainer').style.display = 'block';
+    }
+  }
+
+  window.addEventListener('resize', checkMobileView);
+  window.addEventListener('load', () => {
+    checkMobileView();
+    update();
+  });
+</script>
 </body>
 </html>
