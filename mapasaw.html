@@ -25,13 +25,15 @@
       overflow-x: hidden;
       z-index: 1000;
       transition: all 0.3s ease;
-      width: 130px;
+      width: 280px;
       max-width: 90vw;
     }
+
     .dark-mode .legend {
       background: #2c2c2c;
       color: #e0e0e0;
     }
+
     .circle-icon {
       display: inline-block;
       width: 10px;
@@ -40,6 +42,7 @@
       margin-right: 6px;
       vertical-align: middle;
     }
+
     .collapsible {
       background: none;
       border: none;
@@ -50,22 +53,27 @@
       justify-content: space-between;
       align-items: center;
     }
+
     .collapsible::after {
       content: "▼";
       font-size: 12px;
       transform: rotate(0deg);
       transition: transform 0.3s ease;
     }
+
     .collapsible.active::after {
       transform: rotate(180deg);
     }
+
     .content {
       padding-left: 10px;
       display: none;
     }
+
     .content.show {
       display: block;
     }
+
     .label-tooltip {
       background: white;
       color: black;
@@ -73,55 +81,30 @@
       font-weight: bold;
       border: 1px solid gray;
       border-radius: 4px;
-      white-space: nowrap;
     }
-    #menuButton {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      background: #f4f4f4;
-      border: 1px solid #ccc;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 1100;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      display: none;
-    }
+
     @media (max-width: 767px) {
       .legend {
-        width: 90vw !important;
+        width: 75vw !important;
         max-height: 60vh;
-        top: 70px;
-        right: 5vw;
-      }
-      #menuButton {
-        display: block;
+        top: 20px;
+        right: 20px;
       }
     }
   </style>
 </head>
 <body>
 <div id="map"></div>
-<button id="menuButton" onclick="toggleLegend()">Abrir legenda</button>
 <script>
   if (document.body.classList.contains('dark')) document.body.classList.add('dark-mode');
 
-  const map = L.map('map').setView([50, 10], 4);
-
-  // Limitar zoom para evitar mostrar áreas cinza
-  const bounds = [
-    [10, -30],   // SW
-    [70, 40]    // NE
-  ];
-  map.setMaxBounds(bounds);
-  map.on('drag', () => {
-    map.panInsideBounds(bounds, { animate: false });
-  });
+  const map = L.map('map', {
+    maxBounds: [[-90, -200], [90, 200]],
+    maxBoundsViscosity: 1.0
+  }).setView([50, 10], 4);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
-    minZoom: 3,
     attribution: '© OpenStreetMap'
   }).addTo(map);
 
@@ -144,31 +127,25 @@
     { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "#0000ff", position: "5º-8º", date: "14 - 23 Fev" },
     { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "#00ff00", position: "12º-14º", date: "1 - 16 Mar" },
     { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "#ffa500", position: "13º-16º", date: "21 - 27 Abr" },
-    { name: "Austin Major MRQ", location: "frankfurt", prize: null, color: "#800080", position: "9º-11º", date: "Abril" },
+    { name: "Austin Major MRQ", location: "frankfurt", prize: null, color: "#800080", position: "9º-11º", date: "Abril", description: "online jogado em Frankfurt" },
     { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "#8B4513", position: "7º-8º", date: "30 Abr - 4 Mai" }
   ];
 
-  // Cria pane específico para rotas, para controlar z-index
-  map.createPane('routesPane');
-  map.getPane('routesPane').style.zIndex = 400; // baixo, para ficar atrás dos markers
-
-  // Marcadores dos torneios no pane padrão 'markerPane' (zIndex padrão mais alto)
-  const tournamentMarkers = [];
-
+  const bounds = [];
   tournaments.forEach(t => {
     const coord = cityCoords[t.location];
     if (!coord) return;
+    bounds.push(coord);
 
     const hasPrize = !!t.prize;
     const size = hasPrize ? 10 : 6;
-
     const marker = L.circleMarker(coord, {
       radius: size,
       color: t.color,
       fillColor: t.color,
       fillOpacity: hasPrize ? 0.9 : 0,
       weight: 2,
-      pane: 'markerPane' // garante que fique acima das rotas
+      pane: 'markerPane'
     }).addTo(map);
 
     marker.bindPopup(
@@ -176,28 +153,25 @@
       `<b>Data:</b> ${t.date}<br>` +
       `<b>Localização:</b> ${t.location.charAt(0).toUpperCase() + t.location.slice(1)}<br>` +
       `<b>Posição:</b> ${t.position}<br>` +
-      `<b>Prémio:</b> ${t.prize || "Sem prémio"}`
+      `<b>Prémio:</b> ${t.prize || "Sem prémio"}` +
+      (t.description ? `<br><i>${t.description}</i>` : "")
     );
 
     marker.bindTooltip(t.name, {
       permanent: true,
       direction: 'top',
-      className: 'label-tooltip',
-      pane: 'markerPane' // tooltip também acima
+      className: 'label-tooltip'
     });
-
-    tournamentMarkers.push(marker);
   });
 
   const routeDefinitions = [
     { name: "IEM Katowice", points: ["porto", "krakow", "porto"], distance: "3.600 km" },
     { name: "PGL Cluj-Napoca", points: ["porto", "madrid", "bucharest", "cluj", "bucharest", "madrid", "porto"], distance: "7.800 km" },
     { name: "ESL Pro League S21", points: ["porto", "frankfurt", "stockholm", "porto"], distance: "6.500 km" },
-    { name: "MRQ + IEM Melbourne + MESA Nomadic Masters", points: ["porto", "frankfurt", "dubai", "melbourne", "beijing", "ulaanbaatar", "frankfurt", "porto"], distance: "39.000 km" }
+    { name: "Austin Major MRQ + IEM Melbourne + MESA Nomadic Masters", points: ["porto", "frankfurt", "dubai", "melbourne", "beijing", "ulaanbaatar", "frankfurt", "porto"], distance: "39.000 km" }
   ];
 
   const routeLayers = {};
-
   routeDefinitions.forEach((route) => {
     const latlngs = route.points.map(p => cityCoords[p]);
     const polyline = L.polyline(latlngs, {
@@ -206,7 +180,7 @@
       dashArray: '4, 6',
       opacity: 0.4,
       interactive: true,
-      pane: 'routesPane' // coloca rotas no pane inferior
+      pane: 'shadowPane'
     }).bindPopup(
       `<b>${route.name}</b><br>` +
       `<b>Distância:</b> ${route.distance}<br>` +
@@ -251,22 +225,11 @@
   };
   legendControl.addTo(map);
 
-  function toggleLegend() {
-    const legend = document.querySelector('.legend');
-    legend.classList.toggle('show');
-    const btn = document.getElementById('menuButton');
-    btn.style.display = legend.classList.contains('show') ? 'none' : 'block';
-  }
-
   function updateLegendSize() {
     const legend = document.querySelector('.legend');
     const contents = legend.querySelectorAll('.content');
     const allCollapsed = Array.from(contents).every(c => !c.classList.contains('show'));
-    if (allCollapsed) {
-      legend.style.width = '130px';
-    } else {
-      legend.style.width = '280px';
-    }
+    legend.style.width = allCollapsed ? '130px' : '280px';
   }
 
   document.querySelectorAll('.collapsible').forEach(btn => {
