@@ -89,8 +89,8 @@
       #menuButton { display: none; }
     }
     @media (max-width: 767px) {
-      #menuButton { display: none; } /* esconder botão em mobile */
-      .legend { display: block !important; } /* mostrar legenda */
+      #menuButton { display: none; }
+      .legend { display: block !important; }
     }
   </style>
 </head>
@@ -173,8 +173,10 @@
     const latlngs = route.points.map(p => cityCoords[p]);
     const polyline = L.polyline(latlngs, {
       color: '#ff0000',
-      weight: 2,
-      dashArray: '4, 6'
+      weight: 10,
+      dashArray: '4, 6',
+      opacity: 0.4,
+      interactive: true
     }).bindPopup(
       `<b>${route.name}</b><br>` +
       `<b>Distância:</b> ${route.distance}<br>` +
