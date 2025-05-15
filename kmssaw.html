@@ -21,21 +21,20 @@
     body {
         margin: 0;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: var(--bg-light);
+        background-color: transparent; /* Fundo transparente */
         color: var(--text-light);
     }
 
     @media (prefers-color-scheme: dark) {
         body {
-            background-color: var(--bg-dark);
             color: var(--text-dark);
         }
     }
 
     .container {
-        max-width: 900px;
-        margin: 60px auto 0;
-        padding: 0 20px;
+        max-width: 100%; /* Largura máxima para se ajustar ao iframe */
+        margin: 20px auto 0; /* Reduzi a margem superior */
+        padding: 0 10px; /* Reduzi o padding lateral */
         text-align: center;
     }
 
@@ -43,34 +42,33 @@
     .ruler-container {
         position: relative;
         width: 100%;
-        max-width: 900px;
-        min-width: 600px; /* Ajustei a largura mínima para melhor visualização inicial */
-        height: 140px;
-        margin: 100px auto 20px;
+        min-width: 300px; /* Largura mínima razoável para iframe */
+        height: 100px; /* Altura reduzida */
+        margin: 40px auto 10px; /* Margens ajustadas */
         border-top: 2px solid var(--ruler-border);
         overflow-x: auto;
-        padding: 0 30px; /* espaço lateral para logo */
+        padding: 0 20px; /* Espaço lateral reduzido */
     }
 
     .ruler {
         position: relative;
         height: 100%;
-        width: 58000px; /* Mantive a largura proporcional, mas agora o container tem min-width */
+        width: 58000px; /* Mantive a largura proporcional */
         user-select: none;
     }
 
     .tick {
         position: absolute;
-        top: -10px;
-        width: 2px;
-        height: 20px;
+        top: -5px; /* Ajustei a posição dos ticks */
+        width: 1px;
+        height: 10px; /* Ajustei a altura dos ticks */
         background: var(--tick-color);
     }
 
     .tick-label {
         position: absolute;
-        top: 22px;
-        font-size: 12px;
+        top: 12px; /* Ajustei a posição das labels */
+        font-size: 0.7rem; /* Reduzi o tamanho da fonte */
         color: var(--tick-color);
         white-space: nowrap;
         user-select: none;
@@ -80,13 +78,13 @@
     /* LOGO SAW (avião) desktop */
     .plane {
         position: absolute;
-        top: -70px;
-        width: 40px;
-        height: 40px;
+        top: -40px; /* Ajustei a posição vertical */
+        width: 30px; /* Reduzi o tamanho */
+        height: 30px; /* Reduzi o tamanho */
         pointer-events: none;
         transition: left 1s ease;
         z-index: 10;
-        left: calc(2% - 20px); /* Posição inicial ligeiramente à esquerda do início da régua */
+        left: 1%; /* Posição inicial mais próxima do início */
     }
     .plane img {
         width: 100%;
@@ -99,10 +97,10 @@
         display: none;
         position: relative;
         width: 100%;
-        height: 8px;
+        height: 6px; /* Altura reduzida */
         background-color: #ddd;
-        margin: 80px auto 10px;
-        border-radius: 4px;
+        margin: 40px auto 10px; /* Margens ajustadas */
+        border-radius: 3px;
         overflow: hidden;
     }
 
@@ -116,36 +114,36 @@
 
     .plane-mobile {
         position: absolute;
-        top: -40px;
-        width: 30px;
-        height: 30px;
+        top: -25px; /* Ajustei a posição vertical */
+        width: 20px; /* Reduzi o tamanho */
+        height: 20px; /* Reduzi o tamanho */
         pointer-events: none;
         transition: left 1s ease;
-        left: calc(2% - 15px); /* Posição inicial semelhante à da régua */
+        left: 1%; /* Posição inicial semelhante à da régua */
     }
 
     /* Botões */
     .events {
         display: flex;
         justify-content: center;
-        gap: 10px;
+        gap: 5px; /* Reduzi o espaçamento entre botões */
         flex-wrap: wrap;
         margin: 8px 0 0;
     }
 
     .btn {
         cursor: pointer;
-        border-radius: 8px;
+        border-radius: 6px; /* Bordas menos arredondadas */
         background-color: transparent;
-        border: 2px solid var(--btn-border-color);
+        border: 1px solid var(--btn-border-color); /* Bordas mais finas */
         color: inherit;
-        padding: 6px 10px;
-        font-size: 0.85rem;
+        padding: 4px 8px; /* Padding menor */
+        font-size: 0.75rem; /* Fonte menor */
         font-weight: 500;
         user-select: none;
         transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         text-align: center;
-        min-width: 140px;
+        min-width: 90px; /* Largura mínima menor */
     }
 
     .btn:hover {
@@ -159,8 +157,8 @@
     }
 
     .summary {
-        margin-top: 12px;
-        font-size: 1rem;
+        margin-top: 8px; /* Margem superior menor */
+        font-size: 0.8rem; /* Fonte menor */
         font-weight: 500;
         color: var(--tick-color);
     }
@@ -220,6 +218,7 @@
 
     // Criar os ticks da régua (desktop)
     const step = 5000;
+    ruler.innerHTML = ''; // Limpar quaisquer ticks anteriores
     for (let i = 0; i <= maxKm; i += step) {
         const percent = (i / maxKm) * 100;
         const tick = document.createElement('div');
@@ -247,12 +246,12 @@
         const percent = sum > 0 ? Math.min(sum / maxKm, 1) * 100 : 0;
 
         // Desktop: posição do logo, com limites para não sair da régua
-        const leftPercent = Math.min(Math.max(percent, 2), 98);
-        plane.style.left = `calc(${leftPercent}% - 20px)`;
+        const leftPercent = Math.min(Math.max(percent, 1), 99); // Ajustei os limites
+        plane.style.left = `calc(${leftPercent}% - 15px)`; // Ajustei o cálculo
 
         // Mobile
         progressBar.style.width = `${percent}%`;
-        planeMobile.style.left = `calc(${percent}% - 15px)`;
+        planeMobile.style.left = `calc(${percent}% - 10px)`; // Ajustei o cálculo
     }
 
     buttons.forEach((btn, i) => {
