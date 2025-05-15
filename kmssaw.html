@@ -237,11 +237,20 @@
             const rulerWidth = ruler.offsetWidth;
             const leftPosition = (sum / maxKm) * rulerWidth;
 
-            let desiredLeft = leftPosition;
-            if (sum === 0) desiredLeft = -plane.offsetWidth;
+            let desiredLeft;
+            if (sum === 0) {
+                desiredLeft = -plane.offsetWidth; // Esconder avião à esquerda
+            } else {
+                desiredLeft = leftPosition - plane.offsetWidth; // Alinhar ponta direita
 
-            const safeLeft = Math.min(Math.max(desiredLeft, -plane.offsetWidth), rulerWidth);
-            plane.style.left = `${safeLeft}px`;
+                if (desiredLeft < 0) desiredLeft = 0; // Não sair da régua pela esquerda
+            }
+
+            if (desiredLeft + plane.offsetWidth > rulerWidth) {
+                desiredLeft = rulerWidth - plane.offsetWidth; // Não sair pela direita
+            }
+
+            plane.style.left = `${desiredLeft}px`;
 
             const allSelected = distanceButtons.every(btn => btn.classList.contains('selected'));
             selectAllBtn.textContent = allSelected ? 'Desmarcar todas as rotas' : 'Selecionar todas as rotas';
