@@ -1,185 +1,184 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Distâncias SAW</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background-color: #fff;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Distâncias SAW</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+        }
 
-    #rulerContainer {
-      position: relative;
-      width: 90%;
-      max-width: 1000px;
-      height: 120px;
-      border-top: 3px solid #888;
-      margin-bottom: 2rem;
-    }
+        #rulerContainer {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            height: 120px;
+            border-top: 3px solid #888;
+            margin-bottom: 2rem;
+        }
 
-    .tick {
-      position: absolute;
-      top: 0;
-      width: 2px;
-      height: 10px;
-      background-color: #666;
-    }
+        .tick {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 10px;
+            background-color: #666;
+        }
 
-    .tick-label {
-      position: absolute;
-      top: 12px;
-      font-size: 0.75rem;
-      color: #333;
-      transform: translateX(-50%);
-    }
+        .tick-label {
+            position: absolute;
+            top: 12px;
+            font-size: 0.75rem;
+            color: #333;
+            transform: translateX(-50%);
+        }
 
-    #plane {
-      position: absolute;
-      top: -45px;
-      width: 50px;
-      height: 50px;
-      pointer-events: none;
-      transition: left 1s ease;
-      z-index: 10;
-    }
+        #plane {
+            position: absolute;
+            top: -45px;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            transition: left 1s ease;
+            z-index: 10;
+            display: flex; /* Para centralizar o emoji */
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem; /* Tamanho do emoji */
+        }
 
-    #plane img {
-      width: 100%;
-      height: auto;
-    }
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
 
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
+        .route-btn {
+            padding: 0.75rem 1.2rem;
+            border: 2px solid #888;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            font-weight: bold;
+            text-align: center;
+        }
 
-    .route-btn {
-      padding: 0.75rem 1.2rem;
-      border: 2px solid #888;
-      border-radius: 10px;
-      cursor: pointer;
-      background-color: #f5f5f5;
-      font-weight: bold;
-      text-align: center;
-    }
+        .route-btn.selected {
+            background-color: #cce5ff;
+            border-color: #3399ff;
+        }
 
-    .route-btn.selected {
-      background-color: #cce5ff;
-      border-color: #3399ff;
-    }
+        #total {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
 
-    #total {
-      font-size: 1.25rem;
-      font-weight: bold;
-      margin-top: 0.5rem;
-    }
+        @media (max-width: 600px) {
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
 
-    @media (max-width: 600px) {
-      .buttons {
-        flex-direction: column;
-        align-items: center;
-      }
+            #rulerContainer {
+                height: 100px;
+            }
 
-      #rulerContainer {
-        height: 100px;
-      }
-
-      #plane {
-        top: -40px;
-        width: 40px;
-        height: 40px;
-      }
-    }
-  </style>
+            #plane {
+                top: -40px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem; /* Ajusta o tamanho do emoji no mobile */
+            }
+        }
+    </style>
 </head>
 <body>
-  <div id="rulerContainer">
-    <div id="plane">
-      <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
+    <div id="rulerContainer">
+        <div id="plane">
+            ✈️
+        </div>
+        <script>
+            const tickStep = 10000;
+            const maxKm = 50000;
+            const container = document.currentScript.parentElement;
+
+            for (let km = 0; km <= maxKm; km += tickStep) {
+                const tick = document.createElement("div");
+                tick.className = "tick";
+                tick.style.left = `${(km / maxKm) * 100}%`;
+
+                const label = document.createElement("div");
+                label.className = "tick-label";
+                label.style.left = `${(km / maxKm) * 100}%`;
+                label.textContent = `${km.toLocaleString()} km`;
+
+                container.appendChild(tick);
+                container.appendChild(label);
+            }
+        </script>
     </div>
-    <!-- Ticks da régua -->
+
+    <div class="buttons">
+        <button class="route-btn" data-distance="3600">IEM Katowice<br>3.600 km</button>
+        <button class="route-btn" data-distance="7800">PGL Cluj-Napoca<br>7.800 km</button>
+        <button class="route-btn" data-distance="6500">ESL Pro League S21<br>6.500 km</button>
+        <button class="route-btn" data-distance="39000">MRQ - IEM Melbourne + MESA<br>39.000 km</button>
+    </div>
+
+    <button id="selectAll" class="route-btn">Selecionar todas as rotas</button>
+    <div id="total">Total: 0 km</div>
+
     <script>
-      const tickStep = 10000;
-      const maxKm = 50000;
-      const container = document.currentScript.parentElement;
+        const distances = document.querySelectorAll('.route-btn[data-distance]');
+        const plane = document.getElementById('plane');
+        const totalDisplay = document.getElementById('total');
+        const selectAllBtn = document.getElementById('selectAll');
 
-      for (let km = 0; km <= maxKm; km += tickStep) {
-        const tick = document.createElement("div");
-        tick.className = "tick";
-        tick.style.left = `${(km / maxKm) * 100}%`;
+        const maxKm = 50000;
 
-        const label = document.createElement("div");
-        label.className = "tick-label";
-        label.style.left = `${(km / maxKm) * 100}%`;
-        label.textContent = `${km.toLocaleString()} km`;
+        function updateTotal() {
+            let sum = 0;
+            distances.forEach(btn => {
+                if (btn.classList.contains('selected')) {
+                    sum += parseInt(btn.dataset.distance, 10);
+                }
+            });
+            totalDisplay.textContent = `Total: ${sum.toLocaleString()} km`;
 
-        container.appendChild(tick);
-        container.appendChild(label);
-      }
-    </script>
-  </div>
-
-  <div class="buttons">
-    <button class="route-btn" data-distance="3600">IEM Katowice<br>3.600 km</button>
-    <button class="route-btn" data-distance="7800">PGL Cluj-Napoca<br>7.800 km</button>
-    <button class="route-btn" data-distance="6500">ESL Pro League S21<br>6.500 km</button>
-    <button class="route-btn" data-distance="39000">MRQ - IEM Melbourne + MESA<br>39.000 km</button>
-  </div>
-
-  <button id="selectAll" class="route-btn">Selecionar todas as rotas</button>
-  <div id="total">Total: 0 km</div>
-
-  <script>
-    const distances = document.querySelectorAll('.route-btn[data-distance]');
-    const plane = document.getElementById('plane');
-    const totalDisplay = document.getElementById('total');
-    const selectAllBtn = document.getElementById('selectAll');
-
-    const maxKm = 50000;
-
-    function updateTotal() {
-      let sum = 0;
-      distances.forEach(btn => {
-        if (btn.classList.contains('selected')) {
-          sum += parseInt(btn.dataset.distance, 10);
+            const rulerWidth = document.getElementById('rulerContainer').offsetWidth;
+            const leftPosition = (sum / maxKm) * rulerWidth;
+            const safeLeft = Math.min(Math.max(leftPosition, 10), rulerWidth - 60);
+            plane.style.left = `${safeLeft}px`;
         }
-      });
-      totalDisplay.textContent = `Total: ${sum.toLocaleString()} km`;
 
-      const rulerWidth = document.getElementById('rulerContainer').offsetWidth;
-      const leftPosition = (sum / maxKm) * rulerWidth;
-      const safeLeft = Math.min(Math.max(leftPosition, 10), rulerWidth - 60);
-      plane.style.left = `${safeLeft}px`;
-    }
+        distances.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('selected');
+                updateTotal();
+            });
+        });
 
-    distances.forEach(btn => {
-      btn.addEventListener('click', () => {
-        btn.classList.toggle('selected');
-        updateTotal();
-      });
-    });
+        selectAllBtn.addEventListener('click', () => {
+            const allSelected = [...distances].every(btn => btn.classList.contains('selected'));
+            distances.forEach(btn => {
+                btn.classList.toggle('selected', !allSelected);
+            });
+            updateTotal();
+        });
 
-    selectAllBtn.addEventListener('click', () => {
-      const allSelected = [...distances].every(btn => btn.classList.contains('selected'));
-      distances.forEach(btn => {
-        btn.classList.toggle('selected', !allSelected);
-      });
-      updateTotal();
-    });
-
-    // Inicializa
-    window.addEventListener('load', () => {
-      updateTotal();
-    });
-  </script>
+        // Inicializa
+        window.addEventListener('load', () => {
+            updateTotal();
+        });
+    </script>
 </body>
 </html>
