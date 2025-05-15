@@ -89,6 +89,7 @@
         max-height: 60vh;
         top: 20px;
         right: 20px;
+        bottom: 80px;
       }
     }
   </style>
@@ -100,7 +101,9 @@
 
   const map = L.map('map', {
     maxBounds: [[-90, -200], [90, 200]],
-    maxBoundsViscosity: 1.0
+    maxBoundsViscosity: 1.0,
+    minZoom: 3,
+    maxZoom: 18
   }).setView([50, 10], 4);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
