@@ -26,6 +26,7 @@
       z-index: 1000;
       transition: all 0.3s ease;
       width: 130px;
+      max-width: 90vw;
     }
     .dark-mode .legend {
       background: #2c2c2c;
@@ -72,6 +73,7 @@
       font-weight: bold;
       border: 1px solid gray;
       border-radius: 4px;
+      white-space: nowrap;
     }
     #menuButton {
       position: absolute;
@@ -82,15 +84,20 @@
       padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
-      z-index: 999;
+      z-index: 1100;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    @media (min-width: 768px) {
-      #menuButton { display: none; }
+      display: none;
     }
     @media (max-width: 767px) {
-      #menuButton { display: none; }
-      .legend { display: block !important; }
+      .legend {
+        width: 90vw !important;
+        max-height: 60vh;
+        top: 70px;
+        right: 5vw;
+      }
+      #menuButton {
+        display: block;
+      }
     }
   </style>
 </head>
@@ -101,8 +108,20 @@
   if (document.body.classList.contains('dark')) document.body.classList.add('dark-mode');
 
   const map = L.map('map').setView([50, 10], 4);
+
+  // Limitar zoom para evitar mostrar áreas cinza
+  const bounds = [
+    [10, -30],   // SW
+    [70, 40]    // NE
+  ];
+  map.setMaxBounds(bounds);
+  map.on('drag', () => {
+    map.panInsideBounds(bounds, { animate: false });
+  });
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
+    minZoom: 3,
     attribution: '© OpenStreetMap'
   }).addTo(map);
 
@@ -125,32 +144,37 @@
     { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "#0000ff", position: "5º-8º", date: "14 - 23 Fev" },
     { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "#00ff00", position: "12º-14º", date: "1 - 16 Mar" },
     { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "#ffa500", position: "13º-16º", date: "21 - 27 Abr" },
-    { name: "Austin Major MRQ", location: "frankfurt", prize: null, color: "#800080", position: "9º-11º", date: "Abril", extraInfo: "Online jogado em Frankfurt" },
+    { name: "Austin Major MRQ", location: "frankfurt", prize: null, color: "#800080", position: "9º-11º", date: "Abril" },
     { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "#8B4513", position: "7º-8º", date: "30 Abr - 4 Mai" }
   ];
 
-  const bounds = [];
+  // Cria pane específico para rotas, para controlar z-index
+  map.createPane('routesPane');
+  map.getPane('routesPane').style.zIndex = 400; // baixo, para ficar atrás dos markers
+
+  // Marcadores dos torneios no pane padrão 'markerPane' (zIndex padrão mais alto)
+  const tournamentMarkers = [];
+
   tournaments.forEach(t => {
     const coord = cityCoords[t.location];
     if (!coord) return;
-    bounds.push(coord);
 
     const hasPrize = !!t.prize;
     const size = hasPrize ? 10 : 6;
+
     const marker = L.circleMarker(coord, {
       radius: size,
       color: t.color,
       fillColor: t.color,
       fillOpacity: hasPrize ? 0.9 : 0,
       weight: 2,
-      pane: 'markerPane' // Para garantir que fica acima das rotas
+      pane: 'markerPane' // garante que fique acima das rotas
     }).addTo(map);
 
     marker.bindPopup(
       `<b>${t.name}</b><br>` +
       `<b>Data:</b> ${t.date}<br>` +
       `<b>Localização:</b> ${t.location.charAt(0).toUpperCase() + t.location.slice(1)}<br>` +
-      (t.extraInfo ? `<b>Info:</b> ${t.extraInfo}<br>` : '') +
       `<b>Posição:</b> ${t.position}<br>` +
       `<b>Prémio:</b> ${t.prize || "Sem prémio"}`
     );
@@ -158,8 +182,11 @@
     marker.bindTooltip(t.name, {
       permanent: true,
       direction: 'top',
-      className: 'label-tooltip'
+      className: 'label-tooltip',
+      pane: 'markerPane' // tooltip também acima
     });
+
+    tournamentMarkers.push(marker);
   });
 
   const routeDefinitions = [
@@ -179,7 +206,7 @@
       dashArray: '4, 6',
       opacity: 0.4,
       interactive: true,
-      pane: 'overlayPane'
+      pane: 'routesPane' // coloca rotas no pane inferior
     }).bindPopup(
       `<b>${route.name}</b><br>` +
       `<b>Distância:</b> ${route.distance}<br>` +
@@ -254,11 +281,6 @@
   });
 
   updateLegendSize();
-
-  // Ajusta o zoom para mostrar todos os pontos
-  if (bounds.length > 0) {
-    map.fitBounds(bounds, { padding: [50, 50] });
-  }
 </script>
 </body>
 </html>
