@@ -25,7 +25,7 @@
       overflow-x: hidden;
       z-index: 1000;
       transition: all 0.3s ease;
-      width: 280px;
+      width: fit-content;
       max-width: 90vw;
     }
 
@@ -52,6 +52,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      width: 100%;
     }
 
     .collapsible::after {
@@ -85,17 +86,14 @@
 
     @media (max-width: 767px) {
       .legend {
-        width: 45vw !important;
-        max-width: 45vw;
-        padding: 10px 12px;
+        padding: 8px 10px;
         max-height: 60vh;
-        top: 20px;
-        right: 20px;
-        bottom: auto;
-        overflow-y: auto;
-        overflow-x: hidden;
-        white-space: normal;
-        display: block;
+        width: fit-content;
+        max-width: 90vw;
+      }
+
+      .legend.expanded {
+        width: 75vw;
       }
     }
   </style>
@@ -238,7 +236,7 @@
     const legend = document.querySelector('.legend');
     const contents = legend.querySelectorAll('.content');
     const allCollapsed = Array.from(contents).every(c => !c.classList.contains('show'));
-    legend.style.width = allCollapsed ? '130px' : '280px';
+    legend.classList.toggle('expanded', !allCollapsed);
   }
 
   document.querySelectorAll('.collapsible').forEach(btn => {
