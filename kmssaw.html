@@ -48,6 +48,8 @@
       margin: 80px auto 10px;
       border-top: 2px solid var(--ruler-border);
       max-width: 100%;
+      min-width: 600px;
+      overflow-x: auto;
       user-select: none;
     }
 
@@ -121,6 +123,36 @@
       font-size: 1rem;
       font-weight: 500;
       color: var(--tick-color);
+    }
+
+    @media (max-width: 600px) {
+      .ruler {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 20px;
+        height: 100px;
+      }
+
+      .tick,
+      .tick-label {
+        font-size: 10px;
+      }
+
+      .plane {
+        top: -50px;
+        width: 30px;
+        height: 30px;
+      }
+
+      .container {
+        padding: 0 10px;
+      }
+
+      .ruler::after {
+        content: '';
+        display: block;
+        width: 650px;
+      }
     }
   </style>
 </head>
