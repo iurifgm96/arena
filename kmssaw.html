@@ -85,9 +85,11 @@
         user-select: none;
         color: #fff;
         font-size: 0.95rem;
-        flex: 1 1 200px; /* para tentar ajustar a largura sem overflow */
         box-sizing: border-box;
-        white-space: normal; /* para quebrar linhas no texto */
+        white-space: normal;
+        width: auto;          /* largura automática */
+        min-width: 140px;     /* largura mínima */
+        max-width: 220px;     /* largura máxima */
     }
 
     .route-btn.selected {
@@ -153,12 +155,14 @@
         .route-btn, #selectAll {
             font-size: 0.75rem;
             padding: 0.4rem 0.8rem;
-            width: 100%;
+            width: 100%;       /* botões em mobile ocupam toda largura */
             box-sizing: border-box;
             background-color: #444;
             color: #f5f5f5;
             border-color: #bbb;
             white-space: normal;
+            min-width: auto;   /* reset min-width no mobile */
+            max-width: none;   /* reset max-width no mobile */
         }
 
         #total {
@@ -267,4 +271,4 @@
         });
     </script>
 </body>
-</html
+</html>
