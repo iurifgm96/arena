@@ -15,7 +15,7 @@
       --border-radius: 8px;
       --btn-bg-hover: #f0f0f0;
       --btn-border-color: #999;
-      --btn-selected-bg: #666;
+      --btn-selected-bg: #444;
       --btn-selected-text: #fff;
       --ruler-border: #ccc;
       --tick-color: #888;
@@ -38,14 +38,14 @@
     .container {
       max-width: 900px;
       margin: 30px auto 0;
-      padding: 0 20px;
+      padding: 0 20px 20px;
       text-align: center;
     }
 
     .ruler {
       position: relative;
       height: 120px;
-      margin: 80px auto 10px;
+      margin: 100px auto 10px;
       border-top: 2px solid var(--ruler-border);
       max-width: 100%;
       min-width: 600px;
@@ -127,31 +127,38 @@
 
     @media (max-width: 600px) {
       .ruler {
-        overflow-x: auto;
-        white-space: nowrap;
-        padding-bottom: 20px;
-        height: 100px;
+        display: none;
       }
 
-      .tick,
-      .tick-label {
-        font-size: 10px;
+      .mobile-progress {
+        display: block;
+        position: relative;
+        width: 100%;
+        height: 8px;
+        background-color: #ddd;
+        margin: 80px auto 10px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .mobile-progress .progress-bar {
+        position: absolute;
+        height: 100%;
+        background-color: #444;
+        width: 0;
+        transition: width 1s ease;
       }
 
       .plane {
-        top: -50px;
+        top: -30px;
+        left: 0;
         width: 30px;
         height: 30px;
       }
 
-      .container {
-        padding: 0 10px;
-      }
-
-      .ruler::after {
-        content: '';
-        display: block;
-        width: 650px;
+      .tick,
+      .tick-label {
+        display: none;
       }
     }
   </style>
@@ -160,6 +167,13 @@
   <div class="container">
     <div class="ruler" id="ruler">
       <div class="plane" id="plane">
+        <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo" />
+      </div>
+    </div>
+
+    <div class="mobile-progress" id="mobileProgress" style="display: none">
+      <div class="progress-bar" id="progressBar"></div>
+      <div class="plane" id="planeMobile" style="top: -40px;">
         <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo" />
       </div>
     </div>
@@ -185,6 +199,10 @@
     const plane = document.getElementById('plane');
     const ruler = document.getElementById('ruler');
     const maxKm = 58000;
+
+    const mobileProgress = document.getElementById('mobileProgress');
+    const progressBar = document.getElementById('progressBar');
+    const planeMobile = document.getElementById('planeMobile');
 
     const step = 5000;
     for (let i = 0; i <= maxKm; i += step) {
@@ -212,6 +230,8 @@
       totalEl.textContent = `Total: ${sum.toLocaleString()} km`;
       const percent = sum > 0 ? Math.min(sum / maxKm, 1) * 100 : 0;
       plane.style.left = `calc(${percent}% - 20px)`;
+      progressBar.style.width = `${percent}%`;
+      planeMobile.style.left = `calc(${percent}% - 15px)`;
     }
 
     buttons.forEach((btn, i) => {
@@ -238,7 +258,22 @@
       update();
     });
 
-    update();
+    function checkMobileView() {
+      const isMobile = window.innerWidth <= 600;
+      if (isMobile) {
+        ruler.style.display = 'none';
+        mobileProgress.style.display = 'block';
+      } else {
+        ruler.style.display = 'block';
+        mobileProgress.style.display = 'none';
+      }
+    }
+
+    window.addEventListener('resize', checkMobileView);
+    window.addEventListener('load', () => {
+      checkMobileView();
+      update();
+    });
   </script>
 </body>
 </html>
