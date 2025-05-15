@@ -89,8 +89,8 @@
       #menuButton { display: none; }
     }
     @media (max-width: 767px) {
-      .legend { display: none; }
-      .legend.show { display: block; }
+      #menuButton { display: none; } /* esconder botão em mobile */
+      .legend { display: block !important; } /* mostrar legenda */
     }
   </style>
 </head>
@@ -199,7 +199,7 @@
     const div = L.DomUtil.create('div', 'legend');
     div.innerHTML = `
       <button class="collapsible">Torneios</button>
-      <div class="content show">
+      <div class="content">
         ${tournaments.map(t => `
           <div><span class="circle-icon" style="background:${t.prize ? t.color : 'transparent'}; border: 2px solid ${t.color};"></span>${t.name}</div>
         `).join('')}
@@ -207,7 +207,7 @@
         <div><span class="circle-icon" style="background:transparent; border: 2px solid #000;"></span> Sem prémio</div>
       </div>
       <button class="collapsible">Rotas</button>
-      <div class="content show">
+      <div class="content">
         ${routeDefinitions.map(r => `
           <div>
             <label><input type="checkbox" checked onchange="toggleRoute('${r.name}')"> ${r.name} (${r.distance})</label>
@@ -229,26 +229,28 @@
   function updateLegendSize() {
     const legend = document.querySelector('.legend');
     const contents = legend.querySelectorAll('.content');
-
     const allCollapsed = Array.from(contents).every(c => !c.classList.contains('show'));
-
     if (allCollapsed) {
-      legend.style.width = '130px'; // largura reduzida quando colapsado
+      legend.style.width = '130px';
     } else {
-      legend.style.width = '280px'; // largura padrão
+      legend.style.width = '280px';
     }
   }
 
   document.querySelectorAll('.collapsible').forEach(btn => {
+    const content = btn.nextElementSibling;
+    if (window.innerWidth < 768) {
+      content.classList.remove('show');
+    } else {
+      content.classList.add('show');
+    }
     btn.addEventListener('click', () => {
-      const content = btn.nextElementSibling;
       content.classList.toggle('show');
       btn.classList.toggle('active');
       updateLegendSize();
     });
   });
 
-  // chamada inicial para definir largura correta
   updateLegendSize();
 </script>
 </body>
