@@ -83,19 +83,18 @@
       border-radius: 4px;
     }
 
-    /* CORREÇÃO SÓ PARA MOBILE */
     @media (max-width: 767px) {
       .legend {
-        width: 75vw !important;
+        width: 55vw !important;  /* largura reduzida para mobile */
         max-height: 60vh;
         top: 20px;
         right: 20px;
-        bottom: auto; /* evita conflito com botões zoom */
-        max-width: 75vw;
+        bottom: auto;
+        max-width: 55vw;
         overflow-y: auto;
         overflow-x: hidden;
-        white-space: normal; /* evita barra horizontal */
-        display: block; /* menu vertical */
+        white-space: normal;
+        display: block;
       }
     }
   </style>
