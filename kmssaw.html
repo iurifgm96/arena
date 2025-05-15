@@ -11,7 +11,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        background-color: #fff;
+        /* background-color: #fff; */ /* removido para fundo transparente */
     }
 
     #rulerContainer {
@@ -127,14 +127,12 @@
                 tick.className = "tick";
                 tick.style.left = `${(km / tickMaxKm) * 100}%`;
 
-                // Highlight ticks every 5k
                 if (km % highlightStep === 0) {
                     tick.classList.add('highlight');
                 }
 
                 container.appendChild(tick);
 
-                // Labels every 10k
                 if (km % labelTickStep === 0) {
                     const label = document.createElement("div");
                     label.className = "tick-label";
@@ -177,13 +175,10 @@
             const planeWidth = plane.offsetWidth;
             const leftPosition = (sum / maxKm) * rulerWidth;
 
-            // Ajusta para a ponta do avião tocar no ponto
             let desiredLeft = leftPosition - planeWidth;
 
-            // Se total for 0, começa um pouco atrás da régua (pos negativa)
             if (sum === 0) desiredLeft = -planeWidth;
 
-            // Garante que o avião não ultrapasse os limites da régua (lado direito)
             const safeLeft = Math.min(Math.max(desiredLeft, -planeWidth), rulerWidth - planeWidth);
 
             plane.style.left = `${safeLeft}px`;
