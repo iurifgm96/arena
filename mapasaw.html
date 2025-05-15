@@ -26,7 +26,6 @@
       z-index: 1000;
       transition: all 0.3s ease;
       width: 130px;
-      word-break: break-word;
     }
     .dark-mode .legend {
       background: #2c2c2c;
@@ -91,7 +90,7 @@
     }
     @media (max-width: 767px) {
       #menuButton { display: none; }
-      .legend { display: block !important; width: 180px !important; }
+      .legend { display: block !important; }
     }
   </style>
 </head>
@@ -126,13 +125,11 @@
     { name: "PGL Cluj-Napoca 2025", location: "cluj", prize: "$62500", color: "#0000ff", position: "5º-8º", date: "14 - 23 Fev" },
     { name: "ESL Pro League S21", location: "stockholm", prize: "$10500", color: "#00ff00", position: "12º-14º", date: "1 - 16 Mar" },
     { name: "IEM Melbourne 2025", location: "melbourne", prize: "$4000", color: "#ffa500", position: "13º-16º", date: "21 - 27 Abr" },
-    { name: "MRQ (online jogado em Frankfurt)", location: "frankfurt", prize: null, color: "#800080", position: "9º-11º", date: "Abril" },
+    { name: "Austin Major MRQ", location: "frankfurt", prize: null, color: "#800080", position: "9º-11º", date: "Abril", extraInfo: "Online jogado em Frankfurt" },
     { name: "MESA Nomadic Masters", location: "ulaanbaatar", prize: null, color: "#8B4513", position: "7º-8º", date: "30 Abr - 4 Mai" }
   ];
 
   const bounds = [];
-  const tournamentMarkers = [];
-
   tournaments.forEach(t => {
     const coord = cityCoords[t.location];
     if (!coord) return;
@@ -146,13 +143,14 @@
       fillColor: t.color,
       fillOpacity: hasPrize ? 0.9 : 0,
       weight: 2,
-      pane: 'markerPane' // garante que estão acima das rotas
+      pane: 'markerPane' // Para garantir que fica acima das rotas
     }).addTo(map);
 
     marker.bindPopup(
       `<b>${t.name}</b><br>` +
       `<b>Data:</b> ${t.date}<br>` +
       `<b>Localização:</b> ${t.location.charAt(0).toUpperCase() + t.location.slice(1)}<br>` +
+      (t.extraInfo ? `<b>Info:</b> ${t.extraInfo}<br>` : '') +
       `<b>Posição:</b> ${t.position}<br>` +
       `<b>Prémio:</b> ${t.prize || "Sem prémio"}`
     );
@@ -162,14 +160,13 @@
       direction: 'top',
       className: 'label-tooltip'
     });
-    tournamentMarkers.push(marker);
   });
 
   const routeDefinitions = [
     { name: "IEM Katowice", points: ["porto", "krakow", "porto"], distance: "3.600 km" },
     { name: "PGL Cluj-Napoca", points: ["porto", "madrid", "bucharest", "cluj", "bucharest", "madrid", "porto"], distance: "7.800 km" },
     { name: "ESL Pro League S21", points: ["porto", "frankfurt", "stockholm", "porto"], distance: "6.500 km" },
-    { name: "IEM Melbourne + MESA Nomadic Masters", points: ["porto", "frankfurt", "dubai", "melbourne", "beijing", "ulaanbaatar", "frankfurt", "porto"], distance: "39.000 km" }
+    { name: "MRQ + IEM Melbourne + MESA Nomadic Masters", points: ["porto", "frankfurt", "dubai", "melbourne", "beijing", "ulaanbaatar", "frankfurt", "porto"], distance: "39.000 km" }
   ];
 
   const routeLayers = {};
@@ -182,7 +179,7 @@
       dashArray: '4, 6',
       opacity: 0.4,
       interactive: true,
-      pane: 'overlayPane' // rota atrás dos marcadores
+      pane: 'overlayPane'
     }).bindPopup(
       `<b>${route.name}</b><br>` +
       `<b>Distância:</b> ${route.distance}<br>` +
@@ -200,11 +197,6 @@
     } else {
       layer.addTo(map);
     }
-  }
-
-  // Ajustar zoom para mostrar todos os pontos no mapa
-  if (bounds.length) {
-    map.fitBounds(bounds, { padding: [50, 50] });
   }
 
   const legendControl = L.control({ position: 'topright' });
@@ -262,6 +254,11 @@
   });
 
   updateLegendSize();
+
+  // Ajusta o zoom para mostrar todos os pontos
+  if (bounds.length > 0) {
+    map.fitBounds(bounds, { padding: [50, 50] });
+  }
 </script>
 </body>
 </html>
