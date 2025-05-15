@@ -13,16 +13,11 @@
       --card-bg-light: #ffffff;
       --card-bg-dark: #1e1e1e;
       --border-radius: 8px;
-      --btn-bg-hover: #f0f0f0;
-      --btn-border-color: #ccc;
-      --btn-selected-text: #fff;
+      --btn-bg-hover: #f5f5f5;
+      --btn-border-color: #aaa;
+      --btn-selected-bg: #333;
       --ruler-border: #ccc;
       --tick-color: #888;
-
-      --color-katowice: #e74c3c;
-      --color-cluj: #3498db;
-      --color-esl: #27ae60;
-      --color-melbourne: #9b59b6;
     }
 
     body {
@@ -30,7 +25,6 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: var(--bg-light);
       color: var(--text-light);
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -50,7 +44,7 @@
     .ruler {
       position: relative;
       height: 120px;
-      margin: 60px auto 10px;
+      margin: 90px auto 10px;
       border-top: 2px solid var(--ruler-border);
       max-width: 100%;
       user-select: none;
@@ -91,9 +85,9 @@
     .events {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
-      margin: 10px 0;
+      margin: 6px 0 0;
     }
 
     .btn {
@@ -101,12 +95,12 @@
       border-radius: var(--border-radius);
       background-color: transparent;
       border: 2px solid var(--btn-border-color);
-      color: var(--text-light);
-      padding: 6px 10px;
+      color: inherit;
+      padding: 5px 10px;
       font-size: 0.85rem;
       font-weight: 500;
       user-select: none;
-      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      transition: background-color 0.3s ease, color 0.3s ease;
       text-align: center;
     }
 
@@ -114,28 +108,13 @@
       background-color: var(--btn-bg-hover);
     }
 
-    .btn.selected:nth-child(1) {
-      border-color: var(--color-katowice);
-    }
-
-    .btn.selected:nth-child(2) {
-      border-color: var(--color-cluj);
-    }
-
-    .btn.selected:nth-child(3) {
-      border-color: var(--color-esl);
-    }
-
-    .btn.selected:nth-child(4) {
-      border-color: var(--color-melbourne);
-    }
-
-    #selectAllBtn.selected {
-      background-color: #ddd;
+    .btn.selected {
+      background-color: var(--btn-selected-bg);
+      color: #fff;
     }
 
     .summary {
-      margin-top: 10px;
+      margin-top: 12px;
       font-size: 1rem;
       font-weight: 500;
       color: var(--tick-color);
@@ -217,11 +196,9 @@
       if (selected.size === buttons.length) {
         selected.clear();
         buttons.forEach(btn => btn.classList.remove('selected'));
-        selectAllBtn.classList.remove('selected');
       } else {
         selected = new Set(Array.from(buttons.keys()));
         buttons.forEach(btn => btn.classList.add('selected'));
-        selectAllBtn.classList.add('selected');
       }
       update();
     });
