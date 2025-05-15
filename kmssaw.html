@@ -1,138 +1,159 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Distâncias SAW</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 2rem;
-            display: flex;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Distâncias SAW</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #fff;
+    }
+
+    #rulerContainer {
+        position: relative;
+        width: 90%;
+        max-width: 1000px;
+        height: 80px;
+        border-top: 3px solid #888;
+        margin-bottom: 2rem;
+    }
+
+    .tick {
+        position: absolute;
+        top: 0;
+        width: 2px;
+        background-color: #666;
+        height: 7px;
+        transition: background-color 0.3s ease;
+    }
+
+    .tick.highlight {
+        height: 14px;
+        background-color: #3399ff;
+    }
+
+    .tick-label {
+        position: absolute;
+        top: 18px;
+        font-size: 0.75rem;
+        color: #333;
+        transform: translateX(-50%);
+        user-select: none;
+    }
+
+    #plane {
+        position: absolute;
+        top: -30px;
+        width: 30px;
+        height: 30px;
+        pointer-events: none;
+        transition: left 1s ease;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        color: #666666;
+        user-select: none;
+        left: -30px; /* começa ligeiramente antes do 0 */
+    }
+
+    .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .route-btn {
+        padding: 0.75rem 1.2rem;
+        border: 2px solid #888;
+        border-radius: 10px;
+        cursor: pointer;
+        background-color: #f5f5f5;
+        font-weight: bold;
+        text-align: center;
+        user-select: none;
+    }
+
+    .route-btn.selected {
+        background-color: #cce5ff;
+        border-color: #3399ff;
+    }
+
+    #total {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+        .buttons {
             flex-direction: column;
             align-items: center;
-            background-color: #fff;
         }
 
         #rulerContainer {
-            position: relative;
-            width: 90%;
-            max-width: 1000px;
-            height: 120px;
-            border-top: 3px solid #888;
-            margin-bottom: 2rem;
-        }
-
-        .tick {
-            position: absolute;
-            top: 0;
-            width: 2px;
-            height: 10px;
-            background-color: #666;
-        }
-
-        .tick-label {
-            position: absolute;
-            top: 12px;
-            font-size: 0.75rem;
-            color: #333;
-            transform: translateX(-50%);
+            height: 70px;
         }
 
         #plane {
-            position: absolute;
-            top: -45px;
-            width: 50px;
-            height: 50px;
-            pointer-events: none;
-            transition: left 1s ease;
-            z-index: 10;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
+            top: -25px;
+            width: 25px;
+            height: 25px;
+            font-size: 1.5rem;
         }
-
-        .buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .route-btn {
-            padding: 0.75rem 1.2rem;
-            border: 2px solid #888;
-            border-radius: 10px;
-            cursor: pointer;
-            background-color: #f5f5f5;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .route-btn.selected {
-            background-color: #cce5ff;
-            border-color: #3399ff;
-        }
-
-        #total {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-top: 0.5rem;
-        }
-
-        @media (max-width: 600px) {
-            .buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            #rulerContainer {
-                height: 100px;
-            }
-
-            #plane {
-                top: -40px;
-                width: 40px;
-                height: 40px;
-                font-size: 1.5rem;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <div id="rulerContainer">
-        <div id="plane">✈️</div>
+        <div id="plane">✈</div>
         <script>
-            const tickStep = 10000;
-            const tickMaxKm = 50000;
             const container = document.currentScript.parentElement;
+            const tickMaxKm = 60000;
+            const minorTickStep = 2500;
+            const labelTickStep = 10000;
+            const highlightStep = 5000;
 
-            for (let km = 0; km <= tickMaxKm; km += tickStep) {
+            for (let km = 0; km <= tickMaxKm; km += minorTickStep) {
                 const tick = document.createElement("div");
                 tick.className = "tick";
                 tick.style.left = `${(km / tickMaxKm) * 100}%`;
 
-                const label = document.createElement("div");
-                label.className = "tick-label";
-                label.style.left = `${(km / tickMaxKm) * 100}%`;
-                label.textContent = `${km.toLocaleString()} km`;
+                // Highlight ticks every 5k
+                if (km % highlightStep === 0) {
+                    tick.classList.add('highlight');
+                }
 
                 container.appendChild(tick);
-                container.appendChild(label);
+
+                // Labels every 10k
+                if (km % labelTickStep === 0) {
+                    const label = document.createElement("div");
+                    label.className = "tick-label";
+                    label.style.left = `${(km / tickMaxKm) * 100}%`;
+                    label.textContent = `${km.toLocaleString()} km`;
+                    container.appendChild(label);
+                }
             }
         </script>
     </div>
 
     <div class="buttons">
-        <button class="route-btn" data-distance="3600">IEM Katowice<br>3.600 km</button>
-        <button class="route-btn" data-distance="7800">PGL Cluj-Napoca<br>7.800 km</button>
-        <button class="route-btn" data-distance="6500">ESL Pro League S21<br>6.500 km</button>
-        <button class="route-btn" data-distance="39000">MRQ - IEM Melbourne + MESA<br>39.000 km</button>
+        <button type="button" class="route-btn" data-distance="3600">IEM Katowice<br>3.600 km</button>
+        <button type="button" class="route-btn" data-distance="7800">PGL Cluj-Napoca<br>7.800 km</button>
+        <button type="button" class="route-btn" data-distance="6500">ESL Pro League S21<br>6.500 km</button>
+        <button type="button" class="route-btn" data-distance="39000">MRQ - IEM Melbourne + MESA<br>39.000 km</button>
     </div>
 
-    <button id="selectAll" class="route-btn">Selecionar todas as rotas</button>
+    <button id="selectAll" type="button" class="route-btn">Selecionar todas as rotas</button>
     <div id="total">Total: 0 km</div>
 
     <script>
@@ -140,7 +161,7 @@
         const plane = document.getElementById('plane');
         const totalDisplay = document.getElementById('total');
         const selectAllBtn = document.getElementById('selectAll');
-        const maxKm = 50000;
+        const maxKm = 60000;
 
         function updateTotal() {
             let sum = 0;
@@ -155,15 +176,24 @@
             const rulerWidth = ruler.offsetWidth;
             const planeWidth = plane.offsetWidth;
             const leftPosition = (sum / maxKm) * rulerWidth;
-            const safeLeft = Math.min(Math.max(leftPosition, 0), rulerWidth - planeWidth);
+
+            // Ajusta para a ponta do avião tocar no ponto
+            let desiredLeft = leftPosition - planeWidth;
+
+            // Se total for 0, começa um pouco atrás da régua (pos negativa)
+            if (sum === 0) desiredLeft = -planeWidth;
+
+            // Garante que o avião não ultrapasse os limites da régua (lado direito)
+            const safeLeft = Math.min(Math.max(desiredLeft, -planeWidth), rulerWidth - planeWidth);
+
             plane.style.left = `${safeLeft}px`;
 
-            // Atualiza texto do botão de selecionar tudo
             const allSelected = distanceButtons.every(btn => btn.classList.contains('selected'));
             selectAllBtn.textContent = allSelected ? 'Desmarcar todas as rotas' : 'Selecionar todas as rotas';
         }
 
-        function handleRouteButtonClick() {
+        function handleRouteButtonClick(event) {
+            event.preventDefault();
             this.classList.toggle('selected');
             updateTotal();
         }
@@ -172,7 +202,8 @@
             btn.addEventListener('click', handleRouteButtonClick);
         });
 
-        selectAllBtn.addEventListener('click', () => {
+        selectAllBtn.addEventListener('click', event => {
+            event.preventDefault();
             const allSelected = distanceButtons.every(btn => btn.classList.contains('selected'));
             distanceButtons.forEach(btn => {
                 btn.classList.toggle('selected', !allSelected);
