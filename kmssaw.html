@@ -13,9 +13,10 @@
       --card-bg-light: #ffffff;
       --card-bg-dark: #1e1e1e;
       --border-radius: 8px;
-      --btn-bg-hover: #f5f5f5;
-      --btn-border-color: #aaa;
-      --btn-selected-bg: #333;
+      --btn-bg-hover: #f0f0f0;
+      --btn-border-color: #999;
+      --btn-selected-bg: #666;
+      --btn-selected-text: #fff;
       --ruler-border: #ccc;
       --tick-color: #888;
     }
@@ -44,7 +45,7 @@
     .ruler {
       position: relative;
       height: 120px;
-      margin: 90px auto 10px;
+      margin: 80px auto 10px;
       border-top: 2px solid var(--ruler-border);
       max-width: 100%;
       user-select: none;
@@ -85,9 +86,9 @@
     .events {
       display: flex;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin: 6px 0 0;
+      margin: 8px 0 0;
     }
 
     .btn {
@@ -96,12 +97,13 @@
       background-color: transparent;
       border: 2px solid var(--btn-border-color);
       color: inherit;
-      padding: 5px 10px;
+      padding: 6px 10px;
       font-size: 0.85rem;
       font-weight: 500;
       user-select: none;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
       text-align: center;
+      min-width: 140px;
     }
 
     .btn:hover {
@@ -110,7 +112,8 @@
 
     .btn.selected {
       background-color: var(--btn-selected-bg);
-      color: #fff;
+      color: var(--btn-selected-text);
+      border-color: var(--btn-selected-bg);
     }
 
     .summary {
@@ -125,7 +128,7 @@
   <div class="container">
     <div class="ruler" id="ruler">
       <div class="plane" id="plane">
-        <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo">
+        <img src="https://ggscore.com/media/logo/t45118.png?260" alt="SAW Logo" />
       </div>
     </div>
 
