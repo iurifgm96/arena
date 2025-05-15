@@ -2,68 +2,48 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Viagens dos SAW - Quilómetros Percorridos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Distâncias SAW</title>
   <style>
-    :root {
-      --ruler-border: #ccc;
-      --tick-color: #888;
-    }
-
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: transparent;
-      color: #333;
-      text-align: center;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 60px auto;
-      padding: 0 20px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #fff;
     }
 
     #rulerContainer {
       position: relative;
-      max-width: 100%;
-      min-width: 600px;
-      height: 140px;
-      margin: 50px auto 20px;
-      border-top: 2px solid var(--ruler-border);
-      overflow-x: auto;
-      padding: 0 40px;
-    }
-
-    #ruler {
-      position: relative;
-      height: 100%;
-      min-width: 1200px;
+      width: 90%;
+      max-width: 1000px;
+      height: 120px;
+      border-top: 3px solid #888;
+      margin-bottom: 2rem;
     }
 
     .tick {
       position: absolute;
-      top: -10px;
+      top: 0;
       width: 2px;
-      height: 20px;
-      background: var(--tick-color);
+      height: 10px;
+      background-color: #666;
     }
 
     .tick-label {
       position: absolute;
-      top: 22px;
-      font-size: 12px;
-      color: var(--tick-color);
-      white-space: nowrap;
-      user-select: none;
+      top: 12px;
+      font-size: 0.75rem;
+      color: #333;
       transform: translateX(-50%);
     }
 
     #plane {
       position: absolute;
-      top: -70px;
-      width: 40px;
-      height: 40px;
+      top: -45px;
+      width: 50px;
+      height: 50px;
       pointer-events: none;
       transition: left 1s ease;
       z-index: 10;
@@ -71,199 +51,135 @@
 
     #plane img {
       width: 100%;
-      height: 100%;
-      display: block;
+      height: auto;
     }
 
-    #mobileProgress {
-      display: none;
-      position: relative;
-      width: 8px;
-      height: 250px;
-      background-color: #ddd;
-      margin: 40px auto;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    #progressBar {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      background-color: #444;
-      height: 0;
-      transition: height 1s ease;
-    }
-
-    #planeMobile {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      left: -40px;
-      transition: bottom 1s ease;
-    }
-
-    #planeMobile img {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .events {
+    .buttons {
       display: flex;
-      justify-content: center;
-      gap: 10px;
       flex-wrap: wrap;
-      margin: 10px 0 0;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
 
-    button.btn {
+    .route-btn {
+      padding: 0.75rem 1.2rem;
+      border: 2px solid #888;
+      border-radius: 10px;
       cursor: pointer;
-      border-radius: 8px;
-      background-color: transparent;
-      border: 2px solid #999;
-      color: inherit;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      user-select: none;
-      min-width: 140px;
-      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      background-color: #f5f5f5;
+      font-weight: bold;
+      text-align: center;
     }
 
-    button.btn:hover {
-      background-color: #eee;
+    .route-btn.selected {
+      background-color: #cce5ff;
+      border-color: #3399ff;
     }
 
-    button.btn.selected {
-      background-color: #666;
-      color: white;
-      border-color: #666;
-    }
-
-    #summary {
-      margin-top: 15px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: #666;
+    #total {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-top: 0.5rem;
     }
 
     @media (max-width: 600px) {
-      #rulerContainer {
-        display: none;
+      .buttons {
+        flex-direction: column;
+        align-items: center;
       }
-      #mobileProgress {
-        display: block;
+
+      #rulerContainer {
+        height: 100px;
+      }
+
+      #plane {
+        top: -40px;
+        width: 40px;
+        height: 40px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Desktop -->
-    <div id="rulerContainer">
-      <div id="plane" style="left: 0;">
-        <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
-      </div>
-      <div id="ruler"></div>
+  <div id="rulerContainer">
+    <div id="plane">
+      <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
     </div>
+    <!-- Ticks da régua -->
+    <script>
+      const tickStep = 10000;
+      const maxKm = 50000;
+      const container = document.currentScript.parentElement;
 
-    <!-- Mobile -->
-    <div id="mobileProgress">
-      <div id="progressBar"></div>
-      <div id="planeMobile" style="bottom: 0;">
-        <img src="https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/SAW_%28Portuguese_Team%29logo_square.png/revision/latest/scale-to-width-down/220?cb=20231108204631" alt="SAW Logo" />
-      </div>
-    </div>
+      for (let km = 0; km <= maxKm; km += tickStep) {
+        const tick = document.createElement("div");
+        tick.className = "tick";
+        tick.style.left = `${(km / maxKm) * 100}%`;
 
-    <!-- Botões -->
-    <div class="events" id="buttons">
-      <button class="btn" data-km="3600">IEM Katowice<br><strong>3.600 km</strong></button>
-      <button class="btn" data-km="7800">PGL Cluj-Napoca<br><strong>7.800 km</strong></button>
-      <button class="btn" data-km="6500">ESL Pro League S21<br><strong>6.500 km</strong></button>
-      <button class="btn" data-km="39000">MRQ - IEM Melbourne + MESA<br><strong>39.000 km</strong></button>
-    </div>
+        const label = document.createElement("div");
+        label.className = "tick-label";
+        label.style.left = `${(km / maxKm) * 100}%`;
+        label.textContent = `${km.toLocaleString()} km`;
 
-    <div class="events">
-      <button class="btn" id="selectAllBtn">Selecionar todas as rotas</button>
-    </div>
-
-    <div id="summary">Total: 0 km</div>
+        container.appendChild(tick);
+        container.appendChild(label);
+      }
+    </script>
   </div>
 
+  <div class="buttons">
+    <button class="route-btn" data-distance="3600">IEM Katowice<br>3.600 km</button>
+    <button class="route-btn" data-distance="7800">PGL Cluj-Napoca<br>7.800 km</button>
+    <button class="route-btn" data-distance="6500">ESL Pro League S21<br>6.500 km</button>
+    <button class="route-btn" data-distance="39000">MRQ - IEM Melbourne + MESA<br>39.000 km</button>
+  </div>
+
+  <button id="selectAll" class="route-btn">Selecionar todas as rotas</button>
+  <div id="total">Total: 0 km</div>
+
   <script>
-    const maxKm = 58000;
-    const ruler = document.getElementById('ruler');
+    const distances = document.querySelectorAll('.route-btn[data-distance]');
     const plane = document.getElementById('plane');
-    const buttons = document.querySelectorAll('#buttons .btn');
-    const selectAllBtn = document.getElementById('selectAllBtn');
-    const totalEl = document.getElementById('summary');
-    const progressBar = document.getElementById('progressBar');
-    const planeMobile = document.getElementById('planeMobile');
+    const totalDisplay = document.getElementById('total');
+    const selectAllBtn = document.getElementById('selectAll');
 
-    // Definir largura da régua em px
-    ruler.style.width = maxKm + 'px';
+    const maxKm = 50000;
 
-    // Criar ticks
-    const step = 5000;
-    for (let i = 0; i <= maxKm; i += step) {
-      const tick = document.createElement('div');
-      tick.className = 'tick';
-      tick.style.left = i + 'px';
-
-      const label = document.createElement('div');
-      label.className = 'tick-label';
-      label.style.left = i + 'px';
-      label.textContent = i.toLocaleString() + ' km';
-
-      ruler.appendChild(tick);
-      ruler.appendChild(label);
-    }
-
-    let selected = new Set();
-
-    function update() {
+    function updateTotal() {
       let sum = 0;
-      selected.forEach(i => {
-        sum += parseInt(buttons[i].dataset.km);
+      distances.forEach(btn => {
+        if (btn.classList.contains('selected')) {
+          sum += parseInt(btn.dataset.distance, 10);
+        }
       });
+      totalDisplay.textContent = `Total: ${sum.toLocaleString()} km`;
 
-      totalEl.textContent = 'Total: ' + sum.toLocaleString() + ' km';
-
-      const safeLeft = Math.min(Math.max(sum, 20), maxKm - 40);
-      plane.style.left = safeLeft + 'px';
-
-      // Mobile
-      const percent = sum > 0 ? Math.min(sum / maxKm, 1) : 0;
-      progressBar.style.height = (percent * 100) + '%';
-      planeMobile.style.bottom = `calc(${percent * 100}% - 15px)`;
+      const rulerWidth = document.getElementById('rulerContainer').offsetWidth;
+      const leftPosition = (sum / maxKm) * rulerWidth;
+      const safeLeft = Math.min(Math.max(leftPosition, 10), rulerWidth - 60);
+      plane.style.left = `${safeLeft}px`;
     }
 
-    buttons.forEach((btn, i) => {
+    distances.forEach(btn => {
       btn.addEventListener('click', () => {
-        if (selected.has(i)) {
-          selected.delete(i);
-          btn.classList.remove('selected');
-        } else {
-          selected.add(i);
-          btn.classList.add('selected');
-        }
-        update();
+        btn.classList.toggle('selected');
+        updateTotal();
       });
     });
 
     selectAllBtn.addEventListener('click', () => {
-      if (selected.size === buttons.length) {
-        selected.clear();
-        buttons.forEach(btn => btn.classList.remove('selected'));
-      } else {
-        selected = new Set(Array.from(buttons.keys()));
-        buttons.forEach(btn => btn.classList.add('selected'));
-      }
-      update();
+      const allSelected = [...distances].every(btn => btn.classList.contains('selected'));
+      distances.forEach(btn => {
+        btn.classList.toggle('selected', !allSelected);
+      });
+      updateTotal();
     });
 
-    update();
+    // Inicializa
+    window.addEventListener('load', () => {
+      updateTotal();
+    });
   </script>
 </body>
 </html>
