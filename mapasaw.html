@@ -83,13 +83,19 @@
       border-radius: 4px;
     }
 
+    /* CORREÇÃO SÓ PARA MOBILE */
     @media (max-width: 767px) {
       .legend {
         width: 75vw !important;
         max-height: 60vh;
         top: 20px;
         right: 20px;
-        bottom: 80px;
+        bottom: auto; /* evita conflito com botões zoom */
+        max-width: 75vw;
+        overflow-y: auto;
+        overflow-x: hidden;
+        white-space: normal; /* evita barra horizontal */
+        display: block; /* menu vertical */
       }
     }
   </style>
@@ -228,28 +234,25 @@
   };
   legendControl.addTo(map);
 
-  // **Aqui** adicionamos event listeners depois da legenda estar no DOM
-  setTimeout(() => {
-    document.querySelectorAll('.collapsible').forEach(btn => {
-      const content = btn.nextElementSibling;
-      content.classList.remove('show');  // começa fechado
-      btn.classList.remove('active');    // sem active
-
-      btn.addEventListener('click', () => {
-        content.classList.toggle('show');
-        btn.classList.toggle('active');
-        updateLegendSize();
-      });
-    });
-    updateLegendSize();
-  }, 100);
-
   function updateLegendSize() {
     const legend = document.querySelector('.legend');
     const contents = legend.querySelectorAll('.content');
     const allCollapsed = Array.from(contents).every(c => !c.classList.contains('show'));
     legend.style.width = allCollapsed ? '130px' : '280px';
   }
+
+  document.querySelectorAll('.collapsible').forEach(btn => {
+    const content = btn.nextElementSibling;
+    content.classList.remove('show');
+    btn.classList.remove('active');
+    btn.addEventListener('click', () => {
+      content.classList.toggle('show');
+      btn.classList.toggle('active');
+      updateLegendSize();
+    });
+  });
+
+  updateLegendSize();
 </script>
 </body>
 </html>
