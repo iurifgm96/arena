@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Evolução da NIP com ewjerkz e arrozdoce</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 2rem;
+    background: #121212;
+    color: #eee;
+  }
+  h2 {
+    margin-top: 3rem;
+    color: #ffa500;
+  }
+  canvas {
+    background: #222;
+    border-radius: 8px;
+    margin-top: 1rem;
+    max-width: 800px;
+    width: 100%;
+    height: 400px;
+  }
+  .chart-container {
+    margin-bottom: 4rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>Evolução da equipa NIP desde a entrada de ewjerkz e arrozdoce</h1>
+
+<div class="chart-container">
+  <h2>1. Taxa de Vitórias Mensal (Jan 2025 - Maio 2025)</h2>
+  <canvas id="winRateChart"></canvas>
+</div>
+
+<div class="chart-container">
+  <h2>2. Estatísticas Individuais - ewjerkz vs arrozdoce (últimos 15 jogos)</h2>
+  <canvas id="playerStatsChart"></canvas>
+</div>
+
+<div class="chart-container">
+  <h2>3. Desempenho por Mapa (Taxa de Vitórias e ADR)</h2>
+  <canvas id="mapPerformanceChart"></canvas>
+</div>
+
+<script>
+// --- Gráfico 1: Taxa de vitórias ao longo dos meses ---
+const ctx1 = document.getElementById('winRateChart').getContext('2d');
+const winRateChart = new Chart(ctx1, {
+  type: 'line',
+  data: {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    datasets: [{
+      label: 'Taxa de Vitórias (%)',
+      data: [45, 55, 60, 65, 70], // Exemplo de dados
+      borderColor: '#ffa500',
+      backgroundColor: 'rgba(255, 165, 0, 0.3)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 6,
+      pointBackgroundColor: '#ffa500',
+      borderWidth: 3
+    }]
+  },
+  options: {
+    scales: {
+      y: {
+        min: 0,
+        max: 100,
+        ticks: {
+          callback: val => val + '%'
+        },
+        title: {
+          display: true,
+          text: 'Taxa de Vitórias (%)',
+          color: '#ffa500',
+          font: { size: 14 }
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Mês',
+          color: '#ffa500',
+          font: { size: 14 }
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        labels: { color: '#ffa500' }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ctx.parsed.y + '%'
+        }
+      }
+    }
+  }
+});
+
+// --- Gráfico 2: Estatísticas individuais ---
+const ctx2 = document.getElementById('playerStatsChart').getContext('2d');
+const playerStatsChart = new Chart(ctx2, {
+  type: 'bar',
+  data: {
+    labels: ['K/D', 'ADR', 'Headshot %'],
+    datasets: [
+      {
+        label: 'ewjerkz',
+        data: [1.15, 75, 35],
+        backgroundColor: '#ff7f50'
+      },
+      {
+        label: 'arrozdoce',
+        data: [1.10, 70, 40],
+        backgroundColor: '#20b2aa'
+      }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    scales: {
+      x: {
+        beginAtZero: true,
+        max: 100,
+        ticks: {
+          callback: function(val, index) {
+            if (index === 2) return val + '%';
+            return val;
+          }
+        },
+        title: {
+          display: true,
+          text: 'Valor',
+          color: '#ffa500',
+          font: { size: 14 }
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Estatística',
+          color: '#ffa500',
+          font: { size: 14 }
+        },
+        ticks: {
+          color: '#ffa500',
+          font: { size: 14 }
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        labels: { color: '#ffa500' }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            let label = ctx.dataset.label || '';
+            let val = ctx.parsed.x;
+            if (ctx.label === 'Headshot %') return label + ': ' + val + '%';
+            return label + ': ' + val;
+          }
+        }
+      }
+    }
+  }
+});
+
+// --- Gráfico 3: Desempenho por mapa ---
+const ctx3 = document.getElementById('mapPerformanceChart').getContext('2d');
+const mapLabels = ['Mirage', 'Inferno', 'Nuke', 'Overpass', 'Dust2', 'Ancient'];
+const winRates = [65, 70, 50, 60, 55, 45];
+const adrValues = [75, 80, 65, 70, 68, 60];
+
+const mapPerformanceChart = new Chart(ctx3, {
+  type: 'bar',
+  data: {
+    labels: mapLabels,
+    datasets: [
+      {
+        label: 'Taxa de Vitórias (%)',
+        data: winRates,
+        backgroundColor: winRates.map(val => `rgba(255, 165, 0, ${val / 100})`),
+        yAxisID: 'y'
+      },
+      {
+        label: 'ADR',
+        data: adrValues,
+        backgroundColor: adrValues.map(val => `rgba(32, 178, 170, ${val / 100})`),
+        yAxisID: 'y1'
+      }
+    ]
+  },
+  options: {
+    scales: {
+      y: {
+        type: 'linear',
+        position: 'left',
+        min: 0,
+        max: 100,
+        title: {
+          display: true,
+          text: 'Taxa de Vitórias (%)',
+          color: '#ffa500',
+          font: { size: 14 }
+        },
+        ticks: {
+          color: '#ffa500',
+          callback: val => val + '%'
+        }
+      },
+      y1: {
+        type: 'linear',
+        position: 'right',
+        min: 0,
+        max: 100,
+        grid: { drawOnChartArea: false },
+        title: {
+          display: true,
+          text: 'ADR',
+          color: '#20b2aa',
+          font: { size: 14 }
+        },
+        ticks: {
+          color: '#20b2aa'
+        }
+      },
+      x: {
+        ticks: {
+          color: '#ffa500',
+          font: { size: 14 }
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        labels: { color: '#ffa500' }
+      },
+      tooltip: {
+        mode: 'index',
+        intersect: false
+      }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
