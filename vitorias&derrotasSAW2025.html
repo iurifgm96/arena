@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     body {
@@ -25,18 +25,18 @@
     }
 
     .chart {
-      flex: 1 1 300px;
-      min-width: 280px;
+      flex: 1 1 250px;
+      min-width: 200px;
       max-width: 600px;
       height: 350px;
+      box-sizing: border-box;
     }
   </style>
 </head>
 <body>
   <div id="charts-container">
     <div id="pie-wins-losses" class="chart"></div>
-    <div id="bar-games-by-event" class="chart"></div>
-    <div id="donut-win-percent-by-phase" class="chart"></div>
+    <!-- Outros gráficos -->
   </div>
 
   <script>
@@ -73,6 +73,7 @@
       {data: '2025-05-17', evento: 'CCT Europe S3', adversario: 'ENCE', resultado: '0–2', fase: 'Group', venceu: false},
     ];
 
+    // Cálculo dos totais
     const totalVitorias = jogos.filter(j => j.venceu).length;
     const totalDerrotas = jogos.length - totalVitorias;
 
@@ -88,9 +89,8 @@
       hole: 0.4
     }];
 
-    const pieLayout = (width) => ({
+    const pieLayout = {
       height: 350,
-      width: width,
       font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
@@ -103,12 +103,10 @@
         xanchor: 'center',
         y: -0.1
       }
-    });
+    };
 
     const drawPieChart = () => {
-      const container = document.getElementById('pie-wins-losses');
-      const width = container.clientWidth;
-      Plotly.newPlot('pie-wins-losses', pieData, pieLayout(width), {responsive: true, displayModeBar: false});
+      Plotly.newPlot('pie-wins-losses', pieData, pieLayout, {responsive: true, displayModeBar: false});
     };
 
     drawPieChart();
