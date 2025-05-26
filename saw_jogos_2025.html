@@ -9,8 +9,9 @@
     html, body {
       margin: 0;
       padding: 0;
-      background: #000;
+      background: transparent;
       font-family: Arial, sans-serif;
+      color: #E0E0E0;
     }
 
     #timeline-container {
@@ -18,17 +19,12 @@
       max-width: 1000px;
       margin: 0 auto;
       padding: 10px;
+      box-sizing: border-box;
     }
 
     #timeline {
       width: 100%;
       height: 100%;
-    }
-
-    @media (max-width: 600px) {
-      #timeline-container {
-        padding: 5px;
-      }
     }
   </style>
 </head>
@@ -71,7 +67,14 @@
       {data: '2025-05-17', evento: 'CCT Europe S3', adversario: 'ENCE', resultado: '0–2', fase: 'Group', venceu: false},
     ];
 
+
     jogos.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+    const isMobile = window.innerWidth < 600;
+    const markerSize = isMobile ? 12 : 15;
+    const leftMargin = isMobile ? 120 : 300;
+    const labelFontSize = isMobile ? 10 : 12;
+    const plotHeight = jogos.length * (isMobile ? 28 : 30);
 
     const yLabels = jogos.map(j => `${j.evento} vs ${j.adversario} (${j.resultado})`);
     const xDates = jogos.map(j => j.data);
@@ -90,7 +93,7 @@
       mode: 'markers',
       marker: {
         color: colors,
-        size: 14,
+        size: markerSize,
         line: {width: 1, color: '#333'}
       },
       type: 'scatter',
@@ -99,14 +102,11 @@
     };
 
     const layout = {
-      margin: {
-        l: window.innerWidth < 600 ? 100 : 300, // margem lateral adaptada
-        r: 30, t: 20, b: 50
-      },
-      height: Math.max(jogos.length * 30, 600), // altura automática
+      margin: {l: leftMargin, r: 20, t: 20, b: 40},
+      height: plotHeight,
       font: {color: '#E0E0E0', family: 'Arial, sans-serif'},
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(0,0,0,0)',
+      paper_bgcolor: 'rgba(0,0,0,0)',  // fundo transparente
+      plot_bgcolor: 'rgba(0,0,0,0)',  // fundo transparente
       xaxis: {
         title: 'Data',
         type: 'date',
@@ -118,7 +118,7 @@
       yaxis: {
         type: 'category',
         autorange: 'reversed',
-        tickfont: {color: '#CCCCCC', size: 10},
+        tickfont: {color: '#CCCCCC', size: labelFontSize},
         gridcolor: 'rgba(255,255,255,0.1)',
         automargin: true,
         zeroline: false
@@ -130,6 +130,10 @@
     Plotly.newPlot('timeline', [trace], layout, {
       responsive: true,
       displayModeBar: false
+    });
+
+    window.addEventListener('resize', () => {
+      location.reload();
     });
   </script>
 </body>
