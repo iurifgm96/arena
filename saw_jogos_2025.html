@@ -106,7 +106,12 @@
       showlegend: false,
     };
 
-    Plotly.newPlot('timeline', [trace], layout, {responsive: true, displayModeBar: false});
+    Plotly.newPlot('timeline', [trace], layout, {
+  responsive: true,
+  displayModeBar: false,
+  scrollZoom: true
+});
+
   </script>
 </body>
 </html>
