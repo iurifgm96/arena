@@ -74,45 +74,4 @@
 
   Plotly.newPlot('pie-wins-losses', pieData, pieLayout, {responsive: true, displayModeBar: false});
 
-
-  // 2. Barra Total de Jogos por Evento
-  // Contar jogos por evento
-  const jogosPorEvento = {};
-  jogos.forEach(j => {
-    jogosPorEvento[j.evento] = (jogosPorEvento[j.evento] || 0) + 1;
-  });
-  const eventos = Object.keys(jogosPorEvento);
-  const totalJogosEvento = eventos.map(e => jogosPorEvento[e]);
-
-  const barData = [{
-    x: eventos,
-    y: totalJogosEvento,
-    type: 'bar',
-    marker: {color: '#636efa'},
-    hovertemplate: '%{x}: %{y} jogos<extra></extra>'
-  }];
-
-  const barLayout = {
-    height: 350,
-    width: 600,
-    font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    margin: {t:30, b:100, l:60, r:30},
-    xaxis: {
-      tickangle: -45,
-      tickfont: {size: 12, color: '#CCC'},
-      title: 'Evento'
-    },
-    yaxis: {
-      title: 'Número de jogos',
-      tickfont: {color: '#CCC'},
-      gridcolor: 'rgba(255,255,255,0.1)'
-    },
-    showlegend: false
-  };
-
-  Plotly.newPlot('bar-games-by-event', barData, barLayout, {responsive: true, displayModeBar: false});
- 
-
 </script>
