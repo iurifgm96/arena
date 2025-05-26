@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     body {
@@ -12,7 +12,6 @@
       font-family: Arial, sans-serif;
       color: #E0E0E0;
     }
-
     #charts-container {
       max-width: 1300px;
       margin: 0 auto;
@@ -23,7 +22,6 @@
       padding: 10px;
       box-sizing: border-box;
     }
-
     .chart {
       flex: 1 1 300px;
       min-width: 280px;
@@ -107,11 +105,15 @@
 
     const drawPieChart = () => {
       const container = document.getElementById('pie-wins-losses');
-      const width = container.clientWidth;
+      // fallback width 600 e limite max 600
+      const width = Math.min(container.clientWidth || 600, 600);
       Plotly.newPlot('pie-wins-losses', pieData, pieLayout(width), {responsive: true, displayModeBar: false});
     };
 
-    drawPieChart();
+    // Desenha só quando a página está carregada e dá um pequeno delay para o layout fixar
+    window.addEventListener('load', () => {
+      setTimeout(drawPieChart, 100);
+    });
     window.addEventListener('resize', drawPieChart);
   </script>
 </body>
