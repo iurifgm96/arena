@@ -13,7 +13,7 @@
     #timeline {
       width: 100%;
       max-width: 900px;
-      /* altura será ajustada dinamicamente via JS */
+      height: 1200px;
       margin: 0 auto;
     }
   </style>
@@ -82,38 +82,37 @@
       text: hoverTexts
     };
 
-    const alturaPorJogo = 40;
-    const alturaTotal = jogos.length * alturaPorJogo;
-
     const layout = {
-      margin: { l: 350, r: 50, t: 20, b: 80 },
-      height: alturaTotal,
-      font: { color: '#E0E0E0', family: 'Arial, sans-serif', size: 12 },
+      margin: {l: 300, r: 50, t: 20, b: 50},
+      height: 1200,
+      font: {color: '#E0E0E0', family: 'Arial, sans-serif'},
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
       xaxis: {
-        title: 'Data',
+        title: {
+          text: 'Data',
+          font: {color: '#CCCCCC', size: 14}
+        },
         type: 'date',
         tickformat: '%d %b %Y',
-        tickfont: { color: '#CCCCCC', size: 11 },
+        tickfont: {color: '#CCCCCC'},
         gridcolor: 'rgba(255,255,255,0.1)',
-        zerolinecolor: 'rgba(255,255,255,0.2)',
-        tickangle: -45,
-        automargin: true
+        zerolinecolor: 'rgba(255,255,255,0.2)'
       },
       yaxis: {
         type: 'category',
         autorange: 'reversed',
-        tickfont: { color: '#CCCCCC', size: 12 },
+        tickfont: {color: '#CCCCCC'},
         gridcolor: 'rgba(255,255,255,0.1)',
         automargin: true,
-        zeroline: false
+        zeroline: false,
+        title: {
+          text: 'Jogos',
+          font: {color: '#CCCCCC', size: 14}
+        }
       },
       showlegend: false
     };
-
-    // Ajusta a altura do container do gráfico para coincidir com layout.height
-    document.getElementById('timeline').style.height = alturaTotal + 'px';
 
     Plotly.newPlot('timeline', [trace], layout, {
       responsive: true,
