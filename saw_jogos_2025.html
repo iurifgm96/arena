@@ -6,20 +6,37 @@
   <title>Linha do Tempo SAW 2025</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
-    body, html {
-      margin: 0; padding: 0;
-      background: transparent;
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      font-family: Arial, sans-serif;
     }
+
+    #timeline-container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+
     #timeline {
       width: 100%;
-      max-width: 900px;
-      height: 1200px;
-      margin: 0 auto;
+      height: 100%;
+    }
+
+    @media (max-width: 600px) {
+      #timeline-container {
+        padding: 5px;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="timeline"></div>
+  <div id="timeline-container">
+    <div id="timeline"></div>
+  </div>
+
   <script>
     const jogos = [
       {data: '2025-01-15', evento: 'BLAST Bounty', adversario: 'BIG', resultado: '0–2', fase: 'Playoffs', venceu: false},
@@ -73,7 +90,7 @@
       mode: 'markers',
       marker: {
         color: colors,
-        size: 15,
+        size: 14,
         line: {width: 1, color: '#333'}
       },
       type: 'scatter',
@@ -82,15 +99,18 @@
     };
 
     const layout = {
-      margin: {l: 300, r: 50, t: 20, b: 50},
-      height: 1200,
+      margin: {
+        l: window.innerWidth < 600 ? 100 : 300, // margem lateral adaptada
+        r: 30, t: 20, b: 50
+      },
+      height: Math.max(jogos.length * 30, 600), // altura automática
       font: {color: '#E0E0E0', family: 'Arial, sans-serif'},
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
       xaxis: {
         title: 'Data',
         type: 'date',
-        tickformat: '%d %b %Y',
+        tickformat: '%d %b',
         tickfont: {color: '#CCCCCC'},
         gridcolor: 'rgba(255,255,255,0.1)',
         zerolinecolor: 'rgba(255,255,255,0.2)'
@@ -98,7 +118,7 @@
       yaxis: {
         type: 'category',
         autorange: 'reversed',
-        tickfont: {color: '#CCCCCC'},
+        tickfont: {color: '#CCCCCC', size: 10},
         gridcolor: 'rgba(255,255,255,0.1)',
         automargin: true,
         zeroline: false
@@ -109,8 +129,7 @@
 
     Plotly.newPlot('timeline', [trace], layout, {
       responsive: true,
-      displayModeBar: false,
-      scrollZoom: false
+      displayModeBar: false
     });
   </script>
 </body>
