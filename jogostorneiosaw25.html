@@ -1,60 +1,93 @@
-<div style="text-align: center; margin: 0 auto; max-width: 100%; padding: 1rem;">
-  <div id="bar-games-by-event" style="width:100%; height:350px; max-width: 600px; margin: 0 auto;"></div>
-</div>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: Arial, sans-serif;
+      color: #E0E0E0;
+    }
+    /* Wrapper do gráfico */
+    #bar-wrapper {
+      text-align: center;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 600px;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    /* Div do gráfico ocupa 100% da largura do wrapper */
+    #bar-games-by-event {
+      width: 100%;
+      height: 350px;
+    }
+  </style>
+</head>
+<body>
+  <div id="bar-wrapper">
+    <div id="bar-games-by-event"></div>
+  </div>
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script>
-  const jogos = [
-    {evento: 'BLAST Bounty'}, {evento: 'IEM Katowice'}, {evento: 'IEM Katowice'}, 
-    {evento: 'RES Showdown 1'}, {evento: 'RES Showdown 1'}, {evento: 'RES Showdown 1'}, 
-    {evento: 'PGL Cluj-Napoca'}, {evento: 'PGL Cluj-Napoca'}, {evento: 'PGL Cluj-Napoca'}, 
-    {evento: 'PGL Cluj-Napoca'}, {evento: 'PGL Cluj-Napoca'}, {evento: 'PGL Cluj-Napoca'}, 
-    {evento: 'ESL Pro League'}, {evento: 'ESL Pro League'}, {evento: 'ESL Pro League'}, 
-    {evento: 'ESL Pro League'}, {evento: 'ESL Pro League'}, {evento: 'ESL Pro League'}, 
-    {evento: 'ESL Pro League'}, {evento: 'BLAST Austin Qual'}, {evento: 'BLAST Austin Qual'}, 
-    {evento: 'BLAST Austin Qual'}, {evento: 'BLAST Austin Qual'}, {evento: 'BLAST Austin Qual'}, 
-    {evento: 'IEM Melbourne'}, {evento: 'IEM Melbourne'}, {evento: 'MESA Masters'}, 
-    {evento: 'MESA Masters'}, {evento: 'CCT Europe S3'}, {evento: 'CCT Europe S3'}, 
-  ];
+  <script>
+    const jogos = [
+      {evento: 'BLAST Bounty'}, {evento: 'IEM Katowice'}, {evento: 'IEM Katowice'}, 
+      {evento: 'RES Showdown 1'}, {evento: 'RES Showdown 1'}, {evento: 'RES Showdown 1'}, 
+      {evento: 'PGL Cluj-Napoca'}, {evento: 'PGL Cluj-Napoca'}, {evento: 'PGL Cluj-Napoca'}, 
+      {evento: 'PGL Cluj-Napoca'}, {evento: 'PGL Cluj-Napoca'}, {evento: 'PGL Cluj-Napoca'}, 
+      {evento: 'ESL Pro League'}, {evento: 'ESL Pro League'}, {evento: 'ESL Pro League'}, 
+      {evento: 'ESL Pro League'}, {evento: 'ESL Pro League'}, {evento: 'ESL Pro League'}, 
+      {evento: 'ESL Pro League'}, {evento: 'BLAST Austin Qual'}, {evento: 'BLAST Austin Qual'}, 
+      {evento: 'BLAST Austin Qual'}, {evento: 'BLAST Austin Qual'}, {evento: 'BLAST Austin Qual'}, 
+      {evento: 'IEM Melbourne'}, {evento: 'IEM Melbourne'}, {evento: 'MESA Masters'}, 
+      {evento: 'MESA Masters'}, {evento: 'CCT Europe S3'}, {evento: 'CCT Europe S3'}, 
+    ];
 
-  const jogosPorEvento = {};
-  jogos.forEach(j => {
-    jogosPorEvento[j.evento] = (jogosPorEvento[j.evento] || 0) + 1;
-  });
+    const jogosPorEvento = {};
+    jogos.forEach(j => {
+      jogosPorEvento[j.evento] = (jogosPorEvento[j.evento] || 0) + 1;
+    });
 
-  const eventos = Object.keys(jogosPorEvento);
-  const totalJogosEvento = eventos.map(e => jogosPorEvento[e]);
+    const eventos = Object.keys(jogosPorEvento);
+    const totalJogosEvento = eventos.map(e => jogosPorEvento[e]);
 
-  const barData = [{
-    x: eventos,
-    y: totalJogosEvento,
-    type: 'bar',
-    marker: {color: '#636efa'},
-    hovertemplate: '%{x}: %{y} jogos<extra></extra>'
-  }];
+    const barData = [{
+      x: eventos,
+      y: totalJogosEvento,
+      type: 'bar',
+      marker: {color: '#636efa'},
+      hovertemplate: '%{x}: %{y} jogos<extra></extra>'
+    }];
 
-  const barLayout = {
-    autosize: true,
-    height: 350,
-    font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    margin: {t:30, b:100, l:60, r:30},
-    xaxis: {
-      tickangle: -45,
-      tickfont: {size: 12, color: '#CCC'},
-      title: 'Evento'
-    },
-    yaxis: {
-      title: 'Número de jogos',
-      tickfont: {color: '#CCC'},
-      gridcolor: 'rgba(255,255,255,0.1)'
-    },
-    showlegend: false
-  };
+    const barLayout = {
+      autosize: true,
+      height: 350,
+      font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      margin: {t:30, b:100, l:60, r:30},
+      xaxis: {
+        tickangle: -45,
+        tickfont: {size: 12, color: '#CCC'},
+        automargin: true,
+        title: 'Evento'
+      },
+      yaxis: {
+        title: 'Número de jogos',
+        tickfont: {color: '#CCC'},
+        gridcolor: 'rgba(255,255,255,0.1)'
+      },
+      showlegend: false
+    };
 
-  Plotly.newPlot('bar-games-by-event', barData, barLayout, {
-    responsive: true,
-    displayModeBar: false
-  });
-</script>
+    Plotly.newPlot('bar-games-by-event', barData, barLayout, {
+      responsive: true,
+      displayModeBar: false
+    });
+  </script>
+</body>
+</html>
