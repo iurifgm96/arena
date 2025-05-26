@@ -31,6 +31,17 @@
       height: 350px;
       box-sizing: border-box;
     }
+
+    @media (max-width: 400px) {
+      #charts-container {
+        padding: 5px;
+      }
+      .chart {
+        min-width: 100%;
+        max-width: 100%;
+        height: 300px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -73,7 +84,6 @@
       {data: '2025-05-17', evento: 'CCT Europe S3', adversario: 'ENCE', resultado: '0–2', fase: 'Group', venceu: false},
     ];
 
-    // Cálculo dos totais
     const totalVitorias = jogos.filter(j => j.venceu).length;
     const totalDerrotas = jogos.length - totalVitorias;
 
@@ -89,12 +99,13 @@
       hole: 0.4
     }];
 
-    const pieLayout = {
+    const pieLayoutBase = {
+      autosize: false,
       height: 350,
       font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
-      margin: {t:20, b:20, l:20, r:20},
+      margin: {t: 20, b: 20, l: 20, r: 20},
       showlegend: true,
       legend: {
         font: {color: '#CCC', size: 14},
@@ -105,9 +116,20 @@
       }
     };
 
-    const drawPieChart = () => {
-      Plotly.newPlot('pie-wins-losses', pieData, pieLayout, {responsive: true, displayModeBar: false});
-    };
+    function drawPieChart() {
+      const container = document.getElementById('pie-wins-losses');
+      const width = container.clientWidth;
+
+      const layout = {
+        ...pieLayoutBase,
+        width: width
+      };
+
+      Plotly.newPlot('pie-wins-losses', pieData, layout, {
+        responsive: false,
+        displayModeBar: false
+      });
+    }
 
     drawPieChart();
     window.addEventListener('resize', drawPieChart);
