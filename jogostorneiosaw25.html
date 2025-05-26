@@ -12,7 +12,8 @@
       font-family: Arial, sans-serif;
       color: #E0E0E0;
     }
-    /* Wrapper do gráfico */
+
+    /* Wrapper para o gráfico de barras */
     #bar-wrapper {
       text-align: center;
       margin: 0 auto;
@@ -21,19 +22,46 @@
       padding: 1rem;
       box-sizing: border-box;
     }
-    /* Div do gráfico ocupa 100% da largura do wrapper */
+    /* Gráfico ocupa 100% da largura do wrapper */
     #bar-games-by-event {
       width: 100%;
       height: 350px;
     }
+
+    /* Wrapper para o pie chart (exemplo) */
+    #pie-wrapper {
+      max-width: 600px;
+      margin: 0 auto 2rem auto;
+      width: 100%;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    #pie-wins-losses {
+      width: 100%;
+      height: 350px;
+    }
+
+    /* Media query para ecrãs muito pequenos */
+    @media (max-width: 400px) {
+      #bar-wrapper, #pie-wrapper {
+        max-width: 100%;
+        padding: 0.5rem;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <div id="pie-wrapper">
+    <div id="pie-wins-losses"></div>
+  </div>
+
   <div id="bar-wrapper">
     <div id="bar-games-by-event"></div>
   </div>
 
   <script>
+    // Dados dos jogos para gráfico de barras
     const jogos = [
       {evento: 'BLAST Bounty'}, {evento: 'IEM Katowice'}, {evento: 'IEM Katowice'}, 
       {evento: 'RES Showdown 1'}, {evento: 'RES Showdown 1'}, {evento: 'RES Showdown 1'}, 
@@ -63,13 +91,13 @@
       hovertemplate: '%{x}: %{y} jogos<extra></extra>'
     }];
 
-    const barLayout = {
-      autosize: true,
+    const barLayoutBase = {
+      autosize: false,
       height: 350,
       font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
-      margin: {t:30, b:100, l:60, r:30},
+      margin: {t:30, b:70, l:40, r:20},
       xaxis: {
         tickangle: -45,
         tickfont: {size: 12, color: '#CCC'},
@@ -84,10 +112,76 @@
       showlegend: false
     };
 
-    Plotly.newPlot('bar-games-by-event', barData, barLayout, {
-      responsive: true,
-      displayModeBar: false
-    });
+    function drawBarChart() {
+      const container = document.getElementById('bar-games-by-event');
+      const width = container.clientWidth;
+
+      const layout = {
+        ...barLayoutBase,
+        width: width
+      };
+
+      Plotly.newPlot('bar-games-by-event', barData, layout, {
+        responsive: false,
+        displayModeBar: false
+      });
+    }
+
+    // Chama a função inicial e no resize para garantir responsividade real
+    drawBarChart();
+    window.addEventListener('resize', drawBarChart);
+
+    // Exemplo para o pie chart (se quiseres, posso ajudar a completar)
+    const totalVitorias = 15;
+    const totalDerrotas = 15;
+
+    const pieData = [{
+      values: [totalVitorias, totalDerrotas],
+      labels: ['Vitórias', 'Derrotas'],
+      type: 'pie',
+      marker: {colors: ['#00CC96', '#EF553B']},
+      textinfo: 'label+percent',
+      textposition: 'outside',
+      automargin: true,
+      hoverinfo: 'label+value',
+      hole: 0.4
+    }];
+
+    const pieLayoutBase = {
+      autosize: false,
+      height: 350,
+      font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      margin: {t:20, b:20, l:20, r:20},
+      showlegend: true,
+      legend: {
+        font: {color: '#CCC', size: 14},
+        orientation: 'h',
+        x: 0.5,
+        xanchor: 'center',
+        y: -0.1
+      }
+    };
+
+    function drawPieChart() {
+      const container = document.getElementById('pie-wins-losses');
+      const width = container.clientWidth;
+
+      const layout = {
+        ...pieLayoutBase,
+        width: width
+      };
+
+      Plotly.newPlot('pie-wins-losses', pieData, layout, {
+        responsive: false,
+        displayModeBar: false
+      });
+    }
+
+    drawPieChart();
+    window.addEventListener('resize', drawPieChart);
+
   </script>
 </body>
 </html>
