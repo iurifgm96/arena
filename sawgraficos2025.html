@@ -1,0 +1,167 @@
+<div id="pie-wins-losses" style="display:inline-block; width:350px; height:350px;"></div>
+<div id="bar-games-by-event" style="display:inline-block; width:600px; height:350px;"></div>
+<div id="donut-win-percent-by-phase" style="display:inline-block; width:350px; height:350px;"></div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  // Dados baseados na tua lista de jogos
+  const jogos = [
+    {data: '2025-01-15', evento: 'BLAST Bounty', adversario: 'BIG', resultado: '0–2', fase: 'Playoffs', venceu: false},
+    {data: '2025-01-29', evento: 'IEM Katowice', adversario: 'GamerLegion', resultado: '0–2', fase: 'Play-in', venceu: false},
+    {data: '2025-01-30', evento: 'IEM Katowice', adversario: 'Virtus.pro', resultado: '0–2', fase: 'Play-in', venceu: false},
+    {data: '2025-02-05', evento: 'RES Showdown 1', adversario: 'BC.Game', resultado: '0–2', fase: 'Qualifier', venceu: false},
+    {data: '2025-02-05', evento: 'RES Showdown 1', adversario: 'Eco Warriors', resultado: '2–0', fase: 'Qualifier', venceu: true},
+    {data: '2025-02-06', evento: 'RES Showdown 1', adversario: '500', resultado: '1–2', fase: 'Qualifier', venceu: false},
+    {data: '2025-02-14', evento: 'PGL Cluj-Napoca', adversario: 'FaZe', resultado: '0–2', fase: 'Swiss R1', venceu: false},
+    {data: '2025-02-15', evento: 'PGL Cluj-Napoca', adversario: 'Astralis', resultado: '0–2', fase: 'Swiss R2', venceu: false},
+    {data: '2025-02-16', evento: 'PGL Cluj-Napoca', adversario: 'FlyQuest', resultado: '2–1', fase: 'Swiss R3', venceu: true},
+    {data: '2025-02-17', evento: 'PGL Cluj-Napoca', adversario: 'Complexity', resultado: '2–0', fase: 'Swiss R4', venceu: true},
+    {data: '2025-02-18', evento: 'PGL Cluj-Napoca', adversario: '3DMAX', resultado: '2–0', fase: 'Swiss R5', venceu: true},
+    {data: '2025-02-21', evento: 'PGL Cluj-Napoca', adversario: 'FaZe', resultado: '0–2', fase: 'Playoffs', venceu: false},
+    {data: '2025-03-01', evento: 'ESL Pro League', adversario: 'HEROIC', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-03-02', evento: 'ESL Pro League', adversario: 'FURIA', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-03-03', evento: 'ESL Pro League', adversario: 'M80', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-03-07', evento: 'ESL Pro League', adversario: 'Natus Vincere', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-03-08', evento: 'ESL Pro League', adversario: 'Spirit', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-03-09', evento: 'ESL Pro League', adversario: 'G2', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-03-10', evento: 'ESL Pro League', adversario: 'GamerLegion', resultado: '1–2', fase: 'Group', venceu: false},
+    {data: '2025-04-14', evento: 'BLAST Austin Qual', adversario: 'BetBoom', resultado: '3–13', fase: 'Qualifier', venceu: false},
+    {data: '2025-04-15', evento: 'BLAST Austin Qual', adversario: 'B8', resultado: '19–17', fase: 'Qualifier', venceu: true},
+    {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: 'GamerLegion', resultado: '2–1', fase: 'Qualifier', venceu: true},
+    {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: '9 Pandas', resultado: '11–13', fase: 'Qualifier', venceu: false},
+    {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: 'ENCE', resultado: '0–2', fase: 'Qualifier', venceu: false},
+    {data: '2025-04-21', evento: 'IEM Melbourne', adversario: 'Falcons', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-04-22', evento: 'IEM Melbourne', adversario: 'MIBR', resultado: '1–2', fase: 'Group', venceu: false},
+    {data: '2025-04-30', evento: 'MESA Masters', adversario: 'JiJieHao', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-05-01', evento: 'MESA Masters', adversario: 'Chinggis Warriors', resultado: '1–2', fase: 'Group', venceu: false},
+    {data: '2025-05-16', evento: 'CCT Europe S3', adversario: 'FAVBET', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-05-17', evento: 'CCT Europe S3', adversario: 'ENCE', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-05-23', evento: 'Galaxy Battle', adversario: 'Sashi', resultado: '0–1', fase: 'Group', venceu: false}
+  ];
+
+  // 1. Pizza Vitórias vs Derrotas
+  const totalVitorias = jogos.filter(j => j.venceu).length;
+  const totalDerrotas = jogos.length - totalVitorias;
+
+  const pieData = [{
+    values: [totalVitorias, totalDerrotas],
+    labels: ['Vitórias', 'Derrotas'],
+    type: 'pie',
+    marker: {colors: ['#00CC96', '#EF553B']},
+    textinfo: 'label+percent',
+    textposition: 'outside',
+    automargin: true,
+    hoverinfo: 'label+value',
+    hole: 0.4
+  }];
+
+  const pieLayout = {
+    height: 350,
+    width: 350,
+    font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    margin: {t:20, b:20, l:20, r:20},
+    showlegend: true,
+    legend: {
+      font: {color: '#CCC', size: 14},
+      orientation: 'h',
+      x: 0.5,
+      xanchor: 'center',
+      y: -0.1
+    }
+  };
+
+  Plotly.newPlot('pie-wins-losses', pieData, pieLayout, {responsive: true, displayModeBar: false});
+
+
+  // 2. Barra Total de Jogos por Evento
+  // Contar jogos por evento
+  const jogosPorEvento = {};
+  jogos.forEach(j => {
+    jogosPorEvento[j.evento] = (jogosPorEvento[j.evento] || 0) + 1;
+  });
+  const eventos = Object.keys(jogosPorEvento);
+  const totalJogosEvento = eventos.map(e => jogosPorEvento[e]);
+
+  const barData = [{
+    x: eventos,
+    y: totalJogosEvento,
+    type: 'bar',
+    marker: {color: '#636efa'},
+    hovertemplate: '%{x}: %{y} jogos<extra></extra>'
+  }];
+
+  const barLayout = {
+    height: 350,
+    width: 600,
+    font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    margin: {t:30, b:100, l:60, r:30},
+    xaxis: {
+      tickangle: -45,
+      tickfont: {size: 12, color: '#CCC'},
+      title: 'Evento'
+    },
+    yaxis: {
+      title: 'Número de jogos',
+      tickfont: {color: '#CCC'},
+      gridcolor: 'rgba(255,255,255,0.1)'
+    },
+    showlegend: false
+  };
+
+  Plotly.newPlot('bar-games-by-event', barData, barLayout, {responsive: true, displayModeBar: false});
+
+
+  // 3. Donut Percentual de Vitórias por Fase
+  // Agregar vitórias e total por fase
+  const faseStats = {};
+  jogos.forEach(j => {
+    if (!faseStats[j.fase]) {
+      faseStats[j.fase] = {vitorias: 0, total: 0};
+    }
+    faseStats[j.fase].total++;
+    if (j.venceu) faseStats[j.fase].vitorias++;
+  });
+
+  const fases = Object.keys(faseStats);
+  const valoresVitoria = fases.map(f => faseStats[f].vitorias);
+  const valoresDerrota = fases.map(f => faseStats[f].total - faseStats[f].vitorias);
+
+  // Percentual vitória por fase (pro donut vamos usar só as vitórias)
+  const donutData = [{
+    values: valoresVitoria,
+    labels: fases,
+    type: 'pie',
+    hole: 0.5,
+    marker: {
+      colors: ['#00CC96', '#EF553B', '#636efa', '#ab63fa', '#FFA15A', '#19d3f3', '#FF6692']
+    },
+    textinfo: 'label+percent',
+    textposition: 'outside',
+    hoverinfo: 'label+value',
+    automargin: true,
+  }];
+
+  const donutLayout = {
+    height: 350,
+    width: 350,
+    font: {family: 'Arial, sans-serif', color: '#E0E0E0'},
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    margin: {t:20, b:20, l:20, r:20},
+    showlegend: true,
+    legend: {
+      font: {color: '#CCC', size: 12},
+      orientation: 'v',
+      x: 1,
+      xanchor: 'left',
+      y: 0.5
+    }
+  };
+
+  Plotly.newPlot('donut-win-percent-by-phase', donutData, donutLayout, {responsive: true, displayModeBar: false});
+
+</script>
