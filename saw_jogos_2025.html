@@ -13,7 +13,7 @@
     #timeline {
       width: 100%;
       max-width: 900px;
-      height: 1000px;
+      height: 1200px;
       margin: 0 auto;
     }
   </style>
@@ -22,8 +22,10 @@
   <div id="timeline"></div>
   <script>
     const jogos = [
+      {data: '2025-01-27', evento: 'BLAST Bounty', adversario: 'BIG', resultado: '0–2', fase: 'Main', venceu: false},
       {data: '2025-01-29', evento: 'IEM Katowice', adversario: 'GamerLegion', resultado: '0–2', fase: 'Play-in', venceu: false},
       {data: '2025-01-30', evento: 'IEM Katowice', adversario: 'Virtus.pro', resultado: '0–2', fase: 'Play-in', venceu: false},
+      {data: '2025-02-04', evento: 'RES Showdown 1', adversario: 'BC.Game', resultado: '2–0', fase: 'Qualifier', venceu: true},
       {data: '2025-02-05', evento: 'RES Showdown 1', adversario: 'Eco Warriors', resultado: '2–0', fase: 'Qualifier', venceu: true},
       {data: '2025-02-06', evento: 'RES Showdown 1', adversario: '500', resultado: '1–2', fase: 'Qualifier', venceu: false},
       {data: '2025-02-14', evento: 'PGL Cluj-Napoca', adversario: 'FaZe', resultado: '0–2', fase: 'Swiss R1', venceu: false},
@@ -82,7 +84,7 @@
 
     const layout = {
       margin: {l: 300, r: 50, t: 20, b: 50},
-      height: 1000,
+      height: 1200,
       font: {color: '#E0E0E0', family: 'Arial, sans-serif'},
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
@@ -95,7 +97,7 @@
         zerolinecolor: 'rgba(255,255,255,0.2)'
       },
       yaxis: {
-        autorange: 'reversed',  // <- esta linha faz a inversão correta
+        autorange: 'reversed',
         tickfont: {color: '#CCCCCC'},
         gridcolor: 'rgba(255,255,255,0.1)',
         automargin: true,
@@ -107,11 +109,10 @@
     };
 
     Plotly.newPlot('timeline', [trace], layout, {
-  responsive: true,
-  displayModeBar: false,
-  scrollZoom: true
-});
-
+      responsive: true,
+      displayModeBar: false,
+      scrollZoom: true
+    });
   </script>
 </body>
 </html>
