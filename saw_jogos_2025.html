@@ -21,122 +21,78 @@
 <body>
 <div id="timeline"></div>
 <script>
-  const data = [
-    {
-      type: 'bar',
-      orientation: 'h',
-      y: [
-        "IEM Katowice vs GamerLegion (0–2)",
-        "IEM Katowice vs Virtus.pro (0–2)",
-        "RES Showdown 1 vs Eco Warriors (2–0)",
-        "RES Showdown 1 vs 500 (1–2)",
-        "PGL Cluj-Napoca vs FaZe (0–2)",
-        "PGL Cluj-Napoca vs Astralis (0–2)",
-        "PGL Cluj-Napoca vs FlyQuest (2–1)",
-        "PGL Cluj-Napoca vs Complexity (2–0)",
-        "PGL Cluj-Napoca vs 3DMAX (2–0)",
-        "PGL Cluj-Napoca vs FaZe (0–2)",
-        "ESL Pro League vs HEROIC (2–1)",
-        "ESL Pro League vs FURIA (2–1)",
-        "ESL Pro League vs M80 (2–1)",
-        "ESL Pro League vs Natus Vincere (2–1)",
-        "ESL Pro League vs Spirit (0–2)",
-        "ESL Pro League vs G2 (0–2)",
-        "ESL Pro League vs GamerLegion (1–2)",
-        "BLAST Austin Qual vs BetBoom (3–13)",
-        "BLAST Austin Qual vs B8 (19–17)",
-        "BLAST Austin Qual vs 9 Pandas (11–13)",
-        "BLAST Austin Qual vs ENCE (0–2)",
-        "IEM Melbourne vs Falcons (0–2)",
-        "IEM Melbourne vs MIBR (1–2)",
-        "MESA Masters vs JiJieHao (0–2)",
-        "MESA Masters vs Chinggis Warriors (1–2)",
-        "CCT Europe S3 vs FAVBET (2–1)",
-        "CCT Europe S3 vs ENCE (0–2)",
-        "Galaxy Battle vs Sashi (0–1)"
-      ],
-      x: [
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-      ],
-      base: [
-        Date.parse("2025-01-29"),
-        Date.parse("2025-01-30"),
-        Date.parse("2025-02-05"),
-        Date.parse("2025-02-06"),
-        Date.parse("2025-02-14"),
-        Date.parse("2025-02-15"),
-        Date.parse("2025-02-16"),
-        Date.parse("2025-02-17"),
-        Date.parse("2025-02-18"),
-        Date.parse("2025-02-21"),
-        Date.parse("2025-03-01"),
-        Date.parse("2025-03-02"),
-        Date.parse("2025-03-03"),
-        Date.parse("2025-03-07"),
-        Date.parse("2025-03-08"),
-        Date.parse("2025-03-09"),
-        Date.parse("2025-03-10"),
-        Date.parse("2025-04-14"),
-        Date.parse("2025-04-15"),
-        Date.parse("2025-04-16"),
-        Date.parse("2025-04-16"),
-        Date.parse("2025-04-21"),
-        Date.parse("2025-04-22"),
-        Date.parse("2025-04-30"),
-        Date.parse("2025-05-01"),
-        Date.parse("2025-05-16"),
-        Date.parse("2025-05-17"),
-        Date.parse("2025-05-23")
-      ],
-      marker: {
-        color: [
-          "#EF553B","#EF553B","#00CC96","#AB63FA","#EF553B","#EF553B",
-          "#00CC96","#00CC96","#00CC96","#EF553B","#00CC96","#00CC96",
-          "#00CC96","#00CC96","#EF553B","#EF553B","#EF553B","#EF553B",
-          "#00CC96","#EF553B","#EF553B","#EF553B","#EF553B","#EF553B",
-          "#00CC96","#EF553B","#EF553B","#EF553B"
-        ]
-      },
-      hoverinfo: 'text',
-      text: [
-        "Evento: IEM Katowice<br>Adversário: GamerLegion<br>Resultado: 0–2<br>Fase: Play-in",
-        "Evento: IEM Katowice<br>Adversário: Virtus.pro<br>Resultado: 0–2<br>Fase: Play-in",
-        "Evento: RES Showdown 1<br>Adversário: Eco Warriors<br>Resultado: 2–0<br>Fase: Qualifier",
-        "Evento: RES Showdown 1<br>Adversário: 500<br>Resultado: 1–2<br>Fase: Qualifier",
-        "Evento: PGL Cluj-Napoca<br>Adversário: FaZe<br>Resultado: 0–2<br>Fase: Swiss R1",
-        "Evento: PGL Cluj-Napoca<br>Adversário: Astralis<br>Resultado: 0–2<br>Fase: Swiss R2",
-        "Evento: PGL Cluj-Napoca<br>Adversário: FlyQuest<br>Resultado: 2–1<br>Fase: Swiss R3",
-        "Evento: PGL Cluj-Napoca<br>Adversário: Complexity<br>Resultado: 2–0<br>Fase: Swiss R4",
-        "Evento: PGL Cluj-Napoca<br>Adversário: 3DMAX<br>Resultado: 2–0<br>Fase: Swiss R5",
-        "Evento: PGL Cluj-Napoca<br>Adversário: FaZe<br>Resultado: 0–2<br>Fase: Playoffs",
-        "Evento: ESL Pro League<br>Adversário: HEROIC<br>Resultado: 2–1<br>Fase: Group",
-        "Evento: ESL Pro League<br>Adversário: FURIA<br>Resultado: 2–1<br>Fase: Group",
-        "Evento: ESL Pro League<br>Adversário: M80<br>Resultado: 2–1<br>Fase: Group",
-        "Evento: ESL Pro League<br>Adversário: Natus Vincere<br>Resultado: 2–1<br>Fase: Group",
-        "Evento: ESL Pro League<br>Adversário: Spirit<br>Resultado: 0–2<br>Fase: Group",
-        "Evento: ESL Pro League<br>Adversário: G2<br>Resultado: 0–2<br>Fase: Group",
-        "Evento: ESL Pro League<br>Adversário: GamerLegion<br>Resultado: 1–2<br>Fase: Group",
-        "Evento: BLAST Austin Qual<br>Adversário: BetBoom<br>Resultado: 3–13<br>Fase: Qualifier",
-        "Evento: BLAST Austin Qual<br>Adversário: B8<br>Resultado: 19–17<br>Fase: Qualifier",
-        "Evento: BLAST Austin Qual<br>Adversário: 9 Pandas<br>Resultado: 11–13<br>Fase: Qualifier",
-        "Evento: BLAST Austin Qual<br>Adversário: ENCE<br>Resultado: 0–2<br>Fase: Qualifier",
-        "Evento: IEM Melbourne<br>Adversário: Falcons<br>Resultado: 0–2<br>Fase: Group",
-        "Evento: IEM Melbourne<br>Adversário: MIBR<br>Resultado: 1–2<br>Fase: Group",
-        "Evento: MESA Masters<br>Adversário: JiJieHao<br>Resultado: 0–2<br>Fase: Group",
-        "Evento: MESA Masters<br>Adversário: Chinggis Warriors<br>Resultado: 1–2<br>Fase: Group",
-        "Evento: CCT Europe S3<br>Adversário: FAVBET<br>Resultado: 2–1<br>Fase: Group",
-        "Evento: CCT Europe S3<br>Adversário: ENCE<br>Resultado: 0–2<br>Fase: Group",
-        "Evento: Galaxy Battle<br>Adversário: Sashi<br>Resultado: 0–1<br>Fase: Group"
-      ]
-    }
+  // Dados do gráfico (simplificado)
+  const jogos = [
+    {data: '2025-01-29', evento: 'IEM Katowice', adversario: 'GamerLegion', resultado: '0–2', fase: 'Play-in', venceu: false},
+    {data: '2025-01-30', evento: 'IEM Katowice', adversario: 'Virtus.pro', resultado: '0–2', fase: 'Play-in', venceu: false},
+    {data: '2025-02-05', evento: 'RES Showdown 1', adversario: 'Eco Warriors', resultado: '2–0', fase: 'Qualifier', venceu: true},
+    {data: '2025-02-06', evento: 'RES Showdown 1', adversario: '500', resultado: '1–2', fase: 'Qualifier', venceu: false},
+    {data: '2025-02-14', evento: 'PGL Cluj-Napoca', adversario: 'FaZe', resultado: '0–2', fase: 'Swiss R1', venceu: false},
+    {data: '2025-02-15', evento: 'PGL Cluj-Napoca', adversario: 'Astralis', resultado: '0–2', fase: 'Swiss R2', venceu: false},
+    {data: '2025-02-16', evento: 'PGL Cluj-Napoca', adversario: 'FlyQuest', resultado: '2–1', fase: 'Swiss R3', venceu: true},
+    {data: '2025-02-17', evento: 'PGL Cluj-Napoca', adversario: 'Complexity', resultado: '2–0', fase: 'Swiss R4', venceu: true},
+    {data: '2025-02-18', evento: 'PGL Cluj-Napoca', adversario: '3DMAX', resultado: '2–0', fase: 'Swiss R5', venceu: true},
+    {data: '2025-02-21', evento: 'PGL Cluj-Napoca', adversario: 'FaZe', resultado: '0–2', fase: 'Playoffs', venceu: false},
+    {data: '2025-03-01', evento: 'ESL Pro League', adversario: 'HEROIC', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-03-02', evento: 'ESL Pro League', adversario: 'FURIA', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-03-03', evento: 'ESL Pro League', adversario: 'M80', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-03-07', evento: 'ESL Pro League', adversario: 'Natus Vincere', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-03-08', evento: 'ESL Pro League', adversario: 'Spirit', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-03-09', evento: 'ESL Pro League', adversario: 'G2', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-03-10', evento: 'ESL Pro League', adversario: 'GamerLegion', resultado: '1–2', fase: 'Group', venceu: false},
+    {data: '2025-04-14', evento: 'BLAST Austin Qual', adversario: 'BetBoom', resultado: '3–13', fase: 'Qualifier', venceu: false},
+    {data: '2025-04-15', evento: 'BLAST Austin Qual', adversario: 'B8', resultado: '19–17', fase: 'Qualifier', venceu: true},
+    {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: '9 Pandas', resultado: '11–13', fase: 'Qualifier', venceu: false},
+    {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: 'ENCE', resultado: '0–2', fase: 'Qualifier', venceu: false},
+    {data: '2025-04-21', evento: 'IEM Melbourne', adversario: 'Falcons', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-04-22', evento: 'IEM Melbourne', adversario: 'MIBR', resultado: '1–2', fase: 'Group', venceu: false},
+    {data: '2025-04-30', evento: 'MESA Masters', adversario: 'JiJieHao', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-05-01', evento: 'MESA Masters', adversario: 'Chinggis Warriors', resultado: '1–2', fase: 'Group', venceu: false},
+    {data: '2025-05-16', evento: 'CCT Europe S3', adversario: 'FAVBET', resultado: '2–1', fase: 'Group', venceu: true},
+    {data: '2025-05-17', evento: 'CCT Europe S3', adversario: 'ENCE', resultado: '0–2', fase: 'Group', venceu: false},
+    {data: '2025-05-23', evento: 'Galaxy Battle', adversario: 'Sashi', resultado: '0–1', fase: 'Group', venceu: false},
   ];
 
+  // Ordenar por data para garantir a ordem vertical
+  jogos.sort((a,b) => new Date(b.data) - new Date(a.data));
+
+  // Preparar arrays para o gráfico
+  const yLabels = jogos.map(j => `${j.evento} vs ${j.adversario} (${j.resultado})`);
+  const xDates = jogos.map(j => j.data);
+  const colors = jogos.map(j => j.venceu ? '#00CC96' : '#EF553B'); // verde para vitória, vermelho para derrota
+
+  const hoverTexts = jogos.map(j =>
+    `<b>${j.evento}</b><br>` +
+    `Adversário: ${j.adversario}<br>` +
+    `Resultado: ${j.resultado}<br>` +
+    `Fase: ${j.fase}<br>` +
+    `Data: ${new Date(j.data).toLocaleDateString('pt-PT', {day:'2-digit', month:'short', year:'numeric'})}`
+  );
+
+  // Trace scatter plot
+  const trace = {
+    x: xDates,
+    y: yLabels,
+    mode: 'markers',
+    marker: {
+      color: colors,
+      size: 15,
+      line: {width: 1, color: '#333'}
+    },
+    hoverinfo: 'text',
+    hovertext: hoverTexts,
+    type: 'scatter',
+    orientation: 'h',
+  };
+
   const layout = {
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    paper_bgcolor: 'rgba(0,0,0,0)',
+    margin: {l: 300, r: 50, t: 20, b: 50},
+    height: 1000,
     font: {color: '#E0E0E0', family: 'Arial, sans-serif'},
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
     xaxis: {
-      title: '',
+      title: 'Data',
       type: 'date',
       tickformat: '%d %b %Y',
       tickfont: {color: '#CCCCCC'},
@@ -146,15 +102,16 @@
     yaxis: {
       autorange: 'reversed',
       tickfont: {color: '#CCCCCC'},
-      gridcolor: 'rgba(255,255,255,0.1)'
+      gridcolor: 'rgba(255,255,255,0.1)',
+      automargin: true,
+      tickvals: yLabels,
+      ticktext: yLabels,
+      zeroline: false,
     },
     showlegend: false,
-    margin: {l: 250, r: 50, t: 20, b: 50},
-    height: 1000,
-    width: null,
   };
 
-  Plotly.newPlot('timeline', data, layout, {responsive: true, displayModeBar: false});
+  Plotly.newPlot('timeline', [trace], layout, {responsive: true, displayModeBar: true});
 </script>
 </body>
 </html>
