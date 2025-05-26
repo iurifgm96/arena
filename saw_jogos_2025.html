@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8" />
+    <title>Linha do Tempo SAW 2025</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        #timeline { width: 100%; height: 1000px; }
+    </style>
+</head>
+<body>
+<div id="timeline"></div>
+
+<script>
+    // Dados
+    const data = [
+        {"Data": "2025-01-29", "Evento": "IEM Katowice", "Adversário": "GamerLegion", "Resultado": "0–2", "Fase": "Play-in"},
+        {"Data": "2025-01-30", "Evento": "IEM Katowice", "Adversário": "Virtus.pro", "Resultado": "0–2", "Fase": "Play-in"},
+        {"Data": "2025-02-05", "Evento": "RES Showdown 1", "Adversário": "Eco Warriors", "Resultado": "2–0", "Fase": "Qualifier"},
+        {"Data": "2025-02-06", "Evento": "RES Showdown 1", "Adversário": "500", "Resultado": "1–2", "Fase": "Qualifier"},
+        {"Data": "2025-02-14", "Evento": "PGL Cluj-Napoca", "Adversário": "FaZe", "Resultado": "0–2", "Fase": "Swiss R1"},
+        {"Data": "2025-02-15", "Evento": "PGL Cluj-Napoca", "Adversário": "Astralis", "Resultado": "0–2", "Fase": "Swiss R2"},
+        {"Data": "2025-02-16", "Evento": "PGL Cluj-Napoca", "Adversário": "FlyQuest", "Resultado": "2–1", "Fase": "Swiss R3"},
+        {"Data": "2025-02-17", "Evento": "PGL Cluj-Napoca", "Adversário": "Complexity", "Resultado": "2–0", "Fase": "Swiss R4"},
+        {"Data": "2025-02-18", "Evento": "PGL Cluj-Napoca", "Adversário": "3DMAX", "Resultado": "2–0", "Fase": "Swiss R5"},
+        {"Data": "2025-02-21", "Evento": "PGL Cluj-Napoca", "Adversário": "FaZe", "Resultado": "0–2", "Fase": "Playoffs"},
+        {"Data": "2025-03-01", "Evento": "ESL Pro League", "Adversário": "HEROIC", "Resultado": "2–1", "Fase": "Group"},
+        {"Data": "2025-03-02", "Evento": "ESL Pro League", "Adversário": "FURIA", "Resultado": "2–1", "Fase": "Group"},
+        {"Data": "2025-03-03", "Evento": "ESL Pro League", "Adversário": "M80", "Resultado": "2–1", "Fase": "Group"},
+        {"Data": "2025-03-07", "Evento": "ESL Pro League", "Adversário": "Natus Vincere", "Resultado": "2–1", "Fase": "Group"},
+        {"Data": "2025-03-08", "Evento": "ESL Pro League", "Adversário": "Spirit", "Resultado": "0–2", "Fase": "Group"},
+        {"Data": "2025-03-09", "Evento": "ESL Pro League", "Adversário": "G2", "Resultado": "0–2", "Fase": "Group"},
+        {"Data": "2025-03-10", "Evento": "ESL Pro League", "Adversário": "GamerLegion", "Resultado": "1–2", "Fase": "Group"},
+        {"Data": "2025-04-14", "Evento": "BLAST Austin Qual", "Adversário": "BetBoom", "Resultado": "3–13", "Fase": "Qualifier"},
+        {"Data": "2025-04-15", "Evento": "BLAST Austin Qual", "Adversário": "B8", "Resultado": "19–17", "Fase": "Qualifier"},
+        {"Data": "2025-04-16", "Evento": "BLAST Austin Qual", "Adversário": "9 Pandas", "Resultado": "11–13", "Fase": "Qualifier"},
+        {"Data": "2025-04-16", "Evento": "BLAST Austin Qual", "Adversário": "ENCE", "Resultado": "0–2", "Fase": "Qualifier"},
+        {"Data": "2025-04-21", "Evento": "IEM Melbourne", "Adversário": "Falcons", "Resultado": "0–2", "Fase": "Group"},
+        {"Data": "2025-04-22", "Evento": "IEM Melbourne", "Adversário": "MIBR", "Resultado": "1–2", "Fase": "Group"},
+        {"Data": "2025-04-30", "Evento": "MESA Masters", "Adversário": "JiJieHao", "Resultado": "0–2", "Fase": "Group"},
+        {"Data": "2025-05-01", "Evento": "MESA Masters", "Adversário": "Chinggis Warriors", "Resultado": "1–2", "Fase": "Group"},
+        {"Data": "2025-05-16", "Evento": "CCT Europe S3", "Adversário": "FAVBET", "Resultado": "2–1", "Fase": "Group"},
+        {"Data": "2025-05-17", "Evento": "CCT Europe S3", "Adversário": "ENCE", "Resultado": "0–2", "Fase": "Group"},
+        {"Data": "2025-05-23", "Evento": "Galaxy Battle", "Adversário": "Sashi", "Resultado": "0–1", "Fase": "Group"},
+    ];
+
+    // Preparar os dados para o gráfico timeline (plotly não tem timeline nativo, mas dá pra simular com scatter)
+    // Cada ponto é um jogo, no eixo X a data, no Y o jogo (evento + adversário + resultado)
+    const jogos = data.map(j => `${j.Evento} vs ${j.Adversário} (${j.Resultado})`);
+    const uniqueJogos = [...new Set(jogos)].reverse();  // invertendo para mostrar topo
+
+    // Converter as datas para formato Date
+    const datas = data.map(j => new Date(j.Data));
+
+    // Mapeando cores para o resultado
+    const cores = {
+        "2–0": "green",
+        "2–1": "green",
+        "1–2": "red",
+        "0–2": "red",
+        "3–13": "red",
+        "19–17": "green",
+        "11–13": "red",
+        "0–1": "red"
+    };
+
+    // Criar trace do gráfico
+    const trace = {
+        x: datas,
+        y: jogos,
+        mode: 'markers',
+        type: 'scatter',
+        marker: {
+            color: data.map(d => cores[d.Resultado] || 'gray'),
+            size: 12
+        },
+        text: data.map(d =>
+            `<b>Evento:</b> ${d.Evento}<br>` +
+            `<b>Adversário:</b> ${d.Adversário}<br>` +
+            `<b>Resultado:</b> ${d.Resultado}<br>` +
+            `<b>Fase:</b> ${d.Fase}<br>` +
+            `<b>Data:</b> ${d.Data}`
+        ),
+        hoverinfo: 'text',
+        hoverlabel: { bgcolor: "white", font: { color: "black" } }
+    };
+
+    const layout = {
+        title: 'Linha do Tempo Interativa da Temporada 2025 - SAW',
+        xaxis: {
+            title: 'Data',
+            type: 'date',
+            tickformat: '%Y-%m-%d',
+            showgrid: true,
+        },
+        yaxis: {
+            title: 'Jogos',
+            type: 'category',
+            categoryorder: 'array',
+            categoryarray: uniqueJogos,
+            autorange: 'reversed',
+            showgrid: false,
+            tickfont: { size: 10 }
+        },
+        height: 1000,
+        margin: { t: 50, b: 100, l: 200 }
+    };
+
+    Plotly.newPlot('timeline', [trace], layout);
+</script>
+
+</body>
+</html>
