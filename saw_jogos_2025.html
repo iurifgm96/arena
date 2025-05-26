@@ -21,6 +21,7 @@
 <body>
   <div id="timeline"></div>
   <script>
+    // Dados atualizados conferidos em Liquipedia: https://liquipedia.net/counterstrike/SAW/Matches
     const jogos = [
       {data: '2025-01-15', evento: 'BLAST Bounty', adversario: 'BIG', resultado: '0–2', fase: 'Playoffs', venceu: false},
       {data: '2025-01-29', evento: 'IEM Katowice', adversario: 'GamerLegion', resultado: '0–2', fase: 'Play-in', venceu: false},
@@ -44,15 +45,14 @@
       {data: '2025-04-14', evento: 'BLAST Austin Qual', adversario: 'BetBoom', resultado: '3–13', fase: 'Qualifier', venceu: false},
       {data: '2025-04-15', evento: 'BLAST Austin Qual', adversario: 'B8', resultado: '19–17', fase: 'Qualifier', venceu: true},
       {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: '9 Pandas', resultado: '11–13', fase: 'Qualifier', venceu: false},
-      {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: 'ENCE', resultado: '0–2', fase: 'Qualifier', venceu: false},
       {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: 'GamerLegion', resultado: '2–1', fase: 'Qualifier', venceu: true},
+      {data: '2025-04-16', evento: 'BLAST Austin Qual', adversario: 'ENCE', resultado: '0–2', fase: 'Qualifier', venceu: false},
       {data: '2025-04-21', evento: 'IEM Melbourne', adversario: 'Falcons', resultado: '0–2', fase: 'Group', venceu: false},
       {data: '2025-04-22', evento: 'IEM Melbourne', adversario: 'MIBR', resultado: '1–2', fase: 'Group', venceu: false},
       {data: '2025-04-30', evento: 'MESA Masters', adversario: 'JiJieHao', resultado: '0–2', fase: 'Group', venceu: false},
       {data: '2025-05-01', evento: 'MESA Masters', adversario: 'Chinggis Warriors', resultado: '1–2', fase: 'Group', venceu: false},
       {data: '2025-05-16', evento: 'CCT Europe S3', adversario: 'FAVBET', resultado: '2–1', fase: 'Group', venceu: true},
       {data: '2025-05-17', evento: 'CCT Europe S3', adversario: 'ENCE', resultado: '0–2', fase: 'Group', venceu: false},
-      {data: '2025-05-23', evento: 'Galaxy Battle', adversario: 'Sashi', resultado: '0–1', fase: 'Group', venceu: false}
     ];
 
     jogos.sort((a, b) => new Date(a.data) - new Date(b.data));
@@ -89,10 +89,7 @@
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
       xaxis: {
-        title: {
-          text: 'Data',
-          font: {color: '#CCCCCC', size: 14}
-        },
+        title: 'Data',
         type: 'date',
         tickformat: '%d %b %Y',
         tickfont: {color: '#CCCCCC'},
@@ -105,12 +102,9 @@
         tickfont: {color: '#CCCCCC'},
         gridcolor: 'rgba(255,255,255,0.1)',
         automargin: true,
-        zeroline: false,
-        title: {
-          text: 'Jogos',
-          font: {color: '#CCCCCC', size: 14}
-        }
+        zeroline: false
       },
+      hovermode: 'closest', // <<< hover só na bolinha
       showlegend: false
     };
 
