@@ -13,7 +13,7 @@
     #timeline {
       width: 100%;
       max-width: 900px;
-      height: 1600px; /* aumentei para mais espaço vertical */
+      /* altura será ajustada dinamicamente via JS */
       margin: 0 auto;
     }
   </style>
@@ -55,27 +55,10 @@
       {data: '2025-05-23', evento: 'Galaxy Battle', adversario: 'Sashi', resultado: '0–1', fase: 'Group', venceu: false}
     ];
 
-    // Ordenar por data
     jogos.sort((a, b) => new Date(a.data) - new Date(b.data));
 
-    // Para lidar com múltiplos jogos no mesmo dia, vamos aplicar jitter no eixo X
-    // agrupamos os índices dos jogos por data para calcular o deslocamento
-    const jogosPorData = {};
-    jogos.forEach((j, i) => {
-      if (!jogosPorData[j.data]) jogosPorData[j.data] = [];
-      jogosPorData[j.data].push(i);
-    });
-
-    const xDates = jogos.map((j, i) => {
-      const baseDate = new Date(j.data);
-      const indices = jogosPorData[j.data];
-      const indexNoDia = indices.indexOf(i);
-      // jitter: deslocar 0h, 2h, 4h, ... em milissegundos
-      const jitterMs = indexNoDia * 2 * 60 * 60 * 1000; // 2 horas em ms
-      return new Date(baseDate.getTime() + jitterMs);
-    });
-
     const yLabels = jogos.map(j => `${j.evento} vs ${j.adversario} (${j.resultado})`);
+    const xDates = jogos.map(j => j.data);
     const colors = jogos.map(j => j.venceu ? '#00CC96' : '#EF553B');
     const hoverTexts = jogos.map(j =>
       `<b>${j.evento}</b><br>` +
@@ -91,7 +74,7 @@
       mode: 'markers',
       marker: {
         color: colors,
-        size: 18, // pontos maiores para facilitar seleção
+        size: 15,
         line: {width: 1, color: '#333'}
       },
       type: 'scatter',
@@ -99,30 +82,38 @@
       text: hoverTexts
     };
 
+    const alturaPorJogo = 40;
+    const alturaTotal = jogos.length * alturaPorJogo;
+
     const layout = {
-      margin: {l: 300, r: 50, t: 20, b: 50},
-      height: 1600, // mais alto para dar espaçamento vertical extra
-      font: {color: '#E0E0E0', family: 'Arial, sans-serif'},
+      margin: { l: 350, r: 50, t: 20, b: 80 },
+      height: alturaTotal,
+      font: { color: '#E0E0E0', family: 'Arial, sans-serif', size: 12 },
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
       xaxis: {
         title: 'Data',
         type: 'date',
         tickformat: '%d %b %Y',
-        tickfont: {color: '#CCCCCC'},
+        tickfont: { color: '#CCCCCC', size: 11 },
         gridcolor: 'rgba(255,255,255,0.1)',
-        zerolinecolor: 'rgba(255,255,255,0.2)'
+        zerolinecolor: 'rgba(255,255,255,0.2)',
+        tickangle: -45,
+        automargin: true
       },
       yaxis: {
         type: 'category',
         autorange: 'reversed',
-        tickfont: {color: '#CCCCCC'},
+        tickfont: { color: '#CCCCCC', size: 12 },
         gridcolor: 'rgba(255,255,255,0.1)',
         automargin: true,
         zeroline: false
       },
       showlegend: false
     };
+
+    // Ajusta a altura do container do gráfico para coincidir com layout.height
+    document.getElementById('timeline').style.height = alturaTotal + 'px';
 
     Plotly.newPlot('timeline', [trace], layout, {
       responsive: true,
