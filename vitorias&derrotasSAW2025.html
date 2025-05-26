@@ -1,6 +1,8 @@
-<div id="pie-wins-losses" style="display:inline-block; width:350px; height:350px;"></div>
-<div id="bar-games-by-event" style="display:inline-block; width:600px; height:350px;"></div>
-<div id="donut-win-percent-by-phase" style="display:inline-block; width:350px; height:350px;"></div>
+<div style="text-align: center; margin: 0 auto; max-width: 1300px;">
+  <div id="pie-wins-losses" style="display:inline-block; width:350px; height:350px;"></div>
+  <div id="bar-games-by-event" style="display:inline-block; width:600px; height:350px;"></div>
+  <div id="donut-win-percent-by-phase" style="display:inline-block; width:350px; height:350px;"></div>
+</div>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
@@ -72,5 +74,4 @@
   };
 
   Plotly.newPlot('pie-wins-losses', pieData, pieLayout, {responsive: true, displayModeBar: false});
-
 </script>
