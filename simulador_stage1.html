@@ -49,11 +49,11 @@
             font-family: var(--fonte-principal);
             line-height: 1.6;
             margin: 0;
-            padding: 10px; /* Reduzido para mobile */
+            padding: 10px; 
             background-color: var(--cor-fundo-simulador-body); 
             color: var(--cor-texto-principal);
             transition: background-color 0.3s, color 0.3s; 
-            font-size: 15px; /* Base font size for mobile */
+            font-size: 15px; 
         }
 
         .container {
@@ -66,8 +66,8 @@
 
         .controls {
             display: flex;
-            flex-direction: column; /* Empilhar em mobile */
-            align-items: stretch; /* Esticar botões */
+            flex-direction: column; 
+            align-items: stretch; 
             margin-bottom: 20px; 
             padding: 10px; 
             background-color: var(--cor-fundo-cartao);
@@ -79,24 +79,24 @@
         .controls .buttons { 
             display: flex; 
             gap: 10px;
-            width: 100%; /* Ocupar largura total */
+            width: 100%; 
         }
         .controls .buttons button {
-            flex-grow: 1; /* Botões dividem o espaço */
+            flex-grow: 1; 
         }
         .controls p {
-            font-size: 1em; /* Ajustado para mobile */
+            font-size: 1em; 
             font-weight: 600; 
             color: var(--cor-texto-principal);
-            text-align: center; /* Centralizar em mobile */
+            text-align: center; 
             width: 100%;
-            margin-top: 10px; /* Espaço se empilhado */
+            margin-top: 10px; 
         }
         .controls p #currentRound { color: var(--cor-arena-azul); font-weight: 700; }
 
         .stage-sections, .results-sections {
             display: flex;
-            flex-direction: column; /* Empilhar secções em mobile */
+            flex-direction: column; 
             gap: 15px; 
             margin-bottom: 15px;
         }
@@ -114,7 +114,7 @@
         #standingsSection::before, #matchupsSection::before { 
             content: attr(data-title); 
             font-weight: 700; 
-            font-size: 1.1em; /* Ajustado */
+            font-size: 1.1em; 
             color: var(--cor-texto-principal); 
             display: block;
             margin-bottom: 15px; 
@@ -123,7 +123,7 @@
         }
         .pool-header { 
             font-weight: 600;
-            font-size: 0.95em; /* Ajustado */
+            font-size: 0.95em; 
             color: var(--cor-texto-secundario);
             margin-top: 15px; 
             margin-bottom: 10px; 
@@ -140,7 +140,7 @@
         #advancedSection li, #eliminatedSection li {
             font-weight: 500;
             padding: 3px 0; 
-            font-size: 0.95em; /* Ajustado */
+            font-size: 0.95em; 
             border-bottom: 1px dashed var(--cor-borda); 
             display: flex; 
             align-items: center;
@@ -149,35 +149,59 @@
         #advancedSection li { color: var(--cor-sucesso); }
         #eliminatedSection li { color: var(--cor-perigo); }
 
-        table {
+        /* ESTILOS DA TABELA PARA MOBILE (BASE) - ABORDAGEM DE CARTÕES */
+        #standingsTable {
             width: 100%;
-            border-collapse: collapse; 
             margin-top: 8px; 
-            font-size: 0.85em; /* Reduzir tamanho da fonte da tabela em mobile */
+            border-collapse: separate; /* Necessário para border-radius em TRs */
+            border-spacing: 0; /* Remove espaço entre "cartões" se usar separate */
         }
-        th, td {
-            padding: 8px 6px; /* Reduzir padding em mobile */
-            border-bottom: 1px solid var(--cor-borda);
-            text-align: left;
+        #standingsTable thead {
+            display: none; 
         }
-        th {
+        #standingsTable tr {
+            display: block; 
+            margin-bottom: 10px; 
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--border-radius-padrao);
+            padding: 10px;
+            background-color: var(--cor-fundo-cartao); 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra mais leve para os cartões */
+        }
+        #standingsTable tr:last-child {
+            margin-bottom: 0;
+        }
+        #standingsTable td {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; /* Alinha o label e o valor verticalmente */
+            padding: 8px 0; 
+            border-bottom: 1px dashed var(--cor-borda); 
+            text-align: right; /* Alinha o valor da célula à direita */
+            font-size: 0.9em;
+        }
+        #standingsTable td:last-child {
+            border-bottom: none; 
+        }
+        #standingsTable td::before { 
+            content: attr(data-label); 
+            font-weight: 600;
             color: var(--cor-texto-secundario);
-            font-weight: 700; 
-            text-transform: uppercase;
-            font-size: 0.9em; /* Relativo ao font-size da tabela */
-            letter-spacing: 0.5px; 
+            margin-right: 10px;
+            text-align: left; /* Label à esquerda */
         }
-        tr:first-child th { border-top: 1px solid var(--cor-borda); }
-        tr:hover td { background-color: color-mix(in srgb, var(--cor-fundo-cartao) 90%, var(--cor-borda)); }
-        
-        .team-cell-standings {
-            display: flex;
-            align-items: center;
+        /* Estilo específico para a célula do nome da equipa (que já é flex) */
+        #standingsTable td .team-cell-standings {
+            justify-content: flex-end; /* Alinha o conteúdo (logo+nome) à direita */
+            flex-grow: 1; /* Permite que o conteúdo da equipa ocupe o espaço */
         }
+        #standingsTable td .team-cell-standings .team-name-text {
+             margin-left: 0.4em; 
+        }
+
 
         .matchup {
             display: flex;
-            /* flex-direction: column; Empilhar equipas em mobile se necessário, mas pode ficar longo */
             justify-content: space-between;
             align-items: stretch; 
             margin-bottom: 10px; 
@@ -195,16 +219,16 @@
 
         .matchup .team {
             cursor: pointer;
-            padding: 0 10px; /* Reduzido padding horizontal */
+            padding: 0 10px; 
             transition: background-color 0.2s, color 0.2s, transform 0.2s;
             flex: 1; 
             font-weight: 600; 
-            font-size: 0.9em; /* Reduzido para mobile */
+            font-size: 0.9em; 
             color: var(--cor-texto-principal); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            height: 3.5em; /* Altura ligeiramente reduzida */
+            height: 3.5em; 
             min-width: 0; 
             overflow: hidden; 
         }
@@ -222,7 +246,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-left: 0.4em; /* Reduzido */
+            margin-left: 0.4em; 
         }
 
         .matchup .team:not(.winner):not(.loser):hover {
@@ -238,14 +262,14 @@
         }
 
         button { 
-            padding: 8px 15px; /* Reduzido padding */
+            padding: 8px 15px; 
             background-color: var(--cor-arena-azul);
             color: white;
             border: none;
             border-radius: var(--border-radius-padrao);
             cursor: pointer;
             font-weight: 600; 
-            font-size: 0.85em; /* Reduzido para mobile */
+            font-size: 0.85em; 
             transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease, transform 0.15s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -278,12 +302,13 @@
         }
 
         .team-logo {
-            height: 1.3em;  /* Ajustado para mobile */
-            width: 2.2em;   /* Ajustado para mobile */
-            margin-right: 6px; /* Ajustado */
+            height: 1.3em;  
+            width: 2.2em;   
+            margin-right: 6px; 
             object-fit: contain; 
+            flex-shrink: 0; 
         }
-        #standingsTable .team-logo { 
+        #standingsTable .team-logo { /* Para mobile, dentro do cartão */
             height: 1.2em; 
             width: 2em;  
             margin-right: 5px; 
@@ -294,23 +319,25 @@
             margin-right: 4px; 
         }
 
-        #standingsTable td:last-child.status-cell-advanced { color: var(--cor-sucesso); font-weight: 700; }
-        #standingsTable td:last-child.status-cell-eliminated { color: var(--cor-perigo); font-weight: 700; }
-        #standingsTable td:last-child.status-cell-active { color: var(--cor-texto-secundario); font-weight: 500; }
+        /* Cores de status na tabela (aplicadas ao valor da célula em mobile) */
+        #standingsTable td[data-label="Status"] span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
+        #standingsTable td[data-label="Status"] span.status-text-eliminated { color: var(--cor-perigo); font-weight: 700; }
+        #standingsTable td[data-label="Status"] span.status-text-active { color: var(--cor-texto-secundario); font-weight: 500; }
 
-        /* Media Queries para ecrãs maiores - Mantêm-se e sobrepõem os estilos base (mobile-first) */
+
+        /* Media Queries para ecrãs maiores */
         @media (min-width: 768px) { 
             body {
-                padding: 15px; /* Padding original para tablets e desktops */
-                font-size: 16px; /* Restaura font-size base */
+                padding: 15px; 
+                font-size: 16px; 
             }
             .controls {
-                flex-direction: row; /* Lado a lado em ecrãs maiores */
+                flex-direction: row; 
                 padding: 15px 20px; 
                 align-items: center;
             }
             .controls .buttons {
-                width: auto; /* Tamanho natural dos botões */
+                width: auto; 
             }
             .controls p {
                 text-align: right; 
@@ -319,7 +346,7 @@
                 font-size: 1.1em; 
             }
             .stage-sections, .results-sections {
-                flex-direction: row; /* Lado a lado em ecrãs maiores */
+                flex-direction: row; 
                 gap: 20px; 
             }
              .section {
@@ -329,13 +356,51 @@
             #standingsSection { flex: 3; }
             .results-sections .section { flex: 1; }
 
-            table {
-                font-size: 0.95em; /* Restaura font-size da tabela */
+            /* ESTILOS DA TABELA PARA DESKTOP */
+            #standingsTable {
+                font-size: 0.95em; 
+                border-collapse: collapse; /* Garante que as bordas se fundem */
             }
-            th, td {
-                padding: 10px 12px; /* Restaura padding da tabela */
+            #standingsTable thead {
+                display: table-header-group; /* Mostra o cabeçalho em desktop */
             }
-            th { font-size: 0.8em; } /* Relativo ao font-size da tabela */
+            #standingsTable tr { /* Linhas voltam ao normal */
+                display: table-row;
+                margin-bottom: 0;
+                border: none; /* Bordas de "cartão" removidas */
+                border-radius: 0;
+                padding: 0;
+                background-color: transparent;
+                box-shadow: none;
+            }
+            #standingsTable th, #standingsTable td { 
+                display: table-cell; 
+                padding: 10px 12px; 
+                text-align: left; /* Alinhamento padrão para células de tabela */
+                border-bottom: 1px solid var(--cor-borda); /* Borda apenas em baixo para desktop */
+                vertical-align: middle; 
+            }
+            #standingsTable td::before {
+                display: none; /* Esconde os labels ::before em desktop */
+            }
+            #standingsTable th { 
+                font-size: 0.8em; 
+                vertical-align: middle;
+            } 
+            /* Ajuste para a primeira linha de cabeçalho ter borda superior */
+            #standingsTable thead tr:first-child th {
+                 border-top: 1px solid var(--cor-borda);
+            }
+             /* Ajuste para a última linha de dados ter borda inferior (se não for a última do tbody) */
+            #standingsTable tbody tr:last-child td {
+                 border-bottom: 1px solid var(--cor-borda);
+            }
+             /* Remover borda dupla se houver footer ou múltiplas linhas de cabeçalho */
+            #standingsTable tr:last-child td { border-bottom: 1px solid var(--cor-borda); }
+            #standingsTable td .team-cell-standings { /* Em desktop, não precisa de justify-content: flex-end */
+                 justify-content: flex-start;
+            }
+
 
             .matchup .team {
                 padding: 0 15px;
@@ -349,12 +414,12 @@
                 padding: 9px 18px;
                 font-size: 0.9em;
             }
-            .team-logo {
+            .team-logo { /* Logos em desktop */
                 height: 1.5em;  
                 width: 2.5em;   
                 margin-right: 8px; 
             }
-            #standingsTable .team-logo { 
+            #standingsTable .team-logo { /* Logos na tabela em desktop */
                 height: 1.3em; 
                 width: 2.2em;  
                 margin-right: 6px; 
@@ -374,6 +439,11 @@
              #advancedSection li, #eliminatedSection li {
                 font-size: 1em; 
             }
+
+            /* Cores de status na tabela para desktop (aplicadas à célula inteira ou ao texto) */
+            #standingsTable td.status-cell-advanced { color: var(--cor-sucesso); font-weight: 700; }
+            #standingsTable td.status-cell-eliminated { color: var(--cor-perigo); font-weight: 700; }
+            #standingsTable td.status-cell-active { color: var(--cor-texto-secundario); font-weight: 500; }
         }
     </style>
 </head>
@@ -791,6 +861,8 @@
 
             function renderStandings() {
                 standingsTableBody.innerHTML = '';
+                const tableHeaders = ["Seed", "Equipa", "V-D", "Status"]; // Para os data-labels
+
                 const customSort = (a, b) => { 
                     const statusOrder = { active: 1, advanced: 2, eliminated: 3 };
                     if (statusOrder[a.status] !== statusOrder[b.status]) {
@@ -804,20 +876,39 @@
 
                 sortedForDisplay.forEach(team => {
                     const row = standingsTableBody.insertRow();
-                    row.insertCell().textContent = team.seed;
+                    
+                    const seedCell = row.insertCell();
+                    seedCell.textContent = team.seed;
+                    seedCell.setAttribute('data-label', tableHeaders[0]);
                     
                     const nameCell = row.insertCell(); 
                     nameCell.classList.add('team-cell-standings');
                     nameCell.appendChild(createTeamDisplay(team, 'table'));
+                    nameCell.setAttribute('data-label', tableHeaders[1]);
                     
-                    row.insertCell().textContent = `${team.wins}-${team.losses}`;
+                    const recordCell = row.insertCell();
+                    recordCell.textContent = `${team.wins}-${team.losses}`;
+                    recordCell.setAttribute('data-label', tableHeaders[2]);
+
                     const statusCell = row.insertCell();
-                    statusCell.classList.remove('status-cell-advanced', 'status-cell-eliminated', 'status-cell-active');
+                    statusCell.setAttribute('data-label', tableHeaders[3]);
+                    
+                    const statusTextSpan = document.createElement('span'); // Para aplicar classes de cor ao texto
+                    statusCell.appendChild(statusTextSpan);
+
                     let statusText = 'Em Jogo';
-                    if (team.status === 'advanced') { statusText = `Apurada`; statusCell.classList.add('status-cell-advanced'); }
-                    else if (team.status === 'eliminated') { statusText = `Eliminada`; statusCell.classList.add('status-cell-eliminated'); }
-                    else { statusCell.classList.add('status-cell-active'); }
-                    statusCell.textContent = statusText;
+                    statusTextSpan.classList.remove('status-text-advanced', 'status-text-eliminated', 'status-text-active');
+
+                    if (team.status === 'advanced') { 
+                        statusText = `Apurada`; 
+                        statusTextSpan.classList.add('status-text-advanced');
+                    } else if (team.status === 'eliminated') { 
+                        statusText = `Eliminada`; 
+                        statusTextSpan.classList.add('status-text-eliminated');
+                    } else { 
+                        statusTextSpan.classList.add('status-text-active');
+                    }
+                    statusTextSpan.textContent = statusText;
                 });
             }
 
