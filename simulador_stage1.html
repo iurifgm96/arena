@@ -1,4 +1,13 @@
-<style>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Opening Stage - Major</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
         :root {
             /* Tema Claro (Default) & Cores Base do Arena */
             --cor-arena-azul: #0074FF;
@@ -174,24 +183,46 @@
             transform: translateY(-2px); 
         }
 
-        .matchup .team {
+        .matchup .team { /* Main button box for team selection */
             cursor: pointer;
-            padding: 12px 15px; 
+            padding: 0 15px; /* Padding horizontal, vertical será controlado pela altura */
             transition: background-color 0.2s, color 0.2s, transform 0.2s;
-            flex-grow: 1;
+            flex: 1; /* Each team takes up equal width */
             font-weight: 600; 
             font-size: 1em; 
-            line-height: 1.4; 
             color: var(--cor-texto-principal); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
+            height: 3.8em; /* Fixed height for uniform buttons */
+            min-width: 0; /* Important for flex items that might shrink too much */
+            overflow: hidden; /* Ensures content (like long names) doesn't spill */
         }
         .matchup .team:first-child { border-right: 1px solid var(--cor-borda); }
+        
+        /* Container for logo + name text, INSIDE .matchup .team */
+        .team-display-container {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center logo + text block */
+            width: 100%; /* Take full width of the parent .team button */
+            overflow: hidden; /* Crucial for ellipsis on child */
+        }
+
+        .team-name-text { /* The span containing the actual team name */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-left: 0.5em; /* Space between logo and text */
+            /* flex-grow: 1; Remove if causing issues with centering very short names */
+            /* max-width can be tricky, rely on parent overflow and nowrap for now */
+        }
+
+
         .matchup .team:not(.winner):not(.loser):hover {
             background-color: color-mix(in srgb, var(--cor-arena-azul) 10%, var(--cor-fundo-cartao));
             color: var(--cor-arena-azul);
-            transform: scale(1.02); 
+            /* transform: scale(1.02); Removed to prevent layout shifts with fixed height */
         }
         .matchup .team.winner { background-color: var(--cor-sucesso); color: white; font-weight: 700; }
         .matchup .team.loser {
@@ -241,25 +272,22 @@
             transform: translateY(0px);
         }
 
-        /* Estilos para logos - ATUALIZADO COM WIDTH e HEIGHT FIXOS */
         .team-logo {
-            height: 1.5em;  /* Altura da caixa do logo */
-            width: 2.5em;   /* Largura da caixa do logo - ajuste este rácio conforme necessário */
+            height: 1.5em;  
+            width: 2.5em;   
             margin-right: 8px; 
-            object-fit: contain; /* Garante que o logo caiba sem distorcer, mantendo proporção */
-            /* vertical-align: middle; continua útil se não estiver num container flex */
+            object-fit: contain; 
         }
-        #standingsTable .team-logo { /* Na tabela de classificação */
+        #standingsTable .team-logo { 
             height: 1.3em; 
-            width: 2.2em;  /* Largura proporcionalmente ajustada */
+            width: 2.2em;  
             margin-right: 6px; 
         }
-        #advancedList li .team-logo, #eliminatedList li .team-logo { /* Nas listas de apurados/eliminados */
+        #advancedList li .team-logo, #eliminatedList li .team-logo { 
             height: 1.2em; 
-            width: 2em;    /* Largura proporcionalmente ajustada */
+            width: 2em;    
             margin-right: 5px; 
         }
-
 
         #standingsTable td:last-child.status-cell-advanced { color: var(--cor-sucesso); font-weight: 700; }
         #standingsTable td:last-child.status-cell-eliminated { color: var(--cor-perigo); font-weight: 700; }
@@ -321,27 +349,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const initialTeams = [ // URLs já atualizados para os teus links do arena.rtp.pt
+            const initialTeams = [
                 { id: 1, name: 'Complexity', seed: 1, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Complexity_2025_full_allmode.png' }, 
                 { id: 2, name: 'HEROIC', seed: 2, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Heroic_2023_logo.png' },
                 { id: 3, name: 'B8', seed: 3, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/B8_darkmode.png' }, 
-                { id: 4, name: 'BetBoom Team', seed: 4, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/BetBoom_Team_2024_allmode.png' },
+                { id: 4, name: 'BetBoom', seed: 4, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/BetBoom_Team_2024_allmode.png' }, // Removido "Team"
                 { id: 5, name: 'TYLOO', seed: 5, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/TyLoo_2016_allmode.png' }, 
-                { id: 6, name: 'Lynn Vision', seed: 6, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Lynn_Vision_Gaming_2024_full_allmode.png' },
-                { id: 7, name: 'Wildcard Gaming', seed: 7, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/wildcard-seeklogo.png' }, 
+                { id: 6, name: 'Lynn Vision', seed: 6, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Lynn_Vision_Gaming_2024_full_allmode.png' }, // Removido "Gaming"
+                { id: 7, name: 'Wildcard', seed: 7, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/wildcard-seeklogo.png' }, // Removido "Gaming"
                 { id: 8, name: 'FlyQuest', seed: 8, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Flyquest_logo_2021.png' },
                 { id: 9, name: 'OG', seed: 9, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/OG_RB_allmode.png' }, 
                 { id: 10, name: 'Chinggis Warriors', seed: 10, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/CW_allmode.png' },
-                { id: 11, name: 'Imperial Esports', seed: 11, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/imperial-esports-seeklogo.png' }, 
-                { id: 12, name: 'Nemiga Gaming', seed: 12, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/nemiga.png' },
-                { id: 13, name: 'NRG Esports', seed: 13, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/NRG_2024_allmode.png' }, 
+                { id: 11, name: 'Imperial', seed: 11, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/imperial-esports-seeklogo.png' }, // Removido "Esports"
+                { id: 12, name: 'Nemiga', seed: 12, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/nemiga.png' }, // Removido "Gaming"
+                { id: 13, name: 'NRG', seed: 13, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/NRG_2024_allmode.png' }, // Removido "Esports"
                 { id: 14, name: 'Legacy', seed: 14, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Legacy_allmode.png' },
                 { id: 15, name: 'Metizport', seed: 15, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Metizport_2023_allmode.png' }, 
                 { id: 16, name: 'Fluxo', seed: 16, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Fluxo_darkmode.png' },
             ];
 
-            // O resto do JavaScript (lógica do simulador) permanece IGUAL à versão anterior.
-            // ... (todo o JavaScript da versão anterior) ...
             let teams = [];
             let currentRound = 0; 
             let matchups = [];
@@ -478,7 +504,6 @@
                 const match = matchups[matchIndex]; 
                 if (!match) { console.error("Match não encontrado no índice:", matchIndex); return; }
 
-
                 if (stageComplete && !match.winnerId) {
                      alert("A fase já terminou, não é possível alterar resultados de jogos não concluídos.");
                      return;
@@ -598,19 +623,14 @@
 
             function createTeamDisplay(team, type) { 
                 const teamContainer = document.createElement('span');
-                if (type === 'matchup' || type === 'table' || type === 'list') { 
-                     teamContainer.style.display = 'flex';
-                     teamContainer.style.alignItems = 'center';
-                     if (type === 'matchup') teamContainer.style.justifyContent = 'center'; 
-                }
+                // Adicionada classe para estilização do container interno do botão de equipa
+                teamContainer.classList.add('team-display-container'); 
 
                 if (team.logoUrl && team.logoUrl.trim() !== '') { 
                     const img = document.createElement('img');
                     img.src = team.logoUrl;
                     img.alt = ``; 
                     img.classList.add('team-logo');
-                    // As classes específicas de tipo (.team-logo-table, .team-logo-list) foram removidas
-                    // A estilização agora é feita apenas em .team-logo e depois especificamente dentro de seletores como #standingsTable .team-logo
                     img.onerror = function() { 
                         this.style.display='none'; 
                     };
@@ -618,6 +638,7 @@
                 }
                 const nameSpan = document.createElement('span');
                 nameSpan.textContent = team.name;
+                nameSpan.classList.add('team-name-text'); // Classe para o texto do nome da equipa
                 teamContainer.appendChild(nameSpan);
                 return teamContainer;
             }
