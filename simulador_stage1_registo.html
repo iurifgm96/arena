@@ -53,7 +53,7 @@
             background-color: var(--cor-fundo-simulador-body); 
             color: var(--cor-texto-principal);
             transition: background-color 0.3s, color 0.3s; 
-            font-size: 13px; /* Reduzido ainda mais para mobile */
+            font-size: 13px; 
         }
 
         .container {
@@ -83,17 +83,17 @@
         }
         .controls .buttons button {
             flex-grow: 1; 
-            padding: 6px 7px; /* Ainda mais reduzido */
-            font-size: 0.7em; /* Ainda mais reduzido */
+            padding: 6px 7px; 
+            font-size: 0.7em; 
         }
         .controls .round-indicator { 
-            font-size: 0.8em; /* Reduzido */
+            font-size: 0.8em; 
             font-weight: 600; 
             color: var(--cor-texto-secundario); 
             text-align: center; 
             width: auto; 
             margin: 8px auto 0 auto; 
-            padding: 4px 8px; /* Reduzido */
+            padding: 4px 8px; 
             background-color: color-mix(in srgb, var(--cor-arena-azul) 10%, var(--cor-fundo-cartao)); 
             border: 1px solid color-mix(in srgb, var(--cor-arena-azul) 30%, transparent);
             border-radius: 20px; 
@@ -108,22 +108,22 @@
         .stage-sections, .results-sections, #previousRoundSummarySection { 
             display: flex;
             flex-direction: column; 
-            gap: 10px; /* Reduzido */
-            margin-bottom: 10px; /* Reduzido */
+            gap: 10px; 
+            margin-bottom: 10px; 
         }
         
         #previousRoundSummarySection { }
         .summary-controls { 
             display: flex;
             flex-wrap: wrap;
-            gap: 5px; /* Reduzido */
-            margin-bottom: 6px; /* Reduzido */
-            padding-bottom: 6px; /* Reduzido */
+            gap: 5px; 
+            margin-bottom: 6px; 
+            padding-bottom: 6px; 
             border-bottom: 1px solid var(--cor-borda);
         }
         .summary-controls button {
-            padding: 3px 7px; /* Reduzido */
-            font-size: 0.7em; /* Reduzido */
+            padding: 3px 7px; 
+            font-size: 0.7em; 
             background-color: var(--cor-fundo-cartao);
             color: var(--cor-arena-azul);
             border: 1px solid var(--cor-arena-azul);
@@ -142,29 +142,29 @@
         }
 
         #previousRoundSummaryContainer .summary-pool-header {
-            font-size: 0.75em; /* Reduzido */
-            margin-top: 6px; /* Reduzido */
-            margin-bottom: 3px; /* Reduzido */
+            font-size: 0.75em; 
+            margin-top: 6px; 
+            margin-bottom: 3px; 
         }
         #previousRoundSummaryContainer .matchup { 
-            margin-bottom: 3px; /* Reduzido */
+            margin-bottom: 3px; 
             pointer-events: none; 
             opacity: 0.85;
         }
          #previousRoundSummaryContainer .matchup .team {
-            font-size: 0.7em; /* Reduzido */
-            height: 2.6em; /* Reduzido */
-            padding: 0 5px; /* Reduzido */
+            font-size: 0.7em; 
+            height: 2.6em; 
+            padding: 0 5px; 
         }
         #previousRoundSummaryContainer .team-logo {
-            height: 0.9em; /* Reduzido */
-            width: 1.5em; /* Reduzido */
+            height: 0.9em; 
+            width: 1.5em; 
         }
 
 
         .section {
             background-color: var(--cor-fundo-cartao);
-            padding: 10px; /* Reduzido */
+            padding: 10px; 
             border-radius: var(--border-radius-padrao);
             box-shadow: var(--sombra-cartao);
             border: 1px solid var(--cor-borda);
@@ -176,15 +176,15 @@
         #previousRoundSummarySection::before { 
             content: attr(data-title); 
             font-weight: 700; 
-            font-size: 1em; /* Reduzido */
+            font-size: 1em; 
             color: var(--cor-texto-principal); 
             display: block;
-            margin-bottom: 10px; /* Reduzido */
-            padding-bottom: 4px; /* Reduzido */
+            margin-bottom: 10px; 
+            padding-bottom: 4px; 
             border-bottom: 2px solid var(--cor-arena-azul); 
         }
         #previousRoundSummarySection::before {
-            font-size: 0.85em; /* Reduzido */
+            font-size: 0.85em; 
             font-weight: 600;
             color: var(--cor-texto-secundario);
             border-bottom: 1px solid var(--cor-borda);
@@ -192,11 +192,11 @@
 
         .pool-header { 
             font-weight: 600;
-            font-size: 0.85em; /* Reduzido */
+            font-size: 0.85em; 
             color: var(--cor-texto-secundario);
-            margin-top: 10px; /* Reduzido */
-            margin-bottom: 6px; /* Reduzido */
-            padding-bottom: 3px; /* Reduzido */
+            margin-top: 10px; 
+            margin-bottom: 6px; 
+            padding-bottom: 3px; 
             border-bottom: 1px solid var(--cor-borda);
         }
         .pool-header:first-child { margin-top: 0; }
@@ -204,12 +204,12 @@
         #advancedSection ul, #eliminatedSection ul {
             list-style-type: none;
             padding: 0;
-            margin-top: 5px; /* Reduzido */
+            margin-top: 5px; 
         }
         #advancedSection li, #eliminatedSection li {
             font-weight: 500;
             padding: 3px 0; 
-            font-size: 0.85em; /* Reduzido */
+            font-size: 0.85em; 
             border-bottom: 1px dashed var(--cor-borda); 
             display: flex; 
             align-items: center;
@@ -220,13 +220,13 @@
         #eliminatedSection li .team-display-container {
             flex-grow: 1; 
             min-width: 0; 
-            margin-right: 5px; /* Reduzido */
+            margin-right: 5px; 
         }
         #advancedSection li .score-span,
         #eliminatedSection li .score-span {
             flex-shrink: 0; 
             white-space: nowrap; 
-            font-size: 0.8em; /* Reduzido */
+            font-size: 0.8em; 
             color: var(--cor-texto-secundario);
         }
 
@@ -236,7 +236,7 @@
 
         #standingsTable {
             width: 100%;
-            margin-top: 5px; /* Reduzido */
+            margin-top: 5px; 
             border-collapse: separate; 
             border-spacing: 0; 
         }
@@ -245,12 +245,12 @@
         }
         #standingsTable tr {
             display: block; 
-            margin-bottom: 6px; /* Reduzido */
+            margin-bottom: 6px; 
             border: 1px solid var(--cor-borda);
             border-radius: var(--border-radius-padrao);
-            padding: 6px; /* Reduzido */
+            padding: 6px; 
             background-color: var(--cor-fundo-cartao); 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04); /* Sombra mais leve */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04); 
         }
         #standingsTable tr:last-child {
             margin-bottom: 0;
@@ -259,10 +259,10 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 5px 0; /* Reduzido */
+            padding: 5px 0; 
             border-bottom: 1px dashed var(--cor-borda); 
             text-align: right; 
-            font-size: 0.8em; /* Reduzido */
+            font-size: 0.8em; 
         }
         #standingsTable td:last-child {
             border-bottom: none; 
@@ -271,7 +271,7 @@
             content: attr(data-label); 
             font-weight: 600;
             color: var(--cor-texto-secundario);
-            margin-right: 6px; /* Reduzido */
+            margin-right: 6px; 
             text-align: left; 
         }
         #standingsTable td .team-cell-standings {
@@ -279,7 +279,7 @@
             flex-grow: 1; 
         }
         #standingsTable td .team-cell-standings .team-name-text {
-             margin-left: 0.2em; /* Reduzido */
+             margin-left: 0.2em; 
         }
 
 
@@ -287,31 +287,31 @@
             display: flex;
             justify-content: space-between;
             align-items: stretch; 
-            margin-bottom: 6px; /* Reduzido */
+            margin-bottom: 6px; 
             border: 1px solid var(--cor-borda);
             border-radius: var(--border-radius-padrao);
             background-color: var(--cor-fundo-cartao); 
             overflow: hidden; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02); /* Sombra mais leve */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
             transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
         }
         .matchup:hover {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra de hover mais leve */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
             transform: translateY(-1px); 
         }
 
         .matchup .team {
             cursor: pointer;
-            padding: 0 6px; /* Reduzido */
+            padding: 0 6px; 
             transition: background-color 0.2s, color 0.2s, transform 0.2s;
             flex: 1; 
             font-weight: 600; 
-            font-size: 0.8em; /* Reduzido */
+            font-size: 0.8em; 
             color: var(--cor-texto-principal); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            height: 2.8em; /* Reduzido */
+            height: 2.8em; 
             min-width: 0; 
             overflow: hidden; 
         }
@@ -329,7 +329,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-left: 0.2em; /* Reduzido */
+            margin-left: 0.2em; 
         }
 
         .matchup .team:not(.winner):not(.loser):hover {
@@ -392,21 +392,21 @@
         }
 
         .team-logo { 
-            height: 1.1em;  /* Reduzido */
-            width: 1.8em;   /* Reduzido */
-            margin-right: 4px; /* Reduzido */
+            height: 1.1em;  
+            width: 1.8em;   
+            margin-right: 4px; 
             object-fit: contain; 
             flex-shrink: 0; 
         }
         #standingsTable .team-logo { 
-            height: 1.0em; /* Reduzido */
-            width: 1.6em;  /* Reduzido */
-            margin-right: 3px; /* Reduzido */
+            height: 1.0em; 
+            width: 1.6em;  
+            margin-right: 3px; 
         }
         #advancedList li .team-logo, #eliminatedList li .team-logo { 
-            height: 0.9em; /* Reduzido */
-            width: 1.5em;    /* Reduzido */
-            margin-right: 3px; /* Reduzido */
+            height: 0.9em; 
+            width: 1.5em;    
+            margin-right: 3px; 
         }
 
         #standingsTable td[data-label="Status"] span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
@@ -447,37 +447,39 @@
         /* Media Queries para ecrãs maiores */
         @media (min-width: 768px) { 
             body {
-                padding: 15px; 
-                font-size: 16px; 
+                padding: 12px; /* Ligeiramente reduzido para desktop também */
+                font-size: 15px; /* Ligeiramente reduzido para desktop */
             }
             .controls {
                 flex-direction: row; 
-                padding: 15px 20px; 
+                padding: 12px 18px; /* Reduzido */
                 align-items: center; 
+                margin-bottom: 18px; /* Reduzido */
             }
             .controls .buttons {
                 width: auto; 
             }
             .controls .buttons button { 
-                padding: 9px 18px;
-                font-size: 0.9em;
+                padding: 8px 16px; /* Reduzido */
+                font-size: 0.85em; /* Reduzido */
             }
             .controls .round-indicator { 
                 margin: 0 0 0 auto; 
-                padding: 8px 16px; 
-                font-size: 1em;
+                padding: 7px 14px; /* Reduzido */
+                font-size: 0.95em; /* Reduzido */
             }
             .controls .round-indicator #currentRound {
-                 font-size: 1.15em;
+                 font-size: 1.1em; /* Mantido */
             }
 
             .stage-sections, .results-sections, #previousRoundSummarySection { 
                 flex-direction: row; 
-                gap: 20px; 
+                gap: 15px; /* Reduzido */
+                margin-bottom: 15px; /* Reduzido */
             }
             
              .section {
-                padding: 20px;
+                padding: 15px; /* Reduzido */
             }
             #matchupsSection { flex: 2; }
             #standingsSection { flex: 3; }
@@ -487,7 +489,7 @@
 
             /* ESTILOS DA TABELA PARA DESKTOP */
             #standingsTable {
-                font-size: 0.95em; 
+                font-size: 0.9em; /* Reduzido */
                 border-collapse: collapse; 
             }
             #standingsTable thead {
@@ -504,7 +506,7 @@
             }
             #standingsTable th, #standingsTable td { 
                 display: table-cell; 
-                padding: 10px 12px; 
+                padding: 8px 10px; /* Reduzido */
                 text-align: left; 
                 border-bottom: 1px solid var(--cor-borda); 
                 vertical-align: middle; 
@@ -528,53 +530,53 @@
 
 
             .matchup .team {
-                padding: 0 15px;
-                font-size: 1em;
-                height: 3.8em;
+                padding: 0 12px; /* Reduzido */
+                font-size: 0.95em; /* Reduzido */
+                height: 3.5em; /* Reduzido */
             }
              .team-name-text { 
-                margin-left: 0.5em;
+                margin-left: 0.4em; /* Reduzido */
             }
             
             .team-logo { 
-                height: 1.5em;  
-                width: 2.5em;   
-                margin-right: 8px; 
+                height: 1.4em;  /* Reduzido */
+                width: 2.3em;   /* Reduzido */
+                margin-right: 7px; /* Reduzido */
             }
             #standingsTable .team-logo { 
-                height: 1.3em; 
-                width: 2.2em;  
-                margin-right: 6px; 
+                height: 1.2em; /* Reduzido */
+                width: 2em;  /* Reduzido */
+                margin-right: 5px; /* Reduzido */
             }
             #advancedList li .team-logo, #eliminatedList li .team-logo { 
-                height: 1.2em; 
-                width: 2em;    
-                margin-right: 5px; 
+                height: 1.1em; /* Reduzido */
+                width: 1.8em;    /* Reduzido */
+                margin-right: 4px; /* Reduzido */
             }
              #advancedSection::before, #eliminatedSection::before,
             #standingsSection::before, #matchupsSection::before,
             #previousRoundSummarySection::before { 
-                font-size: 1.15em; 
+                font-size: 1.1em; /* Reduzido */
             }
             #previousRoundSummarySection::before {
-                font-size: 1em; 
+                font-size: 0.95em; /* Reduzido */
             }
             .pool-header { 
-                font-size: 1em; 
+                font-size: 0.95em; /* Reduzido */
             }
              #advancedSection li, #eliminatedSection li {
-                font-size: 1em; 
+                font-size: 0.95em; /* Reduzido */
             }
             #previousRoundSummaryContainer .summary-pool-header {
-                font-size: 0.9em;
+                font-size: 0.85em; /* Reduzido */
             }
             .summary-match-line {
-                font-size: 0.85em;
-                padding: 4px 5px;
+                font-size: 0.8em; /* Reduzido */
+                padding: 3px 4px; /* Reduzido */
             }
             .summary-match-line .team-logo {
-                height: 1.1em;
-                width: 1.8em;
+                height: 1em; /* Reduzido */
+                width: 1.6em; /* Reduzido */
             }
 
             #standingsTable td.status-cell-advanced span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
