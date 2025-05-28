@@ -47,7 +47,7 @@
 
         body {
             font-family: var(--fonte-principal);
-            line-height: 1.5; 
+            line-height: 1.4; /* Reduzido para compacidade geral */
             margin: 0;
             padding: 8px; 
             background-color: var(--cor-fundo-simulador-body); 
@@ -78,14 +78,14 @@
         }
         .controls .buttons { 
             display: flex; 
-            gap: 6px; /* Reduzido */
+            gap: 6px; 
             width: 100%; 
         }
         .controls .buttons button {
             flex-grow: 1; 
-            padding: 5px 6px; /* Ainda mais reduzido */
-            font-size: 0.65em; /* Ainda mais reduzido */
-            min-height: 30px; /* Altura mínima para toque */
+            padding: 5px 6px; 
+            font-size: 0.65em; 
+            min-height: 28px; /* Reduzido */
         }
         .controls .round-indicator { 
             font-size: 0.8em; 
@@ -244,12 +244,12 @@
         #standingsTable thead {
             display: none; 
         }
-        #standingsTable tr {
+        #standingsTable tr { /* Estilo "cartão" para cada linha em mobile */
             display: block; 
             margin-bottom: 6px; 
             border: 1px solid var(--cor-borda);
             border-radius: var(--border-radius-padrao);
-            padding: 6px; 
+            padding: 6px 8px; /* Reduzido padding do cartão */
             background-color: var(--cor-fundo-cartao); 
             box-shadow: 0 1px 2px rgba(0,0,0,0.04); 
         }
@@ -260,10 +260,10 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 5px 0; 
+            padding: 4px 0; /* Reduzido padding vertical da célula */
             border-bottom: 1px dashed var(--cor-borda); 
             text-align: right; 
-            font-size: 0.9em; /* <<< AUMENTADO para melhor legibilidade */
+            font-size: 0.85em; /* Mantido, mas o contexto geral é menor */
         }
         #standingsTable td:last-child {
             border-bottom: none; 
@@ -274,6 +274,7 @@
             color: var(--cor-texto-secundario);
             margin-right: 6px; 
             text-align: left; 
+            font-size: 0.9em; /* Relativo ao font-size do td */
         }
         #standingsTable td .team-cell-standings {
             justify-content: flex-end; 
@@ -306,8 +307,8 @@
             padding: 0 6px; 
             transition: background-color 0.2s, color 0.2s, transform 0.2s;
             flex: 1; 
-            font-weight: 500; /* Ligeiramente menos bold */
-            font-size: 0.75em; /* Reduzido */
+            font-weight: 500; 
+            font-size: 0.75em; 
             color: var(--cor-texto-principal); 
             display: flex; 
             align-items: center; 
@@ -337,7 +338,7 @@
             background-color: color-mix(in srgb, var(--cor-arena-azul) 10%, var(--cor-fundo-cartao));
             color: var(--cor-arena-azul);
         }
-        .matchup .team.winner { background-color: var(--cor-sucesso); color: white; font-weight: 600; } /* Menos bold */
+        .matchup .team.winner { background-color: var(--cor-sucesso); color: white; font-weight: 600; } 
         .matchup .team.loser {
             background-color: var(--cor-fundo-cartao); 
             color: var(--cor-texto-secundario);
@@ -346,14 +347,14 @@
         }
 
         button { 
-            padding: 6px 10px; /* Reduzido */
+            padding: 6px 10px; 
             background-color: var(--cor-arena-azul);
             color: white;
             border: none;
             border-radius: var(--border-radius-padrao);
             cursor: pointer;
             font-weight: 600; 
-            font-size: 0.75em; /* Reduzido */
+            font-size: 0.75em; 
             transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease, transform 0.15s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -393,21 +394,21 @@
         }
 
         .team-logo { 
-            height: 1.0em;  /* Reduzido */
-            width: 1.6em;   /* Reduzido */
-            margin-right: 3px; /* Reduzido */
+            height: 1.0em;  
+            width: 1.6em;   
+            margin-right: 3px; 
             object-fit: contain; 
             flex-shrink: 0; 
         }
         #standingsTable .team-logo { 
-            height: 0.9em; /* Reduzido */
-            width: 1.5em;  /* Reduzido */
-            margin-right: 2px; /* Reduzido */
+            height: 0.9em; 
+            width: 1.5em;  
+            margin-right: 2px; 
         }
         #advancedList li .team-logo, #eliminatedList li .team-logo { 
-            height: 0.8em; /* Reduzido */
-            width: 1.4em;    /* Reduzido */
-            margin-right: 2px; /* Reduzido */
+            height: 0.8em; 
+            width: 1.4em;    
+            margin-right: 2px; 
         }
 
         #standingsTable td[data-label="Status"] span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
@@ -449,25 +450,25 @@
         @media (min-width: 768px) { 
             body {
                 padding: 12px; 
-                font-size: 15px; 
+                font-size: 14px; /* Reduzido ligeiramente para desktop também */
             }
             .controls {
                 flex-direction: row; 
-                padding: 12px 18px; 
+                padding: 10px 15px; /* Reduzido */
                 align-items: center; 
-                margin-bottom: 18px; 
+                margin-bottom: 15px; /* Reduzido */
             }
             .controls .buttons {
                 width: auto; 
             }
             .controls .buttons button { 
-                padding: 8px 16px; 
-                font-size: 0.85em; 
+                padding: 7px 14px; /* Reduzido */
+                font-size: 0.8em; /* Reduzido */
             }
             .controls .round-indicator { 
                 margin: 0 0 0 auto; 
-                padding: 7px 14px; 
-                font-size: 0.95em; 
+                padding: 6px 12px; /* Reduzido */
+                font-size: 0.9em; /* Reduzido */
             }
             .controls .round-indicator #currentRound {
                  font-size: 1.1em; 
@@ -480,7 +481,7 @@
             }
             
              .section {
-                padding: 15px; 
+                padding: 12px; /* Reduzido */
             }
             #matchupsSection { flex: 2; }
             #standingsSection { flex: 3; }
@@ -490,7 +491,7 @@
 
             /* ESTILOS DA TABELA PARA DESKTOP */
             #standingsTable {
-                font-size: 0.9em; 
+                font-size: 0.85em; /* Reduzido */
                 border-collapse: collapse; 
             }
             #standingsTable thead {
@@ -507,7 +508,7 @@
             }
             #standingsTable th, #standingsTable td { 
                 display: table-cell; 
-                padding: 8px 10px; 
+                padding: 7px 9px; /* Reduzido */
                 text-align: left; 
                 border-bottom: 1px solid var(--cor-borda); 
                 vertical-align: middle; 
@@ -531,53 +532,53 @@
 
 
             .matchup .team {
-                padding: 0 12px; 
-                font-size: 0.95em; 
-                height: 3.5em; 
+                padding: 0 10px; /* Reduzido */
+                font-size: 0.9em; /* Reduzido */
+                height: 3.2em; /* Reduzido */
             }
              .team-name-text { 
-                margin-left: 0.4em; 
+                margin-left: 0.3em; /* Reduzido */
             }
             
             .team-logo { 
-                height: 1.4em;  
-                width: 2.3em;   
-                margin-right: 7px; 
+                height: 1.3em;  /* Reduzido */
+                width: 2.1em;   /* Reduzido */
+                margin-right: 6px; /* Reduzido */
             }
             #standingsTable .team-logo { 
-                height: 1.2em; 
-                width: 2em;  
-                margin-right: 5px; 
+                height: 1.1em; /* Reduzido */
+                width: 1.8em;  /* Reduzido */
+                margin-right: 4px; /* Reduzido */
             }
             #advancedList li .team-logo, #eliminatedList li .team-logo { 
-                height: 1.1em; 
-                width: 1.8em;    
-                margin-right: 4px; 
+                height: 1em; /* Reduzido */
+                width: 1.6em;    /* Reduzido */
+                margin-right: 3px; /* Reduzido */
             }
              #advancedSection::before, #eliminatedSection::before,
             #standingsSection::before, #matchupsSection::before,
             #previousRoundSummarySection::before { 
-                font-size: 1.1em; 
+                font-size: 1.05em; /* Reduzido */
             }
             #previousRoundSummarySection::before {
-                font-size: 0.95em; 
+                font-size: 0.9em; /* Reduzido */
             }
             .pool-header { 
-                font-size: 0.95em; 
+                font-size: 0.9em; /* Reduzido */
             }
              #advancedSection li, #eliminatedSection li {
-                font-size: 0.95em; 
+                font-size: 0.9em; /* Reduzido */
             }
             #previousRoundSummaryContainer .summary-pool-header {
-                font-size: 0.85em; 
+                font-size: 0.8em; /* Reduzido */
             }
             .summary-match-line {
-                font-size: 0.8em; 
-                padding: 3px 4px; 
+                font-size: 0.75em; /* Reduzido */
+                padding: 2px 3px; /* Reduzido */
             }
             .summary-match-line .team-logo {
-                height: 1em; 
-                width: 1.6em; 
+                height: 0.9em; /* Reduzido */
+                width: 1.5em; /* Reduzido */
             }
 
             #standingsTable td.status-cell-advanced span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
