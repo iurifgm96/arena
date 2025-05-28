@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Opening Stage - Major</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Tema Claro (Default) & Cores Base do Arena */
+            --cor-arena-azul: #0074FF;
+            --cor-arena-azul-hover: #005fcc; 
+            --cor-sucesso: #28a745;
+            --cor-perigo: #dc3545;
+            --cor-aviso: #ffc107;
+            
+            --cor-fundo-simulador-body: transparent; 
+            --cor-fundo-cartao: #ffffff;
+            --cor-texto-principal: #212529; 
+            --cor-texto-secundario: #525f6c; 
+            --cor-borda: #dee2e6; 
+            --cor-sombra: rgba(0, 0, 0, 0.07); 
+
+            --fonte-principal: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            --border-radius-padrao: 8px; 
+            --sombra-cartao: 0 4px 12px var(--cor-sombra);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Overrides para Tema Escuro */
+                --cor-arena-azul: #1e88e5; 
+                --cor-arena-azul-hover: #42a5f5;
+                --cor-sucesso: #4caf50;
+                --cor-perigo: #f44336;
+                --cor-aviso: #ff9800;
+
+                --cor-fundo-cartao: #2c2f3b; 
+                --cor-texto-principal: #e4e6eb; 
+                --cor-texto-secundario: #b0b3b8; 
+                --cor-borda: #424651; 
+                --cor-sombra: rgba(0, 0, 0, 0.25); 
+            }
+        }
+
+        body {
+            font-family: var(--fonte-principal);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px; 
+            background-color: var(--cor-fundo-simulador-body); 
+            color: var(--cor-texto-principal);
+            transition: background-color 0.3s, color 0.3s; 
+            font-size: 15px; 
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background-color: var(--cor-fundo-simulador-body); 
+        }
+
+        .container > h1 { display: none; }
+
+        .controls {
+            display: flex;
+            flex-direction: column; 
+            align-items: stretch; 
+            margin-bottom: 20px; 
+            padding: 10px; 
+            background-color: var(--cor-fundo-cartao);
+            border-radius: var(--border-radius-padrao);
+            box-shadow: var(--sombra-cartao);
+            border: 1px solid var(--cor-borda);
+            gap: 10px; 
+        }
+        .controls .buttons { 
+            display: flex; 
+            gap: 8px; 
+            width: 100%; 
+        }
+        .controls .buttons button {
+            flex-grow: 1; 
+            padding: 8px 10px; 
+            font-size: 0.8em; 
+        }
+        .controls .round-indicator { 
+            font-size: 0.9em; 
+            font-weight: 600; 
+            color: var(--cor-texto-secundario); 
+            text-align: center; 
+            width: auto; 
+            margin: 10px auto 0 auto; 
+            padding: 6px 12px;
+            background-color: color-mix(in srgb, var(--cor-arena-azul) 10%, var(--cor-fundo-cartao)); 
+            border: 1px solid color-mix(in srgb, var(--cor-arena-azul) 30%, transparent);
+            border-radius: 20px; 
+            display: inline-block; 
+        }
+        .controls .round-indicator #currentRound { 
+            color: var(--cor-arena-azul); 
+            font-weight: 700; 
+            font-size: 1.1em; 
+        }
+
+        .stage-sections, .results-sections, #previousRoundSummarySection { 
+            display: flex;
+            flex-direction: column; 
+            gap: 15px; 
+            margin-bottom: 15px;
+        }
+        
+        #previousRoundSummarySection { }
+        .summary-controls { 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        .summary-controls button {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            background-color: var(--cor-fundo-cartao);
+            color: var(--cor-arena-azul);
+            border: 1px solid var(--cor-arena-azul);
+            box-shadow: none;
+        }
+        .summary-controls button.active,
+        .summary-controls button:hover {
+            background-color: var(--cor-arena-azul);
+            color: white;
+        }
+        .summary-controls button:disabled { 
+            background-color: var(--cor-borda);
+            color: var(--cor-texto-secundario);
+            border-color: var(--cor-borda);
+            cursor: default;
+        }
+
+        #previousRoundSummaryContainer .summary-pool-header {
+            font-size: 0.85em; 
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        #previousRoundSummaryContainer .matchup { 
+            margin-bottom: 5px;
+            pointer-events: none; 
+            opacity: 0.85;
+        }
+         #previousRoundSummaryContainer .matchup .team {
+            font-size: 0.8em;
+            height: 3em;
+            padding: 0 8px;
+        }
+        #previousRoundSummaryContainer .team-logo {
+            height: 1.1em;
+            width: 1.8em;
+        }
+
+
+        .section {
+            background-color: var(--cor-fundo-cartao);
+            padding: 15px; 
+            border-radius: var(--border-radius-padrao);
+            box-shadow: var(--sombra-cartao);
+            border: 1px solid var(--cor-borda);
+            flex-basis: 100%; 
+        }
+        
+        #advancedSection::before, #eliminatedSection::before,
+        #standingsSection::before, #matchupsSection::before,
+        #previousRoundSummarySection::before { 
+            content: attr(data-title); 
+            font-weight: 700; 
+            font-size: 1.1em; 
+            color: var(--cor-texto-principal); 
+            display: block;
+            margin-bottom: 15px; 
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--cor-arena-azul); 
+        }
+        #previousRoundSummarySection::before {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--cor-texto-secundario);
+            border-bottom: 1px solid var(--cor-borda);
+        }
+
+        .pool-header { 
+            font-weight: 600;
+            font-size: 0.95em; 
+            color: var(--cor-texto-secundario);
+            margin-top: 15px; 
+            margin-bottom: 10px; 
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        .pool-header:first-child { margin-top: 0; }
+
+        #advancedSection ul, #eliminatedSection ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 8px;
+        }
+        #advancedSection li, #eliminatedSection li {
+            font-weight: 500;
+            padding: 5px 0; 
+            font-size: 0.95em; 
+            border-bottom: 1px dashed var(--cor-borda); 
+            display: flex; 
+            align-items: center;
+            justify-content: space-between; 
+            overflow: hidden; 
+        }
+        #advancedSection li .team-display-container, 
+        #eliminatedSection li .team-display-container {
+            flex-grow: 1; 
+            min-width: 0; 
+            margin-right: 8px; 
+        }
+        #advancedSection li .score-span,
+        #eliminatedSection li .score-span {
+            flex-shrink: 0; 
+            white-space: nowrap; 
+            font-size: 0.9em;
+            color: var(--cor-texto-secundario);
+        }
+
+        #advancedSection li:last-child, #eliminatedSection li:last-child { border-bottom: none; }
+        #advancedSection li { color: var(--cor-sucesso); }
+        #eliminatedSection li { color: var(--cor-perigo); }
+
+        #standingsTable {
+            width: 100%;
+            margin-top: 8px; 
+            border-collapse: separate; 
+            border-spacing: 0; 
+        }
+        #standingsTable thead {
+            display: none; 
+        }
+        #standingsTable tr {
+            display: block; 
+            margin-bottom: 10px; 
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--border-radius-padrao);
+            padding: 10px;
+            background-color: var(--cor-fundo-cartao); 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+        }
+        #standingsTable tr:last-child {
+            margin-bottom: 0;
+        }
+        #standingsTable td {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 8px 0; 
+            border-bottom: 1px dashed var(--cor-borda); 
+            text-align: right; 
+            font-size: 0.9em;
+        }
+        #standingsTable td:last-child {
+            border-bottom: none; 
+        }
+        #standingsTable td::before { 
+            content: attr(data-label); 
+            font-weight: 600;
+            color: var(--cor-texto-secundario);
+            margin-right: 10px;
+            text-align: left; 
+        }
+        #standingsTable td .team-cell-standings {
+            justify-content: flex-end; 
+            flex-grow: 1; 
+        }
+        #standingsTable td .team-cell-standings .team-name-text {
+             margin-left: 0.4em; 
+        }
+
+
+        .matchup {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch; 
+            margin-bottom: 10px; 
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--border-radius-padrao);
+            background-color: var(--cor-fundo-cartao); 
+            overflow: hidden; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); 
+            transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .matchup:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+            transform: translateY(-2px); 
+        }
+
+        .matchup .team {
+            cursor: pointer;
+            padding: 0 10px; 
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+            flex: 1; 
+            font-weight: 600; 
+            font-size: 0.9em; 
+            color: var(--cor-texto-principal); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 3.5em; 
+            min-width: 0; 
+            overflow: hidden; 
+        }
+        .matchup .team:first-child { border-right: 1px solid var(--cor-borda); }
+        
+        .team-display-container {
+            display: flex;
+            align-items: center;
+            justify-content: center; 
+            width: 100%; 
+            overflow: hidden; 
+        }
+
+        .team-name-text { 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-left: 0.4em; 
+        }
+
+        .matchup .team:not(.winner):not(.loser):hover {
+            background-color: color-mix(in srgb, var(--cor-arena-azul) 10%, var(--cor-fundo-cartao));
+            color: var(--cor-arena-azul);
+        }
+        .matchup .team.winner { background-color: var(--cor-sucesso); color: white; font-weight: 700; }
+        .matchup .team.loser {
+            background-color: var(--cor-fundo-cartao); 
+            color: var(--cor-texto-secundario);
+            text-decoration: line-through;
+            opacity: 0.65; 
+        }
+
+        button { 
+            padding: 8px 15px; 
+            background-color: var(--cor-arena-azul);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-padrao);
+            cursor: pointer;
+            font-weight: 600; 
+            font-size: 0.85em; 
+            transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease, transform 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button#prevRoundButton { 
+            background-color: var(--cor-texto-secundario);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        button#prevRoundButton:hover {
+            background-color: color-mix(in srgb, var(--cor-texto-secundario) 85%, black);
+        }
+        button#nextRoundButton { 
+             background-color: var(--cor-sucesso); 
+        }
+        button#nextRoundButton:hover {
+            background-color: color-mix(in srgb, var(--cor-sucesso) 85%, black);
+        }
+
+        button:hover {
+            background-color: var(--cor-arena-azul-hover);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+        button:active {
+            background-color: color-mix(in srgb, var(--cor-arena-azul) 70%, black);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transform: translateY(0px);
+        }
+        button:disabled {
+            background-color: #cccccc; 
+            color: #666666;
+            opacity: 0.7; 
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: translateY(0px);
+        }
+
+        .team-logo { 
+            height: 1.3em;  
+            width: 2.2em;   
+            margin-right: 6px; 
+            object-fit: contain; 
+            flex-shrink: 0; 
+        }
+        #standingsTable .team-logo { 
+            height: 1.2em; 
+            width: 2em;  
+            margin-right: 5px; 
+        }
+        #advancedList li .team-logo, #eliminatedList li .team-logo { 
+            height: 1.1em; 
+            width: 1.8em;    
+            margin-right: 4px; 
+        }
+
+        #standingsTable td[data-label="Status"] span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
+        #standingsTable td[data-label="Status"] span.status-text-eliminated { color: var(--cor-perigo); font-weight: 700; }
+        #standingsTable td[data-label="Status"] span.status-text-active { color: var(--cor-texto-secundario); font-weight: 500; }
+
+        .summary-match-line {
+            display: flex;
+            align-items: center;
+            font-size: 0.8em;
+            padding: 3px 5px;
+            border-bottom: 1px dotted var(--cor-borda);
+        }
+        .summary-match-line:last-child {
+            border-bottom: none;
+        }
+        .summary-match-line .team-logo {
+            height: 1em; 
+            width: 1.5em;
+            margin-right: 4px;
+            margin-left: 2px;
+        }
+        .summary-match-line .winner-name {
+            font-weight: 600;
+            color: var(--cor-sucesso);
+        }
+        .summary-match-line .loser-name {
+            color: var(--cor-texto-secundario);
+        }
+        .summary-match-line .defeated-text {
+            margin: 0 5px;
+            font-style: italic;
+            font-size: 0.9em;
+            color: var(--cor-texto-secundario);
+        }
+
+
+        /* Media Queries para ecrãs maiores */
+        @media (min-width: 768px) { 
+            body {
+                padding: 15px; 
+                font-size: 16px; 
+            }
+            .controls {
+                flex-direction: row; 
+                padding: 15px 20px; 
+                align-items: center; 
+            }
+            .controls .buttons {
+                width: auto; 
+            }
+            .controls .buttons button { 
+                padding: 9px 18px;
+                font-size: 0.9em;
+            }
+            .controls .round-indicator { 
+                margin: 0 0 0 auto; 
+                padding: 8px 16px; 
+                font-size: 1em;
+            }
+            .controls .round-indicator #currentRound {
+                 font-size: 1.15em;
+            }
+
+            .stage-sections, .results-sections, #previousRoundSummarySection { 
+                flex-direction: row; 
+                gap: 20px; 
+            }
+            
+             .section {
+                padding: 20px;
+            }
+            #matchupsSection { flex: 2; }
+            #standingsSection { flex: 3; }
+            .results-sections .section { flex: 1; }
+            #previousRoundSummarySection { flex: 1; width: 100%;} 
+
+
+            /* ESTILOS DA TABELA PARA DESKTOP */
+            #standingsTable {
+                font-size: 0.95em; 
+                border-collapse: collapse; 
+            }
+            #standingsTable thead {
+                display: table-header-group; 
+            }
+            #standingsTable tr { 
+                display: table-row;
+                margin-bottom: 0;
+                border: none; 
+                border-radius: 0;
+                padding: 0;
+                background-color: transparent;
+                box-shadow: none;
+            }
+            #standingsTable th, #standingsTable td { 
+                display: table-cell; 
+                padding: 10px 12px; 
+                text-align: left; 
+                border-bottom: 1px solid var(--cor-borda); 
+                vertical-align: middle; 
+            }
+            #standingsTable td::before {
+                display: none; 
+            }
+            #standingsTable th { 
+                font-size: 0.8em; 
+                vertical-align: middle;
+            } 
+            #standingsTable thead tr:first-child th {
+                 border-top: 1px solid var(--cor-borda);
+            }
+            #standingsTable tbody tr:last-child td {
+                 border-bottom: 1px solid var(--cor-borda); 
+            }
+            #standingsTable td .team-cell-standings { 
+                 justify-content: flex-start;
+            }
+
+
+            .matchup .team {
+                padding: 0 15px;
+                font-size: 1em;
+                height: 3.8em;
+            }
+             .team-name-text { 
+                margin-left: 0.5em;
+            }
+            
+            .team-logo { 
+                height: 1.5em;  
+                width: 2.5em;   
+                margin-right: 8px; 
+            }
+            #standingsTable .team-logo { 
+                height: 1.3em; 
+                width: 2.2em;  
+                margin-right: 6px; 
+            }
+            #advancedList li .team-logo, #eliminatedList li .team-logo { 
+                height: 1.2em; 
+                width: 2em;    
+                margin-right: 5px; 
+            }
+             #advancedSection::before, #eliminatedSection::before,
+            #standingsSection::before, #matchupsSection::before,
+            #previousRoundSummarySection::before { 
+                font-size: 1.15em; 
+            }
+            #previousRoundSummarySection::before {
+                font-size: 1em; 
+            }
+            .pool-header { 
+                font-size: 1em; 
+            }
+             #advancedSection li, #eliminatedSection li {
+                font-size: 1em; 
+            }
+            #previousRoundSummaryContainer .summary-pool-header {
+                font-size: 0.9em;
+            }
+            .summary-match-line {
+                font-size: 0.85em;
+                padding: 4px 5px;
+            }
+            .summary-match-line .team-logo {
+                height: 1.1em;
+                width: 1.8em;
+            }
+
+            #standingsTable td.status-cell-advanced span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
+            #standingsTable td.status-cell-eliminated span.status-text-eliminated { color: var(--cor-perigo); font-weight: 700; }
+            #standingsTable td.status-cell-active span.status-text-active { color: var(--cor-texto-secundario); font-weight: 500; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulador - Opening Stage</h1>
+
+        <div class="controls">
+            <div class="buttons">
+                <button id="resetButton">Reiniciar</button>
+                <button id="prevRoundButton" disabled>Ronda Ant.</button> 
+                <button id="nextRoundButton" disabled>Próx. Ronda</button> 
+            </div>
+            <div class="round-indicator">Ronda: <span id="currentRound">0</span></div>
+        </div>
+
+        <div class="stage-sections">
+            <div id="matchupsSection" class="section" data-title="Confrontos da Ronda Atual">
+                <div id="matchupsContainer"></div>
+            </div>
+
+            <div id="standingsSection" class="section" data-title="Classificação">
+                <table id="standingsTable">
+                    <thead>
+                        <tr>
+                            <th>Seed</th>
+                            <th>Equipa</th>
+                            <th>V-D</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="previousRoundSummarySection" class="section" data-title="Resultados da Ronda Anterior" style="display: none;">
+            <div class="summary-controls" id="summaryRoundSelector">
+                </div>
+            <div id="previousRoundSummaryContainer">
+                </div>
+        </div>
+
+        <div class="results-sections">
+            <div id="advancedSection" class="section" data-title="Apuradas (3 Vitórias)">
+                <ul id="advancedList"></ul>
+            </div>
+
+            <div id="eliminatedSection" class="section" data-title="Eliminadas (3 Derrotas)">
+                <ul id="eliminatedList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialTeams = [
+                { id: 1, name: 'Complexity', seed: 1, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Complexity_2025_full_allmode.png' }, 
+                { id: 2, name: 'HEROIC', seed: 2, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Heroic_2023_logo.png' },
+                { id: 3, name: 'B8', seed: 3, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/B8_darkmode.png' }, 
+                { id: 4, name: 'BetBoom', seed: 4, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/BetBoom_Team_2024_allmode.png' },
+                { id: 5, name: 'TYLOO', seed: 5, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/TyLoo_2016_allmode.png' }, 
+                { id: 6, name: 'Lynn Vision', seed: 6, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Lynn_Vision_Gaming_2024_full_allmode.png' },
+                { id: 7, name: 'Wildcard', seed: 7, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/wildcard-seeklogo.png' },
+                { id: 8, name: 'FlyQuest', seed: 8, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Flyquest_logo_2021.png' },
+                { id: 9, name: 'OG', seed: 9, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/OG_RB_allmode.png' }, 
+                { id: 10, name: 'Chinggis Warriors', seed: 10, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/CW_allmode.png' },
+                { id: 11, name: 'Imperial', seed: 11, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/imperial-esports-seeklogo.png' }, 
+                { id: 12, name: 'Nemiga', seed: 12, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/nemiga.png' }, 
+                { id: 13, name: 'NRG', seed: 13, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/NRG_2024_allmode.png' }, 
+                { id: 14, name: 'Legacy', seed: 14, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Legacy_allmode.png' },
+                { id: 15, name: 'Metizport', seed: 15, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Metizport_2023_allmode.png' }, 
+                { id: 16, name: 'Fluxo', seed: 16, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Fluxo_darkmode.png' },
+            ];
+
+            let teams = [];
+            let currentRound = 0; 
+            let matchups = [];
+            let stageComplete = false;
+            let roundHistory = []; 
+            let displayedSummaryRound = 0; 
+
+            const matchupsContainer = document.getElementById('matchupsContainer');
+            const standingsTableBody = document.getElementById('standingsTable').getElementsByTagName('tbody')[0];
+            const advancedList = document.getElementById('advancedList');
+            const eliminatedList = document.getElementById('eliminatedList');
+            const currentRoundSpan = document.getElementById('currentRound');
+            const resetButton = document.getElementById('resetButton');
+            const prevRoundButton = document.getElementById('prevRoundButton');
+            const nextRoundButton = document.getElementById('nextRoundButton'); 
+            const prevRoundSummarySection = document.getElementById('previousRoundSummarySection');
+            const prevRoundSummaryContainer = document.getElementById('previousRoundSummaryContainer');
+            const summaryRoundSelector = document.getElementById('summaryRoundSelector');
+
+
+            const POOL_DISPLAY_ORDER = {
+                1: ["0-0"], 2: ["1-0", "0-1"], 3: ["2-0", "1-1", "0-2"],
+                4: ["2-1", "1-2"], 5: ["2-2"]
+            };
+
+            function deepCopy(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+            function updateControlButtonsState() {
+                prevRoundButton.disabled = currentRound <= 1 && !roundHistory.find(r => r.round === 1 && r.matchupsWithResults.length > 0);
+                
+                const allCurrentMatchesDecided = matchups.every(m => m.winnerId !== null);
+                if (stageComplete || matchups.length === 0) {
+                    nextRoundButton.disabled = true;
+                } else {
+                    nextRoundButton.disabled = !allCurrentMatchesDecided;
+                }
+            }
+
+
+            function initializeStage() {
+                teams = deepCopy(initialTeams).map(team => ({
+                    ...team, wins: 0, losses: 0, buchholz: 0, opponentsPlayed: [], status: 'active'
+                }));
+                currentRound = 0; 
+                matchups = []; stageComplete = false; roundHistory = [];
+                displayedSummaryRound = 0; 
+                advancedList.innerHTML = ''; eliminatedList.innerHTML = '';
+                startNewRound(); 
+            }
+
+            function getTeamById(id) { return teams.find(team => team.id === id); }
+
+            function calculateBuchholz() {
+                teams.forEach(team => {
+                    team.buchholz = 0;
+                    team.opponentsPlayed.forEach(opponentId => {
+                        const opponent = getTeamById(opponentId);
+                        if (opponent) team.buchholz += (opponent.wins - opponent.losses);
+                    });
+                });
+            }
+
+            function sortTeamsForPairing(teamList) { 
+                return teamList.sort((a, b) => {
+                    if (b.buchholz !== a.buchholz) return b.buchholz - a.buchholz;
+                    return a.seed - b.seed;
+                });
+            }
+            
+            function getMatchFormat(poolRecord) {
+                switch (poolRecord) {
+                    case "0-0": case "1-0": case "0-1": case "1-1": return "BO1";
+                    case "2-0": case "0-2": case "2-1": case "1-2": case "2-2": return "BO3";
+                    default: return "BO1"; 
+                }
+            }
+
+            function generateRoundMatchups() { 
+                if (stageComplete) return;
+                matchups = []; 
+                
+                const teamsAtStartOfThisRound = deepCopy(teams);
+                
+                let historyEntry = roundHistory.find(r => r.round === currentRound);
+                if (!historyEntry) {
+                    historyEntry = { round: currentRound, teamsAtStartOfRound: teamsAtStartOfThisRound, matchupsWithResults: [] };
+                    roundHistory.push(historyEntry);
+                    roundHistory.sort((a, b) => a.round - b.round); 
+                } else {
+                    historyEntry.teamsAtStartOfRound = teamsAtStartOfThisRound;
+                    if (!matchups || matchups.length === 0) { 
+                         historyEntry.matchupsWithResults = [];
+                    }
+                }
+                currentRoundSpan.textContent = currentRound; 
+
+                const activeTeams = teams.filter(team => team.status === 'active');
+                if ((activeTeams.length < 2 && currentRound > 1) || (activeTeams.length === 0 && currentRound > 1)) {
+                    if (!checkAndFinalizeStageCompletion()) renderAll();
+                    return;
+                }
+
+                if (currentRound === 1) {
+                    const poolRecord = "0-0";
+                    const sortedBySeed = [...activeTeams].sort((a, b) => a.seed - b.seed);
+                    if (sortedBySeed.length < 2) return;
+                    const midPoint = Math.floor(sortedBySeed.length / 2);
+                    for (let i = 0; i < midPoint; i++) {
+                        if (sortedBySeed[i] && sortedBySeed[i + midPoint]) {
+                            matchups.push({ team1Id: sortedBySeed[i].id, team2Id: sortedBySeed[i + midPoint].id, winnerId: null, round: currentRound, poolRecord: poolRecord });
+                        }
+                    }
+                } else {
+                    const pools = {};
+                    activeTeams.forEach(team => {
+                        const record = `${team.wins}-${team.losses}`; 
+                        if (!pools[record]) pools[record] = [];
+                        pools[record].push(team);
+                    });
+                    const processOrder = POOL_DISPLAY_ORDER[currentRound] || Object.keys(pools);
+                    processOrder.forEach(record => {
+                        if (pools[record]) {
+                            let poolTeams = sortTeamsForPairing(deepCopy(pools[record]));
+                            while (poolTeams.length >= 2) {
+                                let t1Proxy = poolTeams.shift(), t2Proxy = null, foundOpp = false;
+                                for (let i = poolTeams.length - 1; i >= 0; i--) {
+                                    if (!getTeamById(t1Proxy.id).opponentsPlayed.includes(poolTeams[i].id)) {
+                                        t2Proxy = poolTeams.splice(i, 1)[0]; foundOpp = true; break;
+                                    }
+                                }
+                                if (!foundOpp && poolTeams.length > 0) t2Proxy = poolTeams.pop();
+                                if (t1Proxy && t2Proxy) matchups.push({ team1Id: t1Proxy.id, team2Id: t2Proxy.id, winnerId: null, round: currentRound, poolRecord: record });
+                            }
+                        }
+                    });
+                }
+                if (historyEntry) {
+                    historyEntry.matchupsWithResults = deepCopy(matchups);
+                }
+                if (matchups.length === 0 && activeTeams.length > 0 && !stageComplete) checkAndFinalizeStageCompletion();
+            }
+            
+            function commitRoundState() { 
+                if (stageComplete) return;
+                let historyEntry = roundHistory.find(r => r.round === currentRound);
+                if (!historyEntry && currentRound > 0) { 
+                    const teamsSnapshotForEmergencyEntry = deepCopy(teams); 
+                    historyEntry = { round: currentRound, teamsAtStartOfRound: teamsSnapshotForEmergencyEntry, matchupsWithResults: [] };
+                    roundHistory.push(historyEntry);
+                    roundHistory.sort((a, b) => a.round - b.round);
+                }
+
+                if (historyEntry) { 
+                    historyEntry.matchupsWithResults = deepCopy(matchups); 
+                } else if (currentRound > 0) { 
+                    console.error("Falha crítica: Não foi possível criar ou encontrar entrada no histórico para commit da ronda:", currentRound);
+                }
+            }
+
+            function recordMatchResult(matchIndex, newWinningTeamId) {
+                const match = matchups[matchIndex]; 
+                if (!match) return;
+
+                if (stageComplete && !match.winnerId) { alert("A fase já terminou."); return; }
+                
+                roundHistory = roundHistory.filter(state => state.round < currentRound);
+                const currentRoundHistoryEntry = roundHistory.find(r => r.round === currentRound);
+                if (currentRoundHistoryEntry) {
+                }
+                stageComplete = false; 
+
+                const team1 = getTeamById(match.team1Id);
+                const team2 = getTeamById(match.team2Id);
+
+                if (match.winnerId === newWinningTeamId) return; 
+
+                if (match.winnerId !== null && match.winnerId !== newWinningTeamId) {
+                    const previousWinner = getTeamById(match.winnerId);
+                    const previousLoser = (match.winnerId === team1.id) ? team2 : team1;
+                    previousWinner.wins--; 
+                    previousLoser.losses--;
+                    updateTeamStatus(previousWinner);
+                    updateTeamStatus(previousLoser);
+                } else if (match.winnerId === newWinningTeamId) { 
+                    return;
+                }
+                
+                match.winnerId = newWinningTeamId; 
+                const newWinner = getTeamById(newWinningTeamId);
+                const newLoser = (newWinningTeamId === team1.id) ? team2 : team1;
+                
+                newWinner.wins++; 
+                newLoser.losses++;
+
+                if (!team1.opponentsPlayed.includes(team2.id)) team1.opponentsPlayed.push(team2.id);
+                if (!team2.opponentsPlayed.includes(team1.id)) team2.opponentsPlayed.push(team1.id);
+                
+                updateTeamStatus(team1); updateTeamStatus(team2);
+                calculateBuchholz(); 
+                renderAll(); 
+            }
+
+            function updateTeamStatus(team) {
+                if (team.wins < 3 && team.losses < 3) team.status = 'active';
+                if (team.wins === 3) team.status = 'advanced';
+                else if (team.losses === 3) team.status = 'eliminated';
+            }
+            
+            function checkAndFinalizeStageCompletion() {
+                if (stageComplete) return true; 
+                const adv = teams.filter(t=>t.status==='advanced').length, elim=teams.filter(t=>t.status==='eliminated').length, active=teams.filter(t=>t.status==='active').length;
+                let end = (adv >= 8 || elim >= 8 || (adv + elim === 16) || (currentRound >= 3 && active < 2 && (adv + elim < 16)));
+                if(end) { stageComplete=true; console.log("STAGE COMPLETE"); }
+                return stageComplete;
+            }
+            
+            function startNewRound() { 
+                if (stageComplete) { renderAll(); return; }
+                currentRound++; 
+                generateRoundMatchups(); 
+                renderAll();
+            }
+
+            function goToPreviousRound() {
+                if (currentRound === 0) return;
+                if (currentRound === 1 && (!roundHistory.find(r => r.round === 1) || roundHistory.find(r => r.round === 1).matchupsWithResults.length === 0) ) {
+                    initializeStage(); 
+                    return; 
+                }
+
+                const targetRoundToReplay = currentRound - 1;
+                currentRound = targetRoundToReplay; 
+                displayedSummaryRound = currentRound > 1 ? currentRound - 1 : 0; 
+
+                const historyEntryForTargetRound = roundHistory.find(r => r.round === currentRound);
+
+                if (historyEntryForTargetRound && historyEntryForTargetRound.teamsAtStartOfRound) {
+                    teams = deepCopy(historyEntryForTargetRound.teamsAtStartOfRound); 
+                    matchups = deepCopy(historyEntryForTargetRound.matchupsWithResults || []); 
+                    
+                    if(matchups.length === 0 && (!historyEntryForTargetRound.matchupsWithResults || historyEntryForTargetRound.matchupsWithResults.length === 0)) {
+                        generateRoundMatchups(); 
+                    }
+                } else {
+                     if (currentRound === 1) { 
+                        teams = deepCopy(initialTeams).map(team => ({...team, wins: 0, losses: 0, buchholz: 0, opponentsPlayed: [], status: 'active'}));
+                        generateRoundMatchups(); 
+                    } else {
+                        initializeStage(); 
+                        return;
+                    }
+                }
+                
+                stageComplete = false;
+                roundHistory = roundHistory.filter(r => r.round < currentRound); 
+                renderAll();
+            }
+
+
+            function createTeamDisplay(team, type) { 
+                const teamContainer = document.createElement('span');
+                teamContainer.classList.add('team-display-container'); 
+
+                if (team.logoUrl && team.logoUrl.trim() !== '') { 
+                    const img = document.createElement('img');
+                    img.src = team.logoUrl;
+                    img.alt = ``; 
+                    img.classList.add('team-logo');
+                    img.onerror = function() { 
+                        this.style.display='none'; 
+                    };
+                    teamContainer.appendChild(img);
+                }
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = team.name;
+                nameSpan.classList.add('team-name-text'); 
+                teamContainer.appendChild(nameSpan);
+                return teamContainer;
+            }
+
+            function renderPreviousRoundSummary() { 
+                prevRoundSummaryContainer.innerHTML = ''; 
+                summaryRoundSelector.innerHTML = ''; 
+
+                const completedRounds = roundHistory.filter(r => r.matchupsWithResults && r.matchupsWithResults.length > 0 && r.round < currentRound);
+
+                if (completedRounds.length === 0) {
+                    prevRoundSummarySection.style.display = 'none';
+                    return;
+                }
+                prevRoundSummarySection.style.display = 'block';
+
+                completedRounds.forEach(histEntry => {
+                    const btn = document.createElement('button');
+                    btn.textContent = `R${histEntry.round}`; 
+                    btn.onclick = () => {
+                        displayedSummaryRound = histEntry.round;
+                        renderPreviousRoundSummary(); 
+                    };
+                    if (histEntry.round === displayedSummaryRound) {
+                        btn.classList.add('active');
+                    }
+                    summaryRoundSelector.appendChild(btn);
+                });
+                if(displayedSummaryRound === 0 && completedRounds.length > 0){ 
+                    displayedSummaryRound = completedRounds[completedRounds.length -1].round;
+                    const activeBtn = Array.from(summaryRoundSelector.children).find(b => parseInt(b.textContent.replace('R','')) === displayedSummaryRound);
+                    if(activeBtn) activeBtn.classList.add('active');
+                }
+
+                const roundToShow = roundHistory.find(r => r.round === displayedSummaryRound);
+
+                if (roundToShow && roundToShow.matchupsWithResults && roundToShow.matchupsWithResults.length > 0) {
+                    prevRoundSummarySection.setAttribute('data-title', `Resultados da Ronda ${displayedSummaryRound}`);
+                    
+                    const matchupsByPool = {};
+                    roundToShow.matchupsWithResults.forEach(match => {
+                        const poolKey = match.poolRecord;
+                        if (!matchupsByPool[poolKey]) matchupsByPool[poolKey] = [];
+                        matchupsByPool[poolKey].push(match);
+                    });
+
+                    const displayOrder = POOL_DISPLAY_ORDER[displayedSummaryRound] || Object.keys(matchupsByPool).sort();
+
+                    displayOrder.forEach(poolKey => {
+                        if (matchupsByPool[poolKey] && matchupsByPool[poolKey].length > 0) {
+                            const poolHeaderDiv = document.createElement('div');
+                            poolHeaderDiv.classList.add('summary-pool-header'); 
+                            const matchFormat = getMatchFormat(poolKey);
+                            poolHeaderDiv.textContent = `Pool ${poolKey} (${matchFormat})`;
+                            prevRoundSummaryContainer.appendChild(poolHeaderDiv);
+
+                            matchupsByPool[poolKey].forEach(match => {
+                                const team1 = initialTeams.find(t => t.id === match.team1Id); 
+                                const team2 = initialTeams.find(t => t.id === match.team2Id);
+                                if (!team1 || !team2) return;
+
+                                const summaryLine = document.createElement('div');
+                                summaryLine.classList.add('summary-match-line');
+
+                                const winner = (match.winnerId === team1.id) ? team1 : team2;
+                                const loser = (match.winnerId === team1.id) ? team2 : team1;
+
+                                const winnerDisplay = createTeamDisplay(winner, 'list'); 
+                                const winnerNameSpan = winnerDisplay.querySelector('.team-name-text');
+                                if(winnerNameSpan) winnerNameSpan.classList.add('winner-name');
+                                
+                                const loserDisplay = createTeamDisplay(loser, 'list');
+                                const loserNameSpan = loserDisplay.querySelector('.team-name-text');
+                                if(loserNameSpan) loserNameSpan.classList.add('loser-name');
+
+                                const defeatedText = document.createElement('span');
+                                defeatedText.classList.add('defeated-text');
+                                defeatedText.textContent = 'derrotou';
+
+                                summaryLine.appendChild(winnerDisplay);
+                                summaryLine.appendChild(defeatedText);
+                                summaryLine.appendChild(loserDisplay);
+                                prevRoundSummaryContainer.appendChild(summaryLine);
+                            });
+                        }
+                    });
+                } else if (completedRounds.length > 0 && displayedSummaryRound === 0) {
+                    displayedSummaryRound = completedRounds[completedRounds.length - 1].round;
+                    renderPreviousRoundSummary(); 
+                } else {
+                     prevRoundSummarySection.setAttribute('data-title', `Resultados da Ronda Anterior`); 
+                }
+            }
+
+
+            function renderMatchups() { 
+                matchupsContainer.innerHTML = '';
+                currentRoundSpan.textContent = stageComplete ? `Final (${currentRound})` : (currentRound === 0 ? "N/A" : currentRound) ;
+
+                let messageP = matchupsContainer.querySelector('p.message-placeholder');
+                
+                let messageText = "";
+                if (stageComplete) messageText = 'Fase concluída!';
+                else if (matchups.length === 0 && currentRound > 0) {
+                    if (teams.filter(t => t.status === 'active').length < 2) messageText = 'Não há equipas ativas suficientes para mais confrontos.';
+                    else messageText = 'Nenhum confronto para esta ronda.';
+                } else if (matchups.length === 0 && currentRound === 0) {
+                    messageText = 'A iniciar...';
+                } else if (matchups.length === 0 && currentRound > 0 && !stageComplete) {
+                    messageText = 'A gerar confrontos...';
+                }
+
+                if (messageText) {
+                    if (!messageP) {
+                        messageP = document.createElement('p');
+                        messageP.classList.add('message-placeholder');
+                        matchupsContainer.appendChild(messageP);
+                    }
+                    messageP.textContent = messageText;
+                    return; 
+                } else if (messageP && matchupsContainer.contains(messageP)) { 
+                     matchupsContainer.removeChild(messageP);
+                }
+
+                const matchupsByPool = {};
+                matchups.forEach(match => {
+                    const poolKey = match.poolRecord;
+                    if (!matchupsByPool[poolKey]) matchupsByPool[poolKey] = [];
+                    matchupsByPool[poolKey].push(match);
+                });
+
+                const displayOrder = POOL_DISPLAY_ORDER[currentRound] || Object.keys(matchupsByPool).sort();
+
+                displayOrder.forEach(poolKey => {
+                    if (matchupsByPool[poolKey] && matchupsByPool[poolKey].length > 0) {
+                        const poolHeaderDiv = document.createElement('div');
+                        poolHeaderDiv.classList.add('pool-header');
+                        const matchFormat = getMatchFormat(poolKey);
+                        poolHeaderDiv.textContent = `Confrontos ${poolKey} (${matchFormat})`;
+                        matchupsContainer.appendChild(poolHeaderDiv);
+
+                        matchupsByPool[poolKey].forEach(match => { 
+                            const originalMatchIndex = matchups.indexOf(match);
+
+                            const team1 = getTeamById(match.team1Id); const team2 = getTeamById(match.team2Id);
+                            if (!team1 || !team2) { console.error("Equipa não encontrada:", match); return; }
+
+                            const matchDiv = document.createElement('div'); matchDiv.classList.add('matchup');
+                            
+                            const team1Div = document.createElement('div'); team1Div.classList.add('team');
+                            team1Div.appendChild(createTeamDisplay(team1, 'matchup'));
+                            team1Div.onclick = () => recordMatchResult(originalMatchIndex, team1.id); 
+
+                            const team2Div = document.createElement('div'); team2Div.classList.add('team');
+                            team2Div.appendChild(createTeamDisplay(team2, 'matchup'));
+                            team2Div.onclick = () => recordMatchResult(originalMatchIndex, team2.id); 
+
+                            team1Div.classList.remove('winner', 'loser'); team2Div.classList.remove('winner', 'loser');
+                            if (match.winnerId) {
+                                if (team1.id === match.winnerId) { team1Div.classList.add('winner'); team2Div.classList.add('loser'); }
+                                else if (team2.id === match.winnerId) { team2Div.classList.add('winner'); team1Div.classList.add('loser'); }
+                            }
+                            matchDiv.appendChild(team1Div); matchDiv.appendChild(team2Div);
+                            matchupsContainer.appendChild(matchDiv);
+                        });
+                    }
+                });
+            }
+
+            function renderStandings() { 
+                standingsTableBody.innerHTML = '';
+                const tableHeaders = ["Seed", "Equipa", "V-D", "Status"]; 
+
+                const customSort = (a, b) => { 
+                    const statusOrder = { active: 1, advanced: 2, eliminated: 3 };
+                    if (statusOrder[a.status] !== statusOrder[b.status]) {
+                        return statusOrder[a.status] - statusOrder[b.status];
+                    }
+                    if (b.wins !== a.wins) return b.wins - a.wins;
+                    if (a.losses !== b.losses) return a.losses - b.losses;
+                    return a.seed - b.seed;
+                };
+                const sortedForDisplay = [...teams].sort(customSort); 
+
+                sortedForDisplay.forEach(team => {
+                    const row = standingsTableBody.insertRow();
+                    
+                    const seedCell = row.insertCell();
+                    seedCell.textContent = team.seed;
+                    seedCell.setAttribute('data-label', tableHeaders[0]);
+                    
+                    const nameCell = row.insertCell(); 
+                    nameCell.appendChild(createTeamDisplay(team, 'table'));
+                    nameCell.setAttribute('data-label', tableHeaders[1]);
+                    
+                    const recordCell = row.insertCell();
+                    recordCell.textContent = `${team.wins}-${team.losses}`;
+                    recordCell.setAttribute('data-label', tableHeaders[2]);
+
+                    const statusCell = row.insertCell();
+                    statusCell.setAttribute('data-label', tableHeaders[3]);
+                    
+                    const statusTextSpan = document.createElement('span'); 
+                    statusCell.appendChild(statusTextSpan);
+
+                    let statusText = 'Em Jogo';
+                    statusTextSpan.classList.remove('status-text-advanced', 'status-text-eliminated', 'status-text-active');
+
+                    if (team.status === 'advanced') { 
+                        statusText = `Apurada`; 
+                        statusTextSpan.classList.add('status-text-advanced');
+                    } else if (team.status === 'eliminated') { 
+                        statusText = `Eliminada`; 
+                        statusTextSpan.classList.add('status-text-eliminated');
+                    } else { 
+                        statusTextSpan.classList.add('status-text-active');
+                    }
+                    statusTextSpan.textContent = statusText;
+                });
+            }
+
+            function renderAdvancedEliminatedLists() { 
+                advancedList.innerHTML = ''; eliminatedList.innerHTML = '';
+                const sortForFinalLists = (a,b) => { 
+                    if(a.wins !== b.wins) return b.wins - a.wins; 
+                    if(a.losses !== b.losses) return a.losses - b.losses;
+                    return a.seed - b.seed;
+                };
+
+                teams.filter(t => t.status === 'advanced').sort(sortForFinalLists).forEach(team => {
+                    const li = document.createElement('li'); 
+                    const teamDisplay = createTeamDisplay(team, 'list');
+                    li.appendChild(teamDisplay);
+                    
+                    const scoreSpan = document.createElement('span');
+                    scoreSpan.textContent = ` (${team.wins}-${team.losses})`;
+                    scoreSpan.classList.add('score-span'); 
+                    li.appendChild(scoreSpan);
+                    advancedList.appendChild(li);
+                });
+                teams.filter(t => t.status === 'eliminated').sort(sortForFinalLists).forEach(team => {
+                    const li = document.createElement('li'); 
+                    const teamDisplay = createTeamDisplay(team, 'list');
+                    li.appendChild(teamDisplay);
+
+                    const scoreSpan = document.createElement('span');
+                    scoreSpan.textContent = ` (${team.wins}-${team.losses})`;
+                    scoreSpan.classList.add('score-span'); 
+                    li.appendChild(scoreSpan);
+                    eliminatedList.appendChild(li);
+                });
+             }
+            
+            function renderAll() {
+                renderStandings(); 
+                renderMatchups(); 
+                renderAdvancedEliminatedLists();
+                renderPreviousRoundSummary(); 
+                updateControlButtonsState(); 
+            }
+
+            nextRoundButton.onclick = () => {
+                if (stageComplete) return;
+
+                const allDecided = matchups.every(m => m.winnerId !== null);
+                if (!allDecided || matchups.length === 0) {
+                    alert("Por favor, decida todos os jogos da ronda atual antes de avançar.");
+                    return;
+                }
+                commitRoundState();
+                if (!checkAndFinalizeStageCompletion()) {
+                    displayedSummaryRound = currentRound;
+                    startNewRound();
+                } else {
+                    renderAll(); 
+                }
+            };
+
+            resetButton.onclick = initializeStage;
+            prevRoundButton.onclick = goToPreviousRound;
+            initializeStage(); 
+        });
+    </script>
+</body>
+</html>
