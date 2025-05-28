@@ -84,15 +84,24 @@
         .controls .buttons button {
             flex-grow: 1; 
         }
-        .controls p {
-            font-size: 1em; 
+        .controls .round-indicator { 
+            font-size: 0.9em; 
             font-weight: 600; 
-            color: var(--cor-texto-principal);
+            color: var(--cor-texto-secundario); 
             text-align: center; 
-            width: 100%;
-            margin-top: 10px; 
+            width: auto; 
+            margin: 10px auto 0 auto; 
+            padding: 6px 12px;
+            background-color: color-mix(in srgb, var(--cor-arena-azul) 10%, var(--cor-fundo-cartao)); 
+            border: 1px solid color-mix(in srgb, var(--cor-arena-azul) 30%, transparent);
+            border-radius: 20px; 
+            display: inline-block; 
         }
-        .controls p #currentRound { color: var(--cor-arena-azul); font-weight: 700; }
+        .controls .round-indicator #currentRound { 
+            color: var(--cor-arena-azul); 
+            font-weight: 700; 
+            font-size: 1.1em; 
+        }
 
         .stage-sections, .results-sections {
             display: flex;
@@ -139,12 +148,28 @@
         }
         #advancedSection li, #eliminatedSection li {
             font-weight: 500;
-            padding: 3px 0; 
+            padding: 5px 0; /* Aumentar padding vertical ligeiramente */
             font-size: 0.95em; 
             border-bottom: 1px dashed var(--cor-borda); 
             display: flex; 
             align-items: center;
+            justify-content: space-between; /* Para empurrar o score para a direita */
+            overflow: hidden; /* Para o ellipsis funcionar no nome da equipa */
         }
+        #advancedSection li .team-display-container, 
+        #eliminatedSection li .team-display-container {
+            flex-grow: 1; /* Permite que o nome da equipa ocupe espaço */
+            min-width: 0; /* Essencial para o ellipsis funcionar em flex items */
+            margin-right: 8px; /* Espaço entre nome e score */
+        }
+        #advancedSection li .score-span,
+        #eliminatedSection li .score-span {
+            flex-shrink: 0; /* Não deixa o score encolher ou quebrar */
+            white-space: nowrap; /* Garante que o score não quebra */
+            font-size: 0.9em;
+            color: var(--cor-texto-secundario);
+        }
+
         #advancedSection li:last-child, #eliminatedSection li:last-child { border-bottom: none; }
         #advancedSection li { color: var(--cor-sucesso); }
         #eliminatedSection li { color: var(--cor-perigo); }
@@ -153,8 +178,8 @@
         #standingsTable {
             width: 100%;
             margin-top: 8px; 
-            border-collapse: separate; /* Necessário para border-radius em TRs */
-            border-spacing: 0; /* Remove espaço entre "cartões" se usar separate */
+            border-collapse: separate; 
+            border-spacing: 0; 
         }
         #standingsTable thead {
             display: none; 
@@ -166,7 +191,7 @@
             border-radius: var(--border-radius-padrao);
             padding: 10px;
             background-color: var(--cor-fundo-cartao); 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra mais leve para os cartões */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
         }
         #standingsTable tr:last-child {
             margin-bottom: 0;
@@ -174,10 +199,10 @@
         #standingsTable td {
             display: flex; 
             justify-content: space-between; 
-            align-items: center; /* Alinha o label e o valor verticalmente */
+            align-items: center; 
             padding: 8px 0; 
             border-bottom: 1px dashed var(--cor-borda); 
-            text-align: right; /* Alinha o valor da célula à direita */
+            text-align: right; 
             font-size: 0.9em;
         }
         #standingsTable td:last-child {
@@ -188,12 +213,11 @@
             font-weight: 600;
             color: var(--cor-texto-secundario);
             margin-right: 10px;
-            text-align: left; /* Label à esquerda */
+            text-align: left; 
         }
-        /* Estilo específico para a célula do nome da equipa (que já é flex) */
         #standingsTable td .team-cell-standings {
-            justify-content: flex-end; /* Alinha o conteúdo (logo+nome) à direita */
-            flex-grow: 1; /* Permite que o conteúdo da equipa ocupe o espaço */
+            justify-content: flex-end; 
+            flex-grow: 1; 
         }
         #standingsTable td .team-cell-standings .team-name-text {
              margin-left: 0.4em; 
@@ -308,7 +332,7 @@
             object-fit: contain; 
             flex-shrink: 0; 
         }
-        #standingsTable .team-logo { /* Para mobile, dentro do cartão */
+        #standingsTable .team-logo { 
             height: 1.2em; 
             width: 2em;  
             margin-right: 5px; 
@@ -319,7 +343,6 @@
             margin-right: 4px; 
         }
 
-        /* Cores de status na tabela (aplicadas ao valor da célula em mobile) */
         #standingsTable td[data-label="Status"] span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
         #standingsTable td[data-label="Status"] span.status-text-eliminated { color: var(--cor-perigo); font-weight: 700; }
         #standingsTable td[data-label="Status"] span.status-text-active { color: var(--cor-texto-secundario); font-weight: 500; }
@@ -334,17 +357,20 @@
             .controls {
                 flex-direction: row; 
                 padding: 15px 20px; 
-                align-items: center;
+                align-items: center; 
             }
             .controls .buttons {
                 width: auto; 
             }
-            .controls p {
-                text-align: right; 
-                width: auto;
-                margin-top: 0;
-                font-size: 1.1em; 
+            .controls .round-indicator { 
+                margin: 0 0 0 auto; 
+                padding: 8px 16px; 
+                font-size: 1em;
             }
+            .controls .round-indicator #currentRound {
+                 font-size: 1.15em;
+            }
+
             .stage-sections, .results-sections {
                 flex-direction: row; 
                 gap: 20px; 
@@ -359,15 +385,15 @@
             /* ESTILOS DA TABELA PARA DESKTOP */
             #standingsTable {
                 font-size: 0.95em; 
-                border-collapse: collapse; /* Garante que as bordas se fundem */
+                border-collapse: collapse; 
             }
             #standingsTable thead {
-                display: table-header-group; /* Mostra o cabeçalho em desktop */
+                display: table-header-group; 
             }
-            #standingsTable tr { /* Linhas voltam ao normal */
+            #standingsTable tr { 
                 display: table-row;
                 margin-bottom: 0;
-                border: none; /* Bordas de "cartão" removidas */
+                border: none; 
                 border-radius: 0;
                 padding: 0;
                 background-color: transparent;
@@ -376,28 +402,25 @@
             #standingsTable th, #standingsTable td { 
                 display: table-cell; 
                 padding: 10px 12px; 
-                text-align: left; /* Alinhamento padrão para células de tabela */
-                border-bottom: 1px solid var(--cor-borda); /* Borda apenas em baixo para desktop */
+                text-align: left; 
+                border-bottom: 1px solid var(--cor-borda); 
                 vertical-align: middle; 
             }
             #standingsTable td::before {
-                display: none; /* Esconde os labels ::before em desktop */
+                display: none; 
             }
             #standingsTable th { 
                 font-size: 0.8em; 
                 vertical-align: middle;
             } 
-            /* Ajuste para a primeira linha de cabeçalho ter borda superior */
             #standingsTable thead tr:first-child th {
                  border-top: 1px solid var(--cor-borda);
             }
-             /* Ajuste para a última linha de dados ter borda inferior (se não for a última do tbody) */
             #standingsTable tbody tr:last-child td {
-                 border-bottom: 1px solid var(--cor-borda);
+                 border-bottom: 1px solid var(--cor-borda); /* Garante que a última linha de dados também tem borda */
             }
-             /* Remover borda dupla se houver footer ou múltiplas linhas de cabeçalho */
-            #standingsTable tr:last-child td { border-bottom: 1px solid var(--cor-borda); }
-            #standingsTable td .team-cell-standings { /* Em desktop, não precisa de justify-content: flex-end */
+            /* #standingsTable tr:last-child td { border-bottom: 1px solid var(--cor-borda); } */ /* Esta linha pode ser redundante ou causar borda dupla se houver um tfoot */
+            #standingsTable td .team-cell-standings { 
                  justify-content: flex-start;
             }
 
@@ -414,12 +437,12 @@
                 padding: 9px 18px;
                 font-size: 0.9em;
             }
-            .team-logo { /* Logos em desktop */
+            .team-logo { 
                 height: 1.5em;  
                 width: 2.5em;   
                 margin-right: 8px; 
             }
-            #standingsTable .team-logo { /* Logos na tabela em desktop */
+            #standingsTable .team-logo { 
                 height: 1.3em; 
                 width: 2.2em;  
                 margin-right: 6px; 
@@ -440,10 +463,19 @@
                 font-size: 1em; 
             }
 
-            /* Cores de status na tabela para desktop (aplicadas à célula inteira ou ao texto) */
-            #standingsTable td.status-cell-advanced { color: var(--cor-sucesso); font-weight: 700; }
-            #standingsTable td.status-cell-eliminated { color: var(--cor-perigo); font-weight: 700; }
-            #standingsTable td.status-cell-active { color: var(--cor-texto-secundario); font-weight: 500; }
+            /* Cores de status na tabela para desktop */
+            #standingsTable td[data-label="Status"] span.status-text-advanced,
+            #standingsTable td.status-cell-advanced span.status-text-advanced { /* Adicionado para cobrir desktop */
+                 color: var(--cor-sucesso); font-weight: 700; 
+            }
+            #standingsTable td[data-label="Status"] span.status-text-eliminated,
+            #standingsTable td.status-cell-eliminated span.status-text-eliminated {
+                 color: var(--cor-perigo); font-weight: 700; 
+            }
+            #standingsTable td[data-label="Status"] span.status-text-active,
+            #standingsTable td.status-cell-active span.status-text-active {
+                 color: var(--cor-texto-secundario); font-weight: 500; 
+            }
         }
     </style>
 </head>
@@ -456,7 +488,7 @@
                 <button id="resetButton">Reiniciar</button>
                 <button id="prevRoundButton" disabled>Ronda Anterior</button>
             </div>
-            <p>Ronda: <span id="currentRound">0</span></p>
+            <div class="round-indicator">Ronda: <span id="currentRound">0</span></div>
         </div>
 
         <div class="stage-sections">
@@ -861,7 +893,7 @@
 
             function renderStandings() {
                 standingsTableBody.innerHTML = '';
-                const tableHeaders = ["Seed", "Equipa", "V-D", "Status"]; // Para os data-labels
+                const tableHeaders = ["Seed", "Equipa", "V-D", "Status"]; 
 
                 const customSort = (a, b) => { 
                     const statusOrder = { active: 1, advanced: 2, eliminated: 3 };
@@ -882,7 +914,7 @@
                     seedCell.setAttribute('data-label', tableHeaders[0]);
                     
                     const nameCell = row.insertCell(); 
-                    nameCell.classList.add('team-cell-standings');
+                    nameCell.classList.add('team-cell-standings'); 
                     nameCell.appendChild(createTeamDisplay(team, 'table'));
                     nameCell.setAttribute('data-label', tableHeaders[1]);
                     
@@ -893,7 +925,7 @@
                     const statusCell = row.insertCell();
                     statusCell.setAttribute('data-label', tableHeaders[3]);
                     
-                    const statusTextSpan = document.createElement('span'); // Para aplicar classes de cor ao texto
+                    const statusTextSpan = document.createElement('span'); 
                     statusCell.appendChild(statusTextSpan);
 
                     let statusText = 'Em Jogo';
@@ -922,23 +954,23 @@
 
                 teams.filter(t => t.status === 'advanced').sort(sortForFinalLists).forEach(team => {
                     const li = document.createElement('li'); 
-                    li.appendChild(createTeamDisplay(team, 'list'));
+                    const teamDisplay = createTeamDisplay(team, 'list');
+                    li.appendChild(teamDisplay);
+                    
                     const scoreSpan = document.createElement('span');
                     scoreSpan.textContent = ` (${team.wins}-${team.losses})`;
-                    scoreSpan.style.marginLeft = 'auto'; 
-                    scoreSpan.style.fontSize = '0.9em';
-                    scoreSpan.style.color = 'var(--cor-texto-secundario)';
+                    scoreSpan.classList.add('score-span'); // Adiciona classe para estilização
                     li.appendChild(scoreSpan);
                     advancedList.appendChild(li);
                 });
                 teams.filter(t => t.status === 'eliminated').sort(sortForFinalLists).forEach(team => {
                     const li = document.createElement('li'); 
-                    li.appendChild(createTeamDisplay(team, 'list'));
+                    const teamDisplay = createTeamDisplay(team, 'list');
+                    li.appendChild(teamDisplay);
+
                     const scoreSpan = document.createElement('span');
                     scoreSpan.textContent = ` (${team.wins}-${team.losses})`;
-                    scoreSpan.style.marginLeft = 'auto'; 
-                    scoreSpan.style.fontSize = '0.9em';
-                    scoreSpan.style.color = 'var(--cor-texto-secundario)';
+                    scoreSpan.classList.add('score-span'); // Adiciona classe para estilização
                     li.appendChild(scoreSpan);
                     eliminatedList.appendChild(li);
                 });
