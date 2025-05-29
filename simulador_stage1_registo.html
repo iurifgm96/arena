@@ -15,7 +15,7 @@
             --cor-sucesso: #28a745;
             --cor-perigo: #dc3545;
             --cor-aviso: #ffc107;
-            
+           
             --cor-fundo-simulador-body: transparent; 
             --cor-fundo-cartao: #ffffff;
             --cor-texto-principal: #212529; 
@@ -112,7 +112,7 @@
             gap: 10px; 
             margin-bottom: 10px; 
         }
-        
+       
         #previousRoundSummarySection { }
         .summary-controls { 
             display: flex;
@@ -171,7 +171,7 @@
             border: 1px solid var(--cor-borda);
             flex-basis: 100%; 
         }
-        
+       
         #advancedSection::before, #eliminatedSection::before,
         #standingsSection::before, #matchupsSection::before,
         #previousRoundSummarySection::before { 
@@ -283,6 +283,22 @@
         #standingsTable td .team-cell-standings .team-name-text {
              margin-left: 0.2em; 
         }
+        .mobile-standings-nav { 
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            margin-top: 8px;
+            gap: 15px; 
+        }
+        .mobile-standings-nav button {
+            padding: 5px 10px;
+            font-size: 1em; 
+            line-height: 1;
+        }
+        .mobile-standings-indicator {
+            font-size: 0.8em;
+            color: var(--cor-texto-secundario);
+        }
 
 
         .matchup {
@@ -318,7 +334,7 @@
             overflow: hidden; 
         }
         .matchup .team:first-child { border-right: 1px solid var(--cor-borda); }
-        
+       
         .team-display-container {
             display: flex;
             align-items: center;
@@ -407,7 +423,7 @@
         }
         #advancedList li .team-logo, #eliminatedList li .team-logo { 
             height: 0.8em; 
-            width: 1.4em;    
+            width: 1.4em;   
             margin-right: 2px; 
         }
 
@@ -479,7 +495,7 @@
                 gap: 15px; 
                 margin-bottom: 15px; 
             }
-            
+           
              .section {
                 padding: 12px; 
             }
@@ -539,7 +555,7 @@
              .team-name-text { 
                 margin-left: 0.3em; 
             }
-            
+           
             .team-logo { 
                 height: 1.2em;  
                 width: 2.0em;   
@@ -552,7 +568,7 @@
             }
             #advancedList li .team-logo, #eliminatedList li .team-logo { 
                 height: 1em; 
-                width: 1.6em;    
+                width: 1.6em;   
                 margin-right: 3px; 
             }
              #advancedSection::before, #eliminatedSection::before,
@@ -597,7 +613,7 @@
                 <button id="prevRoundButton" disabled>Ronda Ant.</button> 
                 <button id="nextRoundButton" disabled>Próx. Ronda</button> 
             </div>
-            <div class="round-indicator">Ronda: <span id="currentRound">0</span></div>
+            <div class="round-indicator">Ronda: <span id="currentRound">1</span></div>
         </div>
 
         <div class="stage-sections">
@@ -622,9 +638,9 @@
 
         <div id="previousRoundSummarySection" class="section" data-title="Resultados da Ronda Anterior" style="display: none;">
             <div class="summary-controls" id="summaryRoundSelector">
-                </div>
+            </div>
             <div id="previousRoundSummaryContainer">
-                </div>
+            </div>
         </div>
 
         <div class="results-sections">
@@ -660,10 +676,10 @@
             ];
 
             let teams = [];
-            let currentRound = 0; 
+            let currentRound = 1; // Começa na Ronda 1
             let matchups = [];
             let stageComplete = false;
-            let roundHistory = []; 
+            let historyStack = []; // NOVA ESTRUTURA DE HISTÓRICO
             let displayedSummaryRound = 0; 
             let currentStandingIndex = 0; 
 
@@ -679,7 +695,6 @@
             const prevRoundSummaryContainer = document.getElementById('previousRoundSummaryContainer');
             const summaryRoundSelector = document.getElementById('summaryRoundSelector');
 
-
             const POOL_DISPLAY_ORDER = {
                 1: ["0-0"], 2: ["1-0", "0-1"], 3: ["2-0", "1-1", "0-2"],
                 4: ["2-1", "1-2"], 5: ["2-2"]
@@ -688,27 +703,46 @@
             function deepCopy(obj) { return JSON.parse(JSON.stringify(obj)); }
 
             function updateControlButtonsState() {
-                prevRoundButton.disabled = currentRound <= 1 && !roundHistory.find(r => r.round === 1 && r.matchupsWithResults.length > 0);
-                
+                prevRoundButton.disabled = historyStack.length === 0;
+               
                 const allCurrentMatchesDecided = matchups.every(m => m.winnerId !== null);
-                if (stageComplete || matchups.length === 0) {
+                if (stageComplete) {
                     nextRoundButton.disabled = true;
-                } else {
+                } else if (matchups.length === 0 && currentRound > 0) { 
+                    // Se não há confrontos (e.g. não há equipas suficientes),
+                    // o botão de próxima ronda deve ser desabilitado porque não há nada para avançar.
+                    // A menos que seja uma situação onde a fase termina por falta de confrontos.
+                    const activeTeams = teams.filter(t => t.status === 'active');
+                    if(activeTeams.length < 2) {
+                        nextRoundButton.disabled = true; // Não há como prosseguir
+                    } else {
+                        // Caso estranho: não há confrontos, mas há equipas. Pode ser um bug na geração.
+                        // Por segurança, desabilita.
+                        nextRoundButton.disabled = true; 
+                        console.warn("Botão Próx. Ronda desabilitado: sem confrontos, mas com equipas ativas.");
+                    }
+                }
+                else {
                     nextRoundButton.disabled = !allCurrentMatchesDecided;
                 }
             }
-
 
             function initializeStage() {
                 teams = deepCopy(initialTeams).map(team => ({
                     ...team, wins: 0, losses: 0, buchholz: 0, opponentsPlayed: [], status: 'active'
                 }));
-                currentRound = 0; 
-                matchups = []; stageComplete = false; roundHistory = [];
+                currentRound = 1; 
+                historyStack = []; 
+                stageComplete = false;
                 displayedSummaryRound = 0; 
                 currentStandingIndex = 0; 
-                advancedList.innerHTML = ''; eliminatedList.innerHTML = '';
-                startNewRound(); 
+                advancedList.innerHTML = ''; 
+                eliminatedList.innerHTML = '';
+
+                matchups = generateMatchupsForCurrentRound();
+                
+                renderAll();
+                // updateControlButtonsState() é chamado em renderAll()
             }
 
             function getTeamById(id) { return teams.find(team => team.id === id); }
@@ -716,8 +750,8 @@
             function calculateBuchholz() {
                 teams.forEach(team => {
                     team.buchholz = 0;
-                    team.opponentsPlayed.forEach(opponentId => {
-                        const opponent = getTeamById(opponentId);
+                    (team.opponentsPlayed || []).forEach(opponentId => { // Garante que opponentsPlayed existe
+                        const opponent = getTeamById(opponentId); // Usa getTeamById para obter o estado atual do oponente
                         if (opponent) team.buchholz += (opponent.wins - opponent.losses);
                     });
                 });
@@ -729,7 +763,7 @@
                     return a.seed - b.seed;
                 });
             }
-            
+           
             function getMatchFormat(poolRecord) {
                 switch (poolRecord) {
                     case "0-0": case "1-0": case "0-1": case "1-1": return "BO1";
@@ -737,194 +771,222 @@
                     default: return "BO1"; 
                 }
             }
-
-            function generateRoundMatchups() { 
-                if (stageComplete) return;
-                matchups = []; 
-                
-                const teamsAtStartOfThisRound = deepCopy(teams);
-                
-                let historyEntry = roundHistory.find(r => r.round === currentRound);
-                if (!historyEntry) {
-                    historyEntry = { round: currentRound, teamsAtStartOfRound: teamsAtStartOfThisRound, matchupsWithResults: [] };
-                    roundHistory.push(historyEntry);
-                    roundHistory.sort((a, b) => a.round - b.round); 
-                } else {
-                    historyEntry.teamsAtStartOfRound = teamsAtStartOfThisRound;
-                    if (!matchups || matchups.length === 0) { 
-                         historyEntry.matchupsWithResults = [];
+           
+            function generatePairingsForPoolRecursive(teamsInPool, currentPairings, allPossibleSolutions, opponentsPlayedData, poolRecordForMatch) {
+                if (teamsInPool.length === 0) {
+                    let rematchesInThisSolution = 0;
+                    for (const match of currentPairings) {
+                        const team1Opponents = opponentsPlayedData[match.team1Id] || [];
+                        if (team1Opponents.includes(match.team2Id)) {
+                            rematchesInThisSolution++;
+                        }
                     }
-                }
-                currentRoundSpan.textContent = currentRound; 
-
-                const activeTeams = teams.filter(team => team.status === 'active');
-                if ((activeTeams.length < 2 && currentRound > 1) || (activeTeams.length === 0 && currentRound > 1)) {
-                    if (!checkAndFinalizeStageCompletion()) renderAll();
+                    allPossibleSolutions.push({
+                        matchups: deepCopy(currentPairings),
+                        rematches: rematchesInThisSolution
+                    });
                     return;
                 }
+
+                const team1 = teamsInPool[0];
+                const remainingTeamsForTeam1 = teamsInPool.slice(1);
+
+                if (remainingTeamsForTeam1.length === 0 && teamsInPool.length === 1) { return; }
+               
+                for (let i = remainingTeamsForTeam1.length - 1; i >= 0; i--) { 
+                    const team2 = remainingTeamsForTeam1[i];
+                    const nextTeamsToPair = remainingTeamsForTeam1.filter((_, idx) => idx !== i);
+                    currentPairings.push({ 
+                        team1Id: team1.id, 
+                        team2Id: team2.id, 
+                        // winnerId, round, poolRecord serão adicionados em generateMatchupsForCurrentRound
+                    });
+                    generatePairingsForPoolRecursive(nextTeamsToPair, currentPairings, allPossibleSolutions, opponentsPlayedData, poolRecordForMatch);
+                    currentPairings.pop(); 
+                }
+            }
+
+            function generateMatchupsForCurrentRound() {
+                console.log(`Gerando confrontos para a Ronda ${currentRound}`);
+                let generatedMatchups = [];
+                if (stageComplete) {
+                    console.log("Fase completa, sem novos confrontos.");
+                    return generatedMatchups;
+                }
+
+                const activeTeams = teams.filter(team => team.status === 'active');
+                console.log(`Equipas ativas para Ronda ${currentRound}: ${activeTeams.length}`, deepCopy(activeTeams.map(t => ({name: t.name, wins: t.wins, losses: t.losses, status: t.status}))));
+
+
+                // Condição para não gerar confrontos se não houver equipas suficientes
+                // Esta condição é crucial. Se for verdadeira, a mensagem "Nenhum confronto" aparecerá.
+                if (activeTeams.length < 2 && currentRound > 1) {
+                    console.log(`Não há equipas ativas suficientes (${activeTeams.length}) para a ronda ${currentRound} > 1.`);
+                    return generatedMatchups; // Retorna array vazio
+                }
+                if (activeTeams.length === 0 && currentRound >= 1) { // Se não há NENHUMA equipa ativa (exceto se for para R1 e queremos que comece vazia, o que não é o caso)
+                     console.log(`Nenhuma equipa ativa para a ronda ${currentRound}.`);
+                     return generatedMatchups;
+                }
+
 
                 if (currentRound === 1) {
                     const poolRecord = "0-0";
+                    // Na ronda 1, todas as equipas `activeTeams` estão 0-0.
                     const sortedBySeed = [...activeTeams].sort((a, b) => a.seed - b.seed);
-                    if (sortedBySeed.length < 2) return;
-                    const midPoint = Math.floor(sortedBySeed.length / 2);
-                    for (let i = 0; i < midPoint; i++) {
-                        if (sortedBySeed[i] && sortedBySeed[i + midPoint]) {
-                            matchups.push({ team1Id: sortedBySeed[i].id, team2Id: sortedBySeed[i + midPoint].id, winnerId: null, round: currentRound, poolRecord: poolRecord });
+                    if (sortedBySeed.length >= 2) {
+                        const midPoint = Math.floor(sortedBySeed.length / 2);
+                        for (let i = 0; i < midPoint; i++) {
+                            if (sortedBySeed[i] && sortedBySeed[i + midPoint]) {
+                                generatedMatchups.push({ 
+                                    team1Id: sortedBySeed[i].id, 
+                                    team2Id: sortedBySeed[i + midPoint].id, 
+                                    winnerId: null, 
+                                    round: currentRound, 
+                                    poolRecord: poolRecord 
+                                });
+                            }
                         }
+                    }  else if (sortedBySeed.length === 1) {
+                        console.log(`Ronda 1: Apenas 1 equipa ativa (${sortedBySeed[0].name}), nenhuma partida gerada.`);
+                    } else {
+                        console.log("Ronda 1: Menos de 2 equipas ativas no total, nenhuma partida gerada.");
                     }
-                } else {
+                } else { // Rondas > 1
                     const pools = {};
                     activeTeams.forEach(team => {
-                        const record = `${team.wins}-${team.losses}`; 
+                        const record = `${team.wins}-${team.losses}`;
                         if (!pools[record]) pools[record] = [];
                         pools[record].push(team);
                     });
-                    const processOrder = POOL_DISPLAY_ORDER[currentRound] || Object.keys(pools);
+                    
+                    console.log(`Pools para Ronda ${currentRound}:`, deepCopy(pools));
+
+                    const processOrder = POOL_DISPLAY_ORDER[currentRound] || Object.keys(pools).sort();
+                    const opponentsPlayedData = {};
+                    teams.forEach(t => { opponentsPlayedData[t.id] = [...(t.opponentsPlayed || [])]; });
+
                     processOrder.forEach(record => {
-                        if (pools[record]) {
+                        if (pools[record] && pools[record].length >= 2) {
                             let poolTeams = sortTeamsForPairing(deepCopy(pools[record]));
-                            while (poolTeams.length >= 2) {
-                                let t1Proxy = poolTeams.shift(), t2Proxy = null, foundOpp = false;
-                                for (let i = poolTeams.length - 1; i >= 0; i--) {
-                                    if (!getTeamById(t1Proxy.id).opponentsPlayed.includes(poolTeams[i].id)) {
-                                        t2Proxy = poolTeams.splice(i, 1)[0]; foundOpp = true; break;
-                                    }
+                            const allPossibleSolutions = [];
+                            generatePairingsForPoolRecursive(poolTeams, [], allPossibleSolutions, opponentsPlayedData, record);
+
+                            if (allPossibleSolutions.length > 0) {
+                                allPossibleSolutions.sort((a, b) => {
+                                    if (a.rematches !== b.rematches) return a.rematches - b.rematches;
+                                    let sumSeedsA = 0;
+                                    a.matchups.forEach(m => {
+                                        const t1 = initialTeams.find(t=>t.id===m.team1Id);
+                                        const t2 = initialTeams.find(t=>t.id===m.team2Id);
+                                        if(t1 && t2) sumSeedsA += (t1.seed + t2.seed);
+                                    });
+                                    let sumSeedsB = 0;
+                                    b.matchups.forEach(m => {
+                                        const t1 = initialTeams.find(t=>t.id===m.team1Id);
+                                        const t2 = initialTeams.find(t=>t.id===m.team2Id);
+                                        if(t1 && t2) sumSeedsB += (t1.seed + t2.seed);
+                                    });
+                                    return sumSeedsA - sumSeedsB;
+                                });
+                                allPossibleSolutions[0].matchups.forEach(m => {
+                                    generatedMatchups.push({
+                                        ...m,
+                                        winnerId: null,
+                                        round: currentRound,
+                                        poolRecord: record 
+                                    });
+                                });
+                                if (allPossibleSolutions[0].rematches > 0) {
+                                    console.warn(`Ronda ${currentRound}, Pool ${record}: Foram gerados ${allPossibleSolutions[0].rematches} confrontos repetidos.`);
                                 }
-                                if (!foundOpp && poolTeams.length > 0) t2Proxy = poolTeams.pop();
-                                if (t1Proxy && t2Proxy) matchups.push({ team1Id: t1Proxy.id, team2Id: t2Proxy.id, winnerId: null, round: currentRound, poolRecord: record });
+                            } else if (poolTeams.length > 0) { 
+                                console.error(`Backtracking não encontrou solução para R${currentRound}, Pool ${record}. Usando fallback.`);
+                                let tempPool = [...poolTeams];
+                                while(tempPool.length >=2) {
+                                    let t1 = tempPool.shift();
+                                    let t2 = tempPool.pop();
+                                    generatedMatchups.push({
+                                        team1Id: t1.id, team2Id: t2.id, 
+                                        winnerId: null, round: currentRound, poolRecord: record
+                                    });
+                                }
                             }
+                        }
+                         if (pools[record] && pools[record].length === 1) { 
+                            console.log(`Equipa ${pools[record][0].name} fica de fora (ímpar no pool ${record}) da ronda ${currentRound}.`);
                         }
                     });
                 }
-                if (historyEntry) {
-                    historyEntry.matchupsWithResults = deepCopy(matchups);
-                }
-                if (matchups.length === 0 && activeTeams.length > 0 && !stageComplete) checkAndFinalizeStageCompletion();
+                console.log(`Generated ${generatedMatchups.length} matchups for round ${currentRound}`, deepCopy(generatedMatchups));
+                return generatedMatchups;
             }
-            
-            function commitRoundState() { 
-                if (stageComplete) return;
-                let historyEntry = roundHistory.find(r => r.round === currentRound);
-                if (!historyEntry && currentRound > 0) { 
-                    const teamsSnapshotForEmergencyEntry = deepCopy(teams); 
-                    historyEntry = { round: currentRound, teamsAtStartOfRound: teamsSnapshotForEmergencyEntry, matchupsWithResults: [] };
-                    roundHistory.push(historyEntry);
-                    roundHistory.sort((a, b) => a.round - b.round);
-                }
-
-                if (historyEntry) { 
-                    historyEntry.matchupsWithResults = deepCopy(matchups); 
-                } else if (currentRound > 0) { 
-                    console.error("Falha crítica: Não foi possível criar ou encontrar entrada no histórico para commit da ronda:", currentRound);
-                }
-            }
-
+           
             function recordMatchResult(matchIndex, newWinningTeamId) {
                 const match = matchups[matchIndex]; 
-                if (!match) return;
-
-                if (stageComplete && !match.winnerId) { alert("A fase já terminou."); return; }
-                
-                roundHistory = roundHistory.filter(state => state.round < currentRound);
-                const currentRoundHistoryEntry = roundHistory.find(r => r.round === currentRound);
-                if (currentRoundHistoryEntry) {
+                if (!match || (match.winnerId === newWinningTeamId && match.winnerId !== null) ) {
+                    return;
                 }
-                stageComplete = false; 
-
+                if (stageComplete) { alert("A fase já terminou."); return; }
+               
                 const team1 = getTeamById(match.team1Id);
                 const team2 = getTeamById(match.team2Id);
 
-                if (match.winnerId === newWinningTeamId) return; 
-
-                if (match.winnerId !== null && match.winnerId !== newWinningTeamId) {
+                if (match.winnerId !== null) { 
                     const previousWinner = getTeamById(match.winnerId);
                     const previousLoser = (match.winnerId === team1.id) ? team2 : team1;
-                    previousWinner.wins--; 
-                    previousLoser.losses--;
-                    updateTeamStatus(previousWinner);
-                    updateTeamStatus(previousLoser);
-                } else if (match.winnerId === newWinningTeamId) { 
-                    return;
+                    if(previousWinner) previousWinner.wins--; 
+                    if(previousLoser) previousLoser.losses--;
+                    // Não remove oponentes jogados ao reverter.
+                    if(previousWinner) updateTeamStatus(previousWinner); 
+                    if(previousLoser) updateTeamStatus(previousLoser);
                 }
-                
+               
                 match.winnerId = newWinningTeamId; 
                 const newWinner = getTeamById(newWinningTeamId);
                 const newLoser = (newWinningTeamId === team1.id) ? team2 : team1;
-                
-                newWinner.wins++; 
-                newLoser.losses++;
+               
+                if(newWinner) newWinner.wins++; 
+                if(newLoser) newLoser.losses++;
 
-                if (!team1.opponentsPlayed.includes(team2.id)) team1.opponentsPlayed.push(team2.id);
-                if (!team2.opponentsPlayed.includes(team1.id)) team2.opponentsPlayed.push(team1.id);
-                
-                updateTeamStatus(team1); updateTeamStatus(team2);
+                if (team1 && team2) { 
+                    if (!(team1.opponentsPlayed || []).includes(team2.id)) (team1.opponentsPlayed = team1.opponentsPlayed || []).push(team2.id);
+                    if (!(team2.opponentsPlayed || []).includes(team1.id)) (team2.opponentsPlayed = team2.opponentsPlayed || []).push(team1.id);
+                }
+               
+                updateTeamStatus(team1); 
+                updateTeamStatus(team2); 
                 calculateBuchholz(); 
                 renderAll(); 
             }
 
             function updateTeamStatus(team) {
-                if (team.wins < 3 && team.losses < 3) team.status = 'active';
-                if (team.wins === 3) team.status = 'advanced';
-                else if (team.losses === 3) team.status = 'eliminated';
+                if (!team) return; 
+                
+                if (team.wins >= 3) {
+                    team.status = 'advanced';
+                } else if (team.losses >= 3) {
+                    team.status = 'eliminated';
+                } else {
+                    team.status = 'active';
+                }
             }
-            
+           
             function checkAndFinalizeStageCompletion() {
                 if (stageComplete) return true; 
-                const adv = teams.filter(t=>t.status==='advanced').length, elim=teams.filter(t=>t.status==='eliminated').length, active=teams.filter(t=>t.status==='active').length;
-                let end = (adv >= 8 || elim >= 8 || (adv + elim === 16) || (currentRound >= 3 && active < 2 && (adv + elim < 16)));
-                if(end) { 
+                const adv = teams.filter(t=>t.status==='advanced').length;
+                const elim = teams.filter(t=>t.status==='eliminated').length;
+                const active = teams.filter(t=>t.status==='active').length;
+                
+                let end = (adv >= 8 || elim >= 8 || (adv + elim === initialTeams.length) || (currentRound >= 3 && active < 2 && (adv + elim < initialTeams.length)));
+                
+                if(end && currentRound > 0) { 
                     stageComplete=true; 
-                    console.log("STAGE COMPLETE"); 
-                    displayedSummaryRound = currentRound; // <<< GARANTE QUE A RONDA FINAL É MOSTRADA NO SUMÁRIO
+                    console.log("FASE COMPLETA na ronda:", currentRound); 
                 }
                 return stageComplete;
             }
-            
-            function startNewRound() { 
-                if (stageComplete) { renderAll(); return; }
-                currentRound++; 
-                generateRoundMatchups(); 
-                renderAll();
-            }
-
-            function goToPreviousRound() {
-                if (currentRound === 0) return;
-                if (currentRound === 1 && (!roundHistory.find(r => r.round === 1) || roundHistory.find(r => r.round === 1).matchupsWithResults.length === 0) ) {
-                    initializeStage(); 
-                    return; 
-                }
-
-                const targetRoundToReplay = currentRound - 1;
-                currentRound = targetRoundToReplay; 
-                displayedSummaryRound = currentRound > 1 ? currentRound - 1 : 0; 
-                currentStandingIndex = 0; 
-
-                const historyEntryForTargetRound = roundHistory.find(r => r.round === currentRound);
-
-                if (historyEntryForTargetRound && historyEntryForTargetRound.teamsAtStartOfRound) {
-                    teams = deepCopy(historyEntryForTargetRound.teamsAtStartOfRound); 
-                    matchups = deepCopy(historyEntryForTargetRound.matchupsWithResults || []); 
-                    
-                    if(matchups.length === 0 && (!historyEntryForTargetRound.matchupsWithResults || historyEntryForTargetRound.matchupsWithResults.length === 0)) {
-                        generateRoundMatchups(); 
-                    }
-                } else {
-                     if (currentRound === 1) { 
-                        teams = deepCopy(initialTeams).map(team => ({...team, wins: 0, losses: 0, buchholz: 0, opponentsPlayed: [], status: 'active'}));
-                        generateRoundMatchups(); 
-                    } else {
-                        initializeStage(); 
-                        return;
-                    }
-                }
-                
-                stageComplete = false;
-                roundHistory = roundHistory.filter(r => r.round < currentRound); 
-                renderAll();
-            }
-
-
+                       
             function createTeamDisplay(team, type) { 
                 const teamContainer = document.createElement('span');
                 teamContainer.classList.add('team-display-container'); 
@@ -950,15 +1012,11 @@
                 prevRoundSummaryContainer.innerHTML = ''; 
                 summaryRoundSelector.innerHTML = ''; 
 
-                // Modificado para incluir a ronda atual se a fase estiver completa
-                const upperRoundLimit = stageComplete ? currentRound : currentRound - 1;
-                const completedRoundsForSelector = roundHistory.filter(r => 
-                    r.matchupsWithResults && 
-                    r.matchupsWithResults.length > 0 && 
-                    r.round <= upperRoundLimit && 
-                    r.round > 0
+                const completedRoundsForSelector = historyStack.filter(histEntry =>
+                    histEntry.matchupsOfRound &&
+                    histEntry.matchupsOfRound.length > 0 &&
+                    histEntry.matchupsOfRound.every(m => m.winnerId !== null)
                 );
-
 
                 if (completedRoundsForSelector.length === 0) {
                     prevRoundSummarySection.style.display = 'none';
@@ -966,36 +1024,30 @@
                 }
                 prevRoundSummarySection.style.display = 'block';
 
+                if (!completedRoundsForSelector.find(r => r.roundCompleted === displayedSummaryRound) && completedRoundsForSelector.length > 0) {
+                     displayedSummaryRound = completedRoundsForSelector[completedRoundsForSelector.length - 1].roundCompleted;
+                }
+               
                 completedRoundsForSelector.forEach(histEntry => {
                     const btn = document.createElement('button');
-                    btn.textContent = `R${histEntry.round}`; 
+                    btn.textContent = `R${histEntry.roundCompleted}`; 
                     btn.onclick = () => {
-                        displayedSummaryRound = histEntry.round;
+                        displayedSummaryRound = histEntry.roundCompleted;
                         renderPreviousRoundSummary(); 
                     };
-                    if (histEntry.round === displayedSummaryRound) {
+                    if (histEntry.roundCompleted === displayedSummaryRound) {
                         btn.classList.add('active');
                     }
                     summaryRoundSelector.appendChild(btn);
                 });
 
-                // Se nenhuma ronda do sumário estiver definida, ou a definida não estiver nos botões, seleciona a última disponível
-                if (!completedRoundsForSelector.find(r => r.round === displayedSummaryRound) && completedRoundsForSelector.length > 0) {
-                     displayedSummaryRound = completedRoundsForSelector[completedRoundsForSelector.length - 1].round;
-                     // Re-seleciona o botão ativo
-                     Array.from(summaryRoundSelector.children).forEach(b => b.classList.remove('active'));
-                     const activeBtn = Array.from(summaryRoundSelector.children).find(b => parseInt(b.textContent.replace('R','')) === displayedSummaryRound);
-                     if(activeBtn) activeBtn.classList.add('active');
-                }
+                const roundToShow = historyStack.find(r => r.roundCompleted === displayedSummaryRound);
 
-
-                const roundToShow = roundHistory.find(r => r.round === displayedSummaryRound);
-
-                if (roundToShow && roundToShow.matchupsWithResults && roundToShow.matchupsWithResults.length > 0) {
+                if (roundToShow && roundToShow.matchupsOfRound.every(m => m.winnerId !== null)) {
                     prevRoundSummarySection.setAttribute('data-title', `Resultados da Ronda ${displayedSummaryRound}`);
-                    
+                   
                     const matchupsByPool = {};
-                    roundToShow.matchupsWithResults.forEach(match => {
+                    roundToShow.matchupsOfRound.forEach(match => {
                         const poolKey = match.poolRecord;
                         if (!matchupsByPool[poolKey]) matchupsByPool[poolKey] = [];
                         matchupsByPool[poolKey].push(match);
@@ -1007,7 +1059,7 @@
                         if (matchupsByPool[poolKey] && matchupsByPool[poolKey].length > 0) {
                             const poolHeaderDiv = document.createElement('div');
                             poolHeaderDiv.classList.add('summary-pool-header'); 
-                            const matchFormat = getMatchFormat(poolKey);
+                            const matchFormat = getMatchFormat(poolKey); 
                             poolHeaderDiv.textContent = `Pool ${poolKey} (${matchFormat})`;
                             prevRoundSummaryContainer.appendChild(poolHeaderDiv);
 
@@ -1018,22 +1070,17 @@
 
                                 const summaryLine = document.createElement('div');
                                 summaryLine.classList.add('summary-match-line');
-
                                 const winner = (match.winnerId === team1.id) ? team1 : team2;
                                 const loser = (match.winnerId === team1.id) ? team2 : team1;
-
                                 const winnerDisplay = createTeamDisplay(winner, 'list'); 
                                 const winnerNameSpan = winnerDisplay.querySelector('.team-name-text');
                                 if(winnerNameSpan) winnerNameSpan.classList.add('winner-name');
-                                
                                 const loserDisplay = createTeamDisplay(loser, 'list');
                                 const loserNameSpan = loserDisplay.querySelector('.team-name-text');
                                 if(loserNameSpan) loserNameSpan.classList.add('loser-name');
-
                                 const defeatedText = document.createElement('span');
                                 defeatedText.classList.add('defeated-text');
                                 defeatedText.textContent = 'derrotou';
-
                                 summaryLine.appendChild(winnerDisplay);
                                 summaryLine.appendChild(defeatedText);
                                 summaryLine.appendChild(loserDisplay);
@@ -1043,32 +1090,32 @@
                     });
                 } else {
                      prevRoundSummarySection.setAttribute('data-title', `Resultados da Ronda Anterior`); 
-                     prevRoundSummaryContainer.innerHTML = '<p>Nenhum resultado para mostrar para esta ronda.</p>';
+                     prevRoundSummaryContainer.innerHTML = (completedRoundsForSelector.length > 0 && displayedSummaryRound > 0) ? `<p>Resultados para Ronda ${displayedSummaryRound} não disponíveis ou incompletos.</p>` : '<p>Nenhuma ronda anterior para mostrar.</p>';
                 }
             }
 
-
             function renderMatchups() { 
                 matchupsContainer.innerHTML = '';
-                currentRoundSpan.textContent = stageComplete ? `Final (${currentRound})` : (currentRound === 0 ? "N/A" : currentRound) ;
+                currentRoundSpan.textContent = stageComplete ? `Final (${currentRound})` : currentRound ;
 
                 let messageP = matchupsContainer.querySelector('p.message-placeholder');
-                
+               
                 let messageText = "";
-                if (stageComplete) messageText = 'Fase concluída!';
-                else if (matchups.length === 0 && currentRound > 0) {
-                    if (teams.filter(t => t.status === 'active').length < 2) messageText = 'Não há equipas ativas suficientes para mais confrontos.';
-                    else messageText = 'Nenhum confronto para esta ronda.';
-                } else if (matchups.length === 0 && currentRound === 0) {
-                    messageText = 'A iniciar...';
-                } else if (matchups.length === 0 && currentRound > 0 && !stageComplete) {
-                    messageText = 'A gerar confrontos...';
+                if (stageComplete) {
+                     messageText = 'Fase concluída!';
+                } else if (matchups.length === 0 && currentRound > 0) { 
+                    messageText = 'Nenhum confronto para esta ronda.';
+                    const activeTeams = teams.filter(t => t.status === 'active');
+                    if (activeTeams.length < 2) { 
+                        messageText += ' Não há equipas ativas suficientes.';
+                    }
                 }
+
 
                 if (messageText) {
                     if (!messageP) {
                         messageP = document.createElement('p');
-                        messageP.classList.add('message-placeholder');
+                        messageP.classList.add('message-placeholder'); 
                         matchupsContainer.appendChild(messageP);
                     }
                     messageP.textContent = messageText;
@@ -1078,7 +1125,7 @@
                 }
 
                 const matchupsByPool = {};
-                matchups.forEach(match => {
+                matchups.forEach(match => { 
                     const poolKey = match.poolRecord;
                     if (!matchupsByPool[poolKey]) matchupsByPool[poolKey] = [];
                     matchupsByPool[poolKey].push(match);
@@ -1094,14 +1141,18 @@
                         poolHeaderDiv.textContent = `Confrontos ${poolKey} (${matchFormat})`;
                         matchupsContainer.appendChild(poolHeaderDiv);
 
-                        matchupsByPool[poolKey].forEach(match => { 
+                        matchupsByPool[poolKey].forEach((match) => { 
                             const originalMatchIndex = matchups.indexOf(match);
+                            if(originalMatchIndex === -1) {
+                                console.error("Não foi possível encontrar o índice original do confronto na renderização:", match, "Array de matchups atual:", deepCopy(matchups));
+                                return; 
+                            }
 
                             const team1 = getTeamById(match.team1Id); const team2 = getTeamById(match.team2Id);
-                            if (!team1 || !team2) { console.error("Equipa não encontrada:", match); return; }
+                            if (!team1 || !team2) { console.error("Equipa não encontrada para o confronto:", match); return; }
 
                             const matchDiv = document.createElement('div'); matchDiv.classList.add('matchup');
-                            
+                           
                             const team1Div = document.createElement('div'); team1Div.classList.add('team');
                             team1Div.appendChild(createTeamDisplay(team1, 'matchup'));
                             team1Div.onclick = () => recordMatchResult(originalMatchIndex, team1.id); 
@@ -1133,70 +1184,66 @@
                     }
                     if (b.wins !== a.wins) return b.wins - a.wins;
                     if (a.losses !== b.losses) return a.losses - b.losses;
+                    if (b.buchholz !== a.buchholz) return b.buchholz - a.buchholz;
                     return a.seed - b.seed;
                 };
                 const sortedForDisplay = [...teams].sort(customSort); 
 
                 const tableElement = document.getElementById('standingsTable');
                 const theadElement = tableElement.querySelector('thead');
+                const existingNav = document.getElementById('standingsSection').querySelector('.mobile-standings-nav');
+                if(existingNav) existingNav.remove();
+
 
                 if (isMobileView) {
                     if(theadElement) theadElement.style.display = 'none';
 
                     if (sortedForDisplay.length === 0) {
-                        standingsTableBodyContainer.innerHTML = "<p>Nenhuma equipa para mostrar.</p>";
+                        standingsTableBodyContainer.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Nenhuma equipa para mostrar.</td></tr>";
                         return;
                     }
 
                     if (currentStandingIndex >= sortedForDisplay.length) currentStandingIndex = sortedForDisplay.length - 1;
                     if (currentStandingIndex < 0 && sortedForDisplay.length > 0) currentStandingIndex = 0;
-                    
+                   
                     const team = sortedForDisplay[currentStandingIndex];
-                    if (!team && sortedForDisplay.length > 0) { 
-                        currentStandingIndex = 0; 
-                        renderStandings(); 
-                        return;
-                    }
-                    if (!team) {
-                         standingsTableBodyContainer.innerHTML = "<p>Nenhuma equipa selecionada.</p>";
+                     if (!team) { 
+                         standingsTableBodyContainer.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Nenhuma equipa selecionada.</td></tr>";
                          return;
                     }
-                    
-                    const card = document.createElement('div');
-                    card.classList.add('mobile-standings-card');
-
+                   
+                    const tr = document.createElement('tr');
                     const fields = [
                         { label: "Seed", value: team.seed },
                         { label: "Equipa", value: null, teamData: team, type: 'table' },
                         { label: "V-D", value: `${team.wins}-${team.losses}` },
                         { label: "Status", value: null, teamData: team, isStatus: true }
                     ];
-
+                    
                     fields.forEach(field => {
-                        const dataRow = document.createElement('div');
-                        dataRow.classList.add('data-row');
-                        const labelSpan = document.createElement('span');
-                        labelSpan.classList.add('data-label');
-                        labelSpan.textContent = field.label + ":";
-                        dataRow.appendChild(labelSpan);
-                        const valueSpan = document.createElement('span');
-                        valueSpan.classList.add('data-value');
+                        const td = document.createElement('td');
+                        td.setAttribute('data-label', field.label);
                         if (field.teamData && !field.isStatus) {
-                            valueSpan.appendChild(createTeamDisplay(field.teamData, field.type));
+                            const teamCellContainer = document.createElement('div'); 
+                            teamCellContainer.classList.add('team-cell-standings');
+                            teamCellContainer.appendChild(createTeamDisplay(field.teamData, field.type));
+                            td.appendChild(teamCellContainer);
                         } else if (field.isStatus) {
                             let statusText = 'Em Jogo';
-                            valueSpan.className = 'data-value'; 
-                            if (team.status === 'advanced') { statusText = `Apurada`; valueSpan.classList.add('status-text-advanced'); }
-                            else if (team.status === 'eliminated') { statusText = `Eliminada`; valueSpan.classList.add('status-text-eliminated'); }
-                            else { valueSpan.classList.add('status-text-active'); }
-                            valueSpan.textContent = statusText;
+                            const statusSpan = document.createElement('span');
+                            if (team.status === 'advanced') { statusText = `Apurada`; statusSpan.classList.add('status-text-advanced'); }
+                            else if (team.status === 'eliminated') { statusText = `Eliminada`; statusSpan.classList.add('status-text-eliminated'); }
+                            else { statusSpan.classList.add('status-text-active'); }
+                            statusSpan.textContent = statusText;
+                            td.appendChild(statusSpan);
                         } else {
+                            const valueSpan = document.createElement('span'); 
                             valueSpan.textContent = field.value;
+                            td.appendChild(valueSpan);
                         }
-                        dataRow.appendChild(valueSpan);
-                        card.appendChild(dataRow);
+                        tr.appendChild(td);
                     });
-                    standingsTableBodyContainer.appendChild(card);
+                    standingsTableBodyContainer.appendChild(tr);
 
                     const navDiv = document.createElement('div');
                     navDiv.classList.add('mobile-standings-nav');
@@ -1214,16 +1261,19 @@
                     rightArrow.disabled = currentStandingIndex >= sortedForDisplay.length - 1;
                     rightArrow.onclick = () => { if (currentStandingIndex < sortedForDisplay.length - 1) { currentStandingIndex++; renderStandings(); } };
                     navDiv.appendChild(rightArrow);
-                    standingsTableBodyContainer.appendChild(navDiv);
+                    document.getElementById('standingsSection').appendChild(navDiv);
 
                 } else { 
                     if(theadElement) theadElement.style.display = 'table-header-group'; 
-
                     sortedForDisplay.forEach(team => {
                         const row = standingsTableBodyContainer.insertRow();
                         row.insertCell().textContent = team.seed;
                         const nameCell = row.insertCell(); 
-                        nameCell.appendChild(createTeamDisplay(team, 'table'));
+                        const teamCellContainer = document.createElement('div');
+                        teamCellContainer.classList.add('team-cell-standings');
+                        teamCellContainer.appendChild(createTeamDisplay(team, 'table'));
+                        nameCell.appendChild(teamCellContainer);
+
                         row.insertCell().textContent = `${team.wins}-${team.losses}`;
                         const statusCell = row.insertCell();
                         const statusTextSpan = document.createElement('span'); 
@@ -1243,6 +1293,7 @@
                 const sortForFinalLists = (a,b) => { 
                     if(a.wins !== b.wins) return b.wins - a.wins; 
                     if(a.losses !== b.losses) return a.losses - b.losses;
+                    if (b.buchholz !== a.buchholz && currentRound > 2) return b.buchholz - a.buchholz; 
                     return a.seed - b.seed;
                 };
 
@@ -1250,7 +1301,7 @@
                     const li = document.createElement('li'); 
                     const teamDisplay = createTeamDisplay(team, 'list');
                     li.appendChild(teamDisplay);
-                    
+                   
                     const scoreSpan = document.createElement('span');
                     scoreSpan.textContent = ` (${team.wins}-${team.losses})`;
                     scoreSpan.classList.add('score-span'); 
@@ -1268,8 +1319,8 @@
                     li.appendChild(scoreSpan);
                     eliminatedList.appendChild(li);
                 });
-             }
-            
+               }
+           
             function renderAll() {
                 renderStandings(); 
                 renderMatchups(); 
@@ -1278,29 +1329,57 @@
                 updateControlButtonsState(); 
             }
 
+            // CLICK HANDLERS
             nextRoundButton.onclick = () => {
                 if (stageComplete) return;
 
                 const allDecided = matchups.every(m => m.winnerId !== null);
-                if (!allDecided || matchups.length === 0) {
+                if (matchups.length > 0 && !allDecided) { 
                     alert("Por favor, decida todos os jogos da ronda atual antes de avançar.");
                     return;
                 }
-                commitRoundState();
-                if (!checkAndFinalizeStageCompletion()) {
-                    displayedSummaryRound = currentRound;
-                    currentStandingIndex = 0; 
-                    startNewRound();
-                } else {
-                    // Se a fase terminou, garantir que o sumário mostra a última ronda jogada
-                    displayedSummaryRound = currentRound;
-                    renderAll(); 
-                }
+                
+                const stateToSave = {
+                    roundCompleted: currentRound,
+                    teamsAtEndOfRound: deepCopy(teams),         
+                    matchupsOfRound: deepCopy(matchups)       
+                };
+                historyStack.push(stateToSave);
+                
+                displayedSummaryRound = currentRound; 
+
+                currentRound++;
+                matchups = generateMatchupsForCurrentRound(); 
+
+                checkAndFinalizeStageCompletion(); 
+                
+                currentStandingIndex = 0;
+                renderAll();
+                // updateControlButtonsState() é chamado dentro de renderAll()
             };
 
-            resetButton.onclick = initializeStage;
-            prevRoundButton.onclick = goToPreviousRound;
+            prevRoundButton.onclick = () => {
+                if (historyStack.length === 0) { 
+                    if (currentRound === 1) initializeStage(); 
+                    return;
+                }
+
+                const restoredState = historyStack.pop(); 
+
+                currentRound = restoredState.roundCompleted;
+                teams = deepCopy(restoredState.teamsAtEndOfRound); 
+                matchups = deepCopy(restoredState.matchupsOfRound);  
+
+                stageComplete = false; 
+
+                displayedSummaryRound = historyStack.length > 0 ? historyStack[historyStack.length - 1].roundCompleted : 0;
+                currentStandingIndex = 0;
+                renderAll();
+                // updateControlButtonsState() é chamado dentro de renderAll()
+            };
             
+            resetButton.onclick = initializeStage;
+           
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
