@@ -58,6 +58,7 @@
             max-width: 1200px;
             margin: auto;
             background-color: var(--cor-fundo-simulador-body); 
+            padding-bottom: 20px; /* Adiciona espaço para o rodapé não sobrepor conteúdo */
         }
 
         .container > h1 { display: none; }
@@ -535,8 +536,20 @@
             color: var(--cor-texto-secundario);
         }
 
+        #pageFooter {
+            text-align: center;
+            padding: 20px 10px;
+            margin-top: 30px; 
+            border-top: 1px solid var(--cor-borda);
+            font-size: 0.8em;
+            color: var(--cor-texto-secundario);
+        }
 
-        /* Media Queries para ecrãs maiores */
+        #pageFooter p {
+            margin: 5px 0;
+        }
+
+
         @media (min-width: 768px) { 
             body {
                 padding: 12px; 
@@ -734,6 +747,11 @@
         </div>
     </div>
 
+    <footer id="pageFooter">
+        <p>Idealizado e produzido por: Iúri Martins</p>
+        <p>&copy; <span id="currentYear"></span> Todos os direitos reservados.</p>
+    </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const initialTeams = [
@@ -780,7 +798,11 @@
             const shareOnXButton = document.getElementById('shareOnXButton');
             const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton'); 
             const closeShareMenuButton = document.getElementById('closeShareMenuButton');
+            const currentYearSpan = document.getElementById('currentYear');
 
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
 
             const POOL_DISPLAY_ORDER = {
                 1: ["0-0"], 2: ["1-0", "0-1"], 3: ["2-0", "1-1", "0-2"],
