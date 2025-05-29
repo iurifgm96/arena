@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Tema Claro (Default) & Cores Base do Arena */
             --cor-arena-azul: #0074FF;
             --cor-arena-azul-hover: #005fcc; 
             --cor-sucesso: #28a745;
@@ -30,7 +29,6 @@
 
         @media (prefers-color-scheme: dark) {
             :root {
-                /* Overrides para Tema Escuro */
                 --cor-arena-azul: #1e88e5; 
                 --cor-arena-azul-hover: #42a5f5;
                 --cor-sucesso: #4caf50;
@@ -581,7 +579,6 @@
             #previousRoundSummarySection { flex: 1; width: 100%;} 
 
 
-            /* ESTILOS DA TABELA PARA DESKTOP */
             #standingsTable {
                 font-size: 0.85em; 
                 border-collapse: collapse; 
@@ -804,7 +801,6 @@
                         nextRoundButton.disabled = true; 
                     } else {
                         nextRoundButton.disabled = true; 
-                        console.warn("Botão Próx. Ronda desabilitado: sem confrontos, mas com equipas ativas.");
                     }
                 }
                 else {
@@ -892,22 +888,17 @@
             }
 
             function generateMatchupsForCurrentRound() {
-                console.log(`Gerando confrontos para a Ronda ${currentRound}`);
                 let generatedMatchups = [];
                 if (stageComplete) {
-                    console.log("Fase completa, sem novos confrontos.");
                     return generatedMatchups;
                 }
 
                 const activeTeams = teams.filter(team => team.status === 'active');
-                console.log(`Equipas ativas para Ronda ${currentRound}: ${activeTeams.length}`, deepCopy(activeTeams.map(t => ({name: t.name, wins: t.wins, losses: t.losses, status: t.status}))));
 
                 if (activeTeams.length < 2 && currentRound > 1) {
-                    console.log(`Não há equipas ativas suficientes (${activeTeams.length}) para a ronda ${currentRound} > 1.`);
                     return generatedMatchups;
                 }
                 if (activeTeams.length === 0 && currentRound >= 1) { 
-                     console.log(`Nenhuma equipa ativa para a ronda ${currentRound}.`);
                      return generatedMatchups;
                 }
 
@@ -927,10 +918,6 @@
                                 });
                             }
                         }
-                    }  else if (sortedBySeed.length === 1) {
-                        console.log(`Ronda 1: Apenas 1 equipa ativa (${sortedBySeed[0].name}), nenhuma partida gerada.`);
-                    } else {
-                        console.log("Ronda 1: Menos de 2 equipas ativas no total, nenhuma partida gerada.");
                     }
                 } else { 
                     const pools = {};
@@ -940,8 +927,6 @@
                         pools[record].push(team);
                     });
                     
-                    console.log(`Pools para Ronda ${currentRound}:`, deepCopy(pools));
-
                     const processOrder = POOL_DISPLAY_ORDER[currentRound] || Object.keys(pools).sort();
                     const opponentsPlayedData = {};
                     teams.forEach(t => { opponentsPlayedData[t.id] = [...(t.opponentsPlayed || [])]; });
@@ -977,11 +962,7 @@
                                         poolRecord: record 
                                     });
                                 });
-                                if (allPossibleSolutions[0].rematches > 0) {
-                                    console.warn(`Ronda ${currentRound}, Pool ${record}: Foram gerados ${allPossibleSolutions[0].rematches} confrontos repetidos.`);
-                                }
                             } else if (poolTeams.length > 0) { 
-                                console.error(`Backtracking não encontrou solução para R${currentRound}, Pool ${record}. Usando fallback.`);
                                 let tempPool = [...poolTeams];
                                 while(tempPool.length >=2) {
                                     let t1 = tempPool.shift();
@@ -993,12 +974,8 @@
                                 }
                             }
                         }
-                         if (pools[record] && pools[record].length === 1) { 
-                            console.log(`Equipa ${pools[record][0].name} fica de fora (ímpar no pool ${record}) da ronda ${currentRound}.`);
-                        }
                     });
                 }
-                console.log(`Gerados ${generatedMatchups.length} confrontos para a ronda ${currentRound}.`);
                 return generatedMatchups;
             }
            
@@ -1061,7 +1038,6 @@
                 
                 if(end && currentRound > 0) { 
                     stageComplete=true; 
-                    console.log("FASE COMPLETA na ronda:", currentRound); 
                 }
                 return stageComplete;
             }
@@ -1222,12 +1198,11 @@
                         matchupsByPool[poolKey].forEach((match) => { 
                             const originalMatchIndex = matchups.indexOf(match);
                             if(originalMatchIndex === -1) {
-                                console.error("Não foi possível encontrar o índice original do confronto na renderização:", match, "Array de matchups atual:", deepCopy(matchups));
                                 return; 
                             }
 
                             const team1 = getTeamById(match.team1Id); const team2 = getTeamById(match.team2Id);
-                            if (!team1 || !team2) { console.error("Equipa não encontrada para o confronto:", match); return; }
+                            if (!team1 || !team2) { return; }
 
                             const matchDiv = document.createElement('div'); matchDiv.classList.add('matchup');
                            
@@ -1414,7 +1389,6 @@
                 }
             }
 
-            // CLICK HANDLERS
             nextRoundButton.onclick = () => {
                 if (stageComplete) return;
 
@@ -1461,7 +1435,6 @@
                 renderAll();
             };
             
-            // Função auxiliar para construir o texto de partilha
             function buildShareMessage() {
                 let resultsSummaryWithEmojis = "🏆 Minha Simulação do BLAST Austin Major 🏆\n\n";
                 let resultsSummaryWithoutEmojis = "Minha Simulação do BLAST Austin Major\n\n";
@@ -1482,15 +1455,15 @@
                 resultsSummaryWithEmojis += "\n";
                 resultsSummaryWithoutEmojis += "\n";
 
-                const customMessage = "Faz também a tua simulação para o BLAST Austin Major aqui!"; // FRASE ATUALIZADA
+                const customMessage = "Faz também a tua simulação para o BLAST Austin Major aqui!"; 
                 const shareUrl = "https://arena.rtp.pt/ao-minuto/simulador-major-austin/"; 
-                const hashtagX = " #MAJORnaRTP"; // Adicionado espaço antes do hashtag
+                const hashtagX = " #MAJORnaRTP"; 
 
                 return {
-                    textForX: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}`, // Mantém emojis e adiciona hashtag para o X
-                    textForWhatsApp: `${resultsSummaryWithoutEmojis}${customMessage} ${shareUrl}`, // Sem emojis para WhatsApp, link no final
+                    textForX: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}`, 
+                    textForWhatsApp: `${resultsSummaryWithoutEmojis}${customMessage} ${shareUrl}`, 
                     urlForX: shareUrl, 
-                    fullTextForCopy: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}\n\nLink para o simulador: ${shareUrl}` // Para cópia manual, com emojis e hashtag
+                    fullTextForCopy: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}\n\nLink para o simulador: ${shareUrl}` 
                 };
             }
 
@@ -1508,7 +1481,6 @@
                 if (!stageComplete) return;
                 const shareData = buildShareMessage();
                 
-                // O texto para o X já inclui a mensagem e o hashtag. O URL é passado separadamente.
                 const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.textForX)}&url=${encodeURIComponent(shareData.urlForX)}`;
                 window.open(xUrl, '_blank');
                 socialShareMenu.style.display = 'none';
