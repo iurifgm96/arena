@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Tema Claro (Default) & Cores Base do Arena */
             --cor-arena-azul: #0074FF;
             --cor-arena-azul-hover: #005fcc; 
             --cor-sucesso: #28a745;
@@ -29,6 +30,7 @@
 
         @media (prefers-color-scheme: dark) {
             :root {
+                /* Overrides para Tema Escuro */
                 --cor-arena-azul: #1e88e5; 
                 --cor-arena-azul-hover: #42a5f5;
                 --cor-sucesso: #4caf50;
@@ -58,7 +60,7 @@
             max-width: 1200px;
             margin: auto;
             background-color: var(--cor-fundo-simulador-body); 
-            padding-bottom: 20px; /* Adiciona espaço para o rodapé não sobrepor conteúdo */
+            padding-bottom: 20px;
         }
 
         .container > h1 { display: none; }
@@ -577,10 +579,17 @@
                  font-size: 1.1em; 
             }
 
-            .stage-sections, .results-sections, #previousRoundSummarySection { 
+            .stage-sections, .results-sections { 
+                display: flex; 
                 flex-direction: row; 
                 gap: 15px; 
                 margin-bottom: 15px; 
+            }
+            #previousRoundSummarySection { 
+                display: flex;
+                flex-direction: row; 
+                gap: 15px;
+                margin-bottom: 15px;
             }
            
              .section {
@@ -589,7 +598,16 @@
             #matchupsSection { flex: 2; }
             #standingsSection { flex: 3; }
             .results-sections .section { flex: 1; }
-            #previousRoundSummarySection { flex: 1; width: 100%;} 
+            
+            #previousRoundSummarySection > .summary-controls {
+                flex-shrink: 0; 
+            }
+
+            #previousRoundSummarySection > #previousRoundSummaryContainer {
+                flex-grow: 1; 
+                min-width: 0;   
+                overflow-x: auto; 
+            }
 
 
             #standingsTable {
