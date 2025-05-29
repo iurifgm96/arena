@@ -105,6 +105,74 @@
             font-weight: 700; 
             font-size: 1.1em; 
         }
+        
+        #socialShareMenu {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: var(--cor-fundo-cartao);
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--border-radius-padrao);
+            text-align: center;
+            box-shadow: var(--sombra-cartao);
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            align-items: center; 
+        }
+
+        #socialShareMenu p {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 600; 
+            color: var(--cor-texto-principal);
+            font-size: 0.9em; 
+        }
+
+        #socialShareMenu button {
+            border: none;
+            padding: 8px 15px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            margin: 0; 
+            font-size: 0.75em; 
+            font-weight: 500;
+            width: 80%; 
+            max-width: 200px; 
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        
+        #socialShareMenu button:hover {
+            transform: translateY(-1px);
+        }
+
+        #shareOnXButton {
+            background-color: #1DA1F2; 
+            color: #ffffff;
+        }
+        #shareOnXButton:hover {
+            background-color: #0c85d0;
+        }
+        
+        #shareOnWhatsAppButton { 
+            background-color: #25D366; 
+            color: #ffffff;
+        }
+        #shareOnWhatsAppButton:hover {
+            background-color: #1DAA50; 
+        }
+
+        #closeShareMenuButton {
+            background-color: var(--cor-perigo);
+            color: #ffffff;
+            font-size: 0.7em; 
+            padding: 6px 12px;
+            width: auto; 
+            margin-top: 5px; 
+        }
+         #closeShareMenuButton:hover {
+            background-color: color-mix(in srgb, var(--cor-perigo) 80%, black);
+        }
+
 
         .stage-sections, .results-sections, #previousRoundSummarySection { 
             display: flex;
@@ -389,6 +457,14 @@
         button#nextRoundButton:hover {
             background-color: color-mix(in srgb, var(--cor-sucesso) 85%, black);
         }
+        button#shareResultsButton { 
+            background-color: var(--cor-aviso); 
+            color: var(--cor-texto-principal); 
+        }
+        button#shareResultsButton:hover {
+            background-color: color-mix(in srgb, var(--cor-aviso) 85%, black);
+        }
+
 
         button:hover {
             background-color: var(--cor-arena-azul-hover);
@@ -611,7 +687,14 @@
             <div class="buttons">
                 <button id="resetButton">Reiniciar</button>
                 <button id="prevRoundButton" disabled>Ronda Ant.</button> 
-                <button id="nextRoundButton" disabled>Próx. Ronda</button> 
+                <button id="nextRoundButton" disabled>Próx. Ronda</button>
+                <button id="shareResultsButton" style="display: none;">Partilhar Resultados</button>
+            </div>
+            <div id="socialShareMenu" style="display: none;">
+                <p>Escolha como partilhar:</p>
+                <button id="shareOnXButton">Partilhar no X</button>
+                <button id="shareOnWhatsAppButton">Partilhar no WhatsApp</button> 
+                <button id="closeShareMenuButton">Fechar</button>
             </div>
             <div class="round-indicator">Ronda: <span id="currentRound">1</span></div>
         </div>
@@ -676,10 +759,10 @@
             ];
 
             let teams = [];
-            let currentRound = 1; // Começa na Ronda 1
+            let currentRound = 1; 
             let matchups = [];
             let stageComplete = false;
-            let historyStack = []; // NOVA ESTRUTURA DE HISTÓRICO
+            let historyStack = []; 
             let displayedSummaryRound = 0; 
             let currentStandingIndex = 0; 
 
@@ -694,6 +777,13 @@
             const prevRoundSummarySection = document.getElementById('previousRoundSummarySection');
             const prevRoundSummaryContainer = document.getElementById('previousRoundSummaryContainer');
             const summaryRoundSelector = document.getElementById('summaryRoundSelector');
+            
+            const shareResultsButton = document.getElementById('shareResultsButton');
+            const socialShareMenu = document.getElementById('socialShareMenu');
+            const shareOnXButton = document.getElementById('shareOnXButton');
+            const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton'); 
+            const closeShareMenuButton = document.getElementById('closeShareMenuButton');
+
 
             const POOL_DISPLAY_ORDER = {
                 1: ["0-0"], 2: ["1-0", "0-1"], 3: ["2-0", "1-1", "0-2"],
@@ -709,21 +799,16 @@
                 if (stageComplete) {
                     nextRoundButton.disabled = true;
                 } else if (matchups.length === 0 && currentRound > 0) { 
-                    // Se não há confrontos (e.g. não há equipas suficientes),
-                    // o botão de próxima ronda deve ser desabilitado porque não há nada para avançar.
-                    // A menos que seja uma situação onde a fase termina por falta de confrontos.
                     const activeTeams = teams.filter(t => t.status === 'active');
                     if(activeTeams.length < 2) {
-                        nextRoundButton.disabled = true; // Não há como prosseguir
+                        nextRoundButton.disabled = true; 
                     } else {
-                        // Caso estranho: não há confrontos, mas há equipas. Pode ser um bug na geração.
-                        // Por segurança, desabilita.
                         nextRoundButton.disabled = true; 
                         console.warn("Botão Próx. Ronda desabilitado: sem confrontos, mas com equipas ativas.");
                     }
                 }
                 else {
-                    nextRoundButton.disabled = !allCurrentMatchesDecided;
+                    nextRoundButton.disabled = !allCurrentMatchesDecided && matchups.length > 0;
                 }
             }
 
@@ -741,8 +826,9 @@
 
                 matchups = generateMatchupsForCurrentRound();
                 
+                shareResultsButton.style.display = 'none'; 
+                socialShareMenu.style.display = 'none'; 
                 renderAll();
-                // updateControlButtonsState() é chamado em renderAll()
             }
 
             function getTeamById(id) { return teams.find(team => team.id === id); }
@@ -750,8 +836,8 @@
             function calculateBuchholz() {
                 teams.forEach(team => {
                     team.buchholz = 0;
-                    (team.opponentsPlayed || []).forEach(opponentId => { // Garante que opponentsPlayed existe
-                        const opponent = getTeamById(opponentId); // Usa getTeamById para obter o estado atual do oponente
+                    (team.opponentsPlayed || []).forEach(opponentId => { 
+                        const opponent = getTeamById(opponentId); 
                         if (opponent) team.buchholz += (opponent.wins - opponent.losses);
                     });
                 });
@@ -799,7 +885,6 @@
                     currentPairings.push({ 
                         team1Id: team1.id, 
                         team2Id: team2.id, 
-                        // winnerId, round, poolRecord serão adicionados em generateMatchupsForCurrentRound
                     });
                     generatePairingsForPoolRecursive(nextTeamsToPair, currentPairings, allPossibleSolutions, opponentsPlayedData, poolRecordForMatch);
                     currentPairings.pop(); 
@@ -817,22 +902,17 @@
                 const activeTeams = teams.filter(team => team.status === 'active');
                 console.log(`Equipas ativas para Ronda ${currentRound}: ${activeTeams.length}`, deepCopy(activeTeams.map(t => ({name: t.name, wins: t.wins, losses: t.losses, status: t.status}))));
 
-
-                // Condição para não gerar confrontos se não houver equipas suficientes
-                // Esta condição é crucial. Se for verdadeira, a mensagem "Nenhum confronto" aparecerá.
                 if (activeTeams.length < 2 && currentRound > 1) {
                     console.log(`Não há equipas ativas suficientes (${activeTeams.length}) para a ronda ${currentRound} > 1.`);
-                    return generatedMatchups; // Retorna array vazio
+                    return generatedMatchups;
                 }
-                if (activeTeams.length === 0 && currentRound >= 1) { // Se não há NENHUMA equipa ativa (exceto se for para R1 e queremos que comece vazia, o que não é o caso)
+                if (activeTeams.length === 0 && currentRound >= 1) { 
                      console.log(`Nenhuma equipa ativa para a ronda ${currentRound}.`);
                      return generatedMatchups;
                 }
 
-
                 if (currentRound === 1) {
                     const poolRecord = "0-0";
-                    // Na ronda 1, todas as equipas `activeTeams` estão 0-0.
                     const sortedBySeed = [...activeTeams].sort((a, b) => a.seed - b.seed);
                     if (sortedBySeed.length >= 2) {
                         const midPoint = Math.floor(sortedBySeed.length / 2);
@@ -852,7 +932,7 @@
                     } else {
                         console.log("Ronda 1: Menos de 2 equipas ativas no total, nenhuma partida gerada.");
                     }
-                } else { // Rondas > 1
+                } else { 
                     const pools = {};
                     activeTeams.forEach(team => {
                         const record = `${team.wins}-${team.losses}`;
@@ -918,7 +998,7 @@
                         }
                     });
                 }
-                console.log(`Generated ${generatedMatchups.length} matchups for round ${currentRound}`, deepCopy(generatedMatchups));
+                console.log(`Gerados ${generatedMatchups.length} confrontos para a ronda ${currentRound}.`);
                 return generatedMatchups;
             }
            
@@ -937,7 +1017,6 @@
                     const previousLoser = (match.winnerId === team1.id) ? team2 : team1;
                     if(previousWinner) previousWinner.wins--; 
                     if(previousLoser) previousLoser.losses--;
-                    // Não remove oponentes jogados ao reverter.
                     if(previousWinner) updateTeamStatus(previousWinner); 
                     if(previousLoser) updateTeamStatus(previousLoser);
                 }
@@ -1024,7 +1103,7 @@
                 }
                 prevRoundSummarySection.style.display = 'block';
 
-                if (!completedRoundsForSelector.find(r => r.roundCompleted === displayedSummaryRound) && completedRoundsForSelector.length > 0) {
+                if ((!completedRoundsForSelector.find(r => r.roundCompleted === displayedSummaryRound) || displayedSummaryRound === 0) && completedRoundsForSelector.length > 0) {
                      displayedSummaryRound = completedRoundsForSelector[completedRoundsForSelector.length - 1].roundCompleted;
                 }
                
@@ -1110,7 +1189,6 @@
                         messageText += ' Não há equipas ativas suficientes.';
                     }
                 }
-
 
                 if (messageText) {
                     if (!messageP) {
@@ -1327,6 +1405,13 @@
                 renderAdvancedEliminatedLists();
                 renderPreviousRoundSummary(); 
                 updateControlButtonsState(); 
+
+                if (stageComplete) {
+                    shareResultsButton.style.display = 'inline-block';
+                } else {
+                    shareResultsButton.style.display = 'none';
+                    socialShareMenu.style.display = 'none'; 
+                }
             }
 
             // CLICK HANDLERS
@@ -1355,7 +1440,6 @@
                 
                 currentStandingIndex = 0;
                 renderAll();
-                // updateControlButtonsState() é chamado dentro de renderAll()
             };
 
             prevRoundButton.onclick = () => {
@@ -1375,9 +1459,71 @@
                 displayedSummaryRound = historyStack.length > 0 ? historyStack[historyStack.length - 1].roundCompleted : 0;
                 currentStandingIndex = 0;
                 renderAll();
-                // updateControlButtonsState() é chamado dentro de renderAll()
             };
             
+            // Função auxiliar para construir o texto de partilha
+            function buildShareMessage() {
+                let resultsSummaryWithEmojis = "🏆 Minha Simulação do BLAST Austin Major 🏆\n\n";
+                let resultsSummaryWithoutEmojis = "Minha Simulação do BLAST Austin Major\n\n";
+                
+                const advancedTeamElements = advancedList.querySelectorAll('li .team-name-text');
+                if (advancedTeamElements.length > 0) {
+                    resultsSummaryWithEmojis += "✅ Apurados:\n";
+                    resultsSummaryWithoutEmojis += "Apurados:\n";
+                    advancedTeamElements.forEach(el => {
+                        const teamName = el.textContent.trim();
+                        resultsSummaryWithEmojis += `- ${teamName}\n`;
+                        resultsSummaryWithoutEmojis += `- ${teamName}\n`;
+                    });
+                } else {
+                    resultsSummaryWithEmojis += "✅ Apurados: Nenhuma equipa se apurou neste cenário.\n";
+                    resultsSummaryWithoutEmojis += "Apurados: Nenhuma equipa se apurou neste cenário.\n";
+                }
+                resultsSummaryWithEmojis += "\n";
+                resultsSummaryWithoutEmojis += "\n";
+
+                const customMessage = "Faz também a tua simulação para o BLAST Austin Major aqui!"; // FRASE ATUALIZADA
+                const shareUrl = "https://arena.rtp.pt/ao-minuto/simulador-major-austin/"; 
+                const hashtagX = " #MAJORnaRTP"; // Adicionado espaço antes do hashtag
+
+                return {
+                    textForX: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}`, // Mantém emojis e adiciona hashtag para o X
+                    textForWhatsApp: `${resultsSummaryWithoutEmojis}${customMessage} ${shareUrl}`, // Sem emojis para WhatsApp, link no final
+                    urlForX: shareUrl, 
+                    fullTextForCopy: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}\n\nLink para o simulador: ${shareUrl}` // Para cópia manual, com emojis e hashtag
+                };
+            }
+
+            shareResultsButton.onclick = () => {
+                if (stageComplete) {
+                    socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none';
+                }
+            };
+
+            closeShareMenuButton.onclick = () => {
+                socialShareMenu.style.display = 'none';
+            };
+
+            shareOnXButton.onclick = () => {
+                if (!stageComplete) return;
+                const shareData = buildShareMessage();
+                
+                // O texto para o X já inclui a mensagem e o hashtag. O URL é passado separadamente.
+                const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.textForX)}&url=${encodeURIComponent(shareData.urlForX)}`;
+                window.open(xUrl, '_blank');
+                socialShareMenu.style.display = 'none';
+            };
+
+            shareOnWhatsAppButton.onclick = () => { 
+                if (!stageComplete) return;
+                const shareData = buildShareMessage();
+                
+                const whatsAppUrl = `https://wa.me/?text=${encodeURIComponent(shareData.textForWhatsApp)}`;
+                
+                window.open(whatsAppUrl, '_blank');
+                socialShareMenu.style.display = 'none'; 
+            };
+
             resetButton.onclick = initializeStage;
            
             let resizeTimeout;
