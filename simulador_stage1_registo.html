@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
     <style>
         :root {
             /* Tema Claro (Default) & Cores Base do Arena */
@@ -244,7 +245,8 @@
         #advancedSection::before, #eliminatedSection::before,
         #standingsSection::before, #matchupsSection::before,
         #previousRoundSummarySection::before,
-        #newsCarouselSection::before { 
+        #newsCarouselSection::before,
+        #twitchPlayerSection::before { 
             content: attr(data-title); 
             font-weight: 700; 
             font-size: 1em; 
@@ -260,7 +262,8 @@
             color: var(--cor-texto-secundario);
             border-bottom: 1px solid var(--cor-borda);
         }
-        #newsCarouselSection::before { 
+        #newsCarouselSection::before,
+        #twitchPlayerSection::before { 
         }
 
 
@@ -610,6 +613,20 @@
             color: var(--cor-texto-secundario);
             margin-top: auto; 
         }
+        #twitch-embed { /* NOVO ESTILO */
+            width: 100%;
+            height: 100%;
+        }
+        #twitch-embed iframe { 
+            width: 100%;
+            height: 100%;
+        }
+        #twitchPlayerSection .section-content-wrapper { 
+            width: 100%;
+            aspect-ratio: 16 / 9; 
+            max-height: 480px; 
+            margin: 0 auto; 
+        }
 
 
         @media (min-width: 768px) { 
@@ -738,7 +755,8 @@
              #advancedSection::before, #eliminatedSection::before,
             #standingsSection::before, #matchupsSection::before,
             #previousRoundSummarySection::before,
-            #newsCarouselSection::before { 
+            #newsCarouselSection::before,
+            #twitchPlayerSection::before { 
                 font-size: 1.05em; 
             }
             #previousRoundSummarySection::before {
@@ -772,6 +790,9 @@
                 .news-card {
                     min-width: 180px; 
                     max-width: 220px;
+                }
+                #twitchPlayerSection .section-content-wrapper {
+                    max-height: 300px; 
                 }
             }
         }
@@ -834,6 +855,12 @@
             </div>
         </div>
         
+        <div id="twitchPlayerSection" class="section" data-title="Acompanha na Twitch!">
+            <div class="section-content-wrapper">
+                 <div id="twitch-embed"></div>
+            </div>
+        </div>
+
         <div id="newsCarouselSection" class="section" data-title="Notícias que te podem interessar:">
             <div id="newsCarouselContainer">
                 <p style="color: var(--cor-texto-secundario); font-style: italic;">A carregar notícias...</p>
@@ -896,6 +923,9 @@
             const currentYearSpan = document.getElementById('currentYear');
             const newsCarouselSection = document.getElementById('newsCarouselSection'); 
             const newsCarouselContainer = document.getElementById('newsCarouselContainer'); 
+            const twitchPlayerSection = document.getElementById('twitchPlayerSection');
+            const twitchEmbedDiv = document.getElementById('twitch-embed');
+
 
             if (currentYearSpan) {
                 currentYearSpan.textContent = new Date().getFullYear();
@@ -944,9 +974,30 @@
                 shareResultsButton.style.display = 'none'; 
                 socialShareMenu.style.display = 'none'; 
                 
+                renderTwitchPlayer();
                 fetchAndRenderNews();
                 renderAll();
             }
+
+            function renderTwitchPlayer(){
+                const twitchEmbedDiv = document.getElementById('twitch-embed');
+                twitchPlayerSection.style.display = 'block'; 
+
+                if (twitchEmbedDiv) { 
+                    twitchEmbedDiv.innerHTML = ''; 
+                    new Twitch.Embed("twitch-embed", {
+                        width: "100%",
+                        height: "100%", 
+                        channel: "rtparenacs",
+                        layout: "video",
+                        autoplay: false, 
+                        parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost"]
+                    });
+                } else {
+                    twitchPlayerSection.style.display = 'none';
+                }
+            }
+
 
             async function fetchAndRenderNews() {
                 const NEWS_API_ENDPOINT = "https://rss.app/feeds/v1.1/6tdzkG5Yidh3tqyw.json"; 
@@ -965,21 +1016,21 @@
                         const newsItemsToDisplay = data.items.slice(0, 5);
                         const formattedNews = newsItemsToDisplay.map(item => {
                             let imageUrl = 'https://placehold.co/300x180/cccccc/969696?text=Noticia'; 
-                            if (item.image) { // Prioridade para o campo 'image' se existir
+                            if (item.image) {
                                 imageUrl = item.image;
-                            } else if (item.thumbnail) {
+                            } else if (item.thumbnail) { 
                                 imageUrl = item.thumbnail;
-                            } else if (item.enclosure && item.enclosure.link && (item.enclosure.type || '').startsWith('image/')) {
-                                imageUrl = item.enclosure.link;
                             } else if (item.media && item.media.thumbnail && item.media.thumbnail.length > 0 && item.media.thumbnail[0].url) {
                                 imageUrl = item.media.thumbnail[0].url;
                             } else if (item.media && item.media.content && item.media.content.length > 0 && item.media.content[0].url && (item.media.content[0].type || '').startsWith('image/')) {
                                 imageUrl = item.media.content[0].url;
+                            } else if (item.enclosures && item.enclosures.length > 0 && item.enclosures[0].url && (item.enclosures[0].type || '').startsWith('image/')) {
+                                imageUrl = item.enclosures[0].url;
                             }
                             
                             return {
                                 title: item.title || "Título indisponível",
-                                link: item.link || item.url || "#", // Tenta 'link' primeiro, depois 'url'
+                                link: item.link || item.url || "#", 
                                 imageUrl: imageUrl,
                                 source: data.title || "RTP Arena" 
                             };
