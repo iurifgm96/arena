@@ -613,6 +613,10 @@
             color: var(--cor-texto-secundario);
             margin-top: auto; 
         }
+        #twitch-embed { /* NOVO ESTILO */
+            width: 100%;
+            height: 100%;
+        }
         #twitch-embed iframe { 
             width: 100%;
             height: 100%;
@@ -970,14 +974,14 @@
                 shareResultsButton.style.display = 'none'; 
                 socialShareMenu.style.display = 'none'; 
                 
-                renderTwitchPlayer(); // Alterado para sempre renderizar
+                renderTwitchPlayer();
                 fetchAndRenderNews();
                 renderAll();
             }
 
             function renderTwitchPlayer(){
                 const twitchEmbedDiv = document.getElementById('twitch-embed');
-                twitchPlayerSection.style.display = 'block'; // Garante que a secção está visível
+                twitchPlayerSection.style.display = 'block'; 
 
                 if (twitchEmbedDiv) { 
                     twitchEmbedDiv.innerHTML = ''; 
@@ -987,11 +991,9 @@
                         channel: "rtparenacs",
                         layout: "video",
                         autoplay: false, 
-                        // IMPORTANTE: Substitua com os seus domínios de produção!
-                        parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost"] 
+                        parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost"]
                     });
                 } else {
-                    // Se o div do embed não existir, esconde a secção
                     twitchPlayerSection.style.display = 'none';
                 }
             }
