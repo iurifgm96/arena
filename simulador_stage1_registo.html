@@ -180,7 +180,6 @@
             display: flex;
             flex-direction: column; 
             gap: 10px; 
-            /* margin-bottom: 10px;  Removido para usar o margin-bottom do .section */
         }
        
         #previousRoundSummarySection { }
@@ -239,8 +238,7 @@
             border-radius: var(--border-radius-padrao);
             box-shadow: var(--sombra-cartao);
             border: 1px solid var(--cor-borda);
-            /* flex-basis: 100%; */ /* Comentado pois não é estritamente necessário para layout de bloco */
-            margin-bottom: 15px; /* Garante espaçamento inferior para todas as secções */
+            margin-bottom: 15px; 
         }
        
         #advancedSection::before, #eliminatedSection::before,
@@ -661,13 +659,11 @@
                 display: flex; 
                 flex-direction: row; 
                 gap: 15px; 
-                margin-bottom: 15px; 
             }
             #previousRoundSummarySection { 
                 display: flex;
                 flex-direction: row; 
                 gap: 15px;
-                margin-bottom: 15px;
             }
            
              .section {
@@ -856,7 +852,7 @@
             </div>
         </div>
         
-        <div id="twitchPlayerSection" class="section" data-title="Stage 1 - 3 a 6 de junho!">
+        <div id="twitchPlayerSection" class="section" data-title="Assiste em Direto!">
             <div class="section-content-wrapper">
                  <div id="twitch-embed"></div>
             </div>
@@ -894,6 +890,17 @@
                 { id: 14, name: 'Legacy', seed: 14, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Legacy_allmode.png' },
                 { id: 15, name: 'Metizport', seed: 15, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Metizport_2023_allmode.png' }, 
                 { id: 16, name: 'Fluxo', seed: 16, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Fluxo_darkmode.png' },
+            ];
+
+            const preloadedRound1Results = [
+                { team1Name: 'OG', team2Name: 'Complexity', winnerName: 'OG' },
+                { team1Name: 'HEROIC', team2Name: 'Chinggis Warriors', winnerName: 'HEROIC' },
+                { team1Name: 'B8', team2Name: 'Imperial', winnerName: 'B8' },
+                { team1Name: 'BetBoom', team2Name: 'Nemiga', winnerName: 'BetBoom' },
+                { team1Name: 'NRG', team2Name: 'TYLOO', winnerName: 'NRG' },
+                { team1Name: 'Lynn Vision', team2Name: 'Legacy', winnerName: 'Lynn Vision' },
+                { team1Name: 'Wildcard', team2Name: 'Metizport', winnerName: 'Wildcard' },
+                { team1Name: 'FlyQuest', team2Name: 'Fluxo', winnerName: 'FlyQuest' },
             ];
 
             let teams = [];
@@ -957,12 +964,33 @@
                     nextRoundButton.disabled = !allCurrentMatchesDecided && matchups.length > 0;
                 }
             }
+            
+            function applyPreloadedResult(matchToUpdate, winnerId) {
+                if (!matchToUpdate) return;
+                
+                matchToUpdate.winnerId = winnerId;
+                const team1 = getTeamById(matchToUpdate.team1Id);
+                const team2 = getTeamById(matchToUpdate.team2Id);
+                const winner = getTeamById(winnerId);
+                const loser = (winnerId === team1.id) ? team2 : team1;
+
+                if (winner && loser) {
+                    winner.wins++;
+                    loser.losses++;
+                    
+                    if (!winner.opponentsPlayed.includes(loser.id)) winner.opponentsPlayed.push(loser.id);
+                    if (!loser.opponentsPlayed.includes(winner.id)) loser.opponentsPlayed.push(winner.id);
+
+                    updateTeamStatus(winner);
+                    updateTeamStatus(loser);
+                }
+            }
 
             function initializeStage() {
                 teams = deepCopy(initialTeams).map(team => ({
                     ...team, wins: 0, losses: 0, buchholz: 0, opponentsPlayed: [], status: 'active'
                 }));
-                currentRound = 1; 
+                
                 historyStack = []; 
                 stageComplete = false;
                 displayedSummaryRound = 0; 
@@ -970,7 +998,45 @@
                 advancedList.innerHTML = ''; 
                 eliminatedList.innerHTML = '';
 
-                matchups = generateMatchupsForCurrentRound();
+                if (preloadedRound1Results && preloadedRound1Results.length > 0) {
+                    currentRound = 1;
+                    matchups = generateMatchupsForCurrentRound(); 
+
+                    preloadedRound1Results.forEach(preloadedResult => {
+                        const team1 = teams.find(t => t.name === preloadedResult.team1Name);
+                        const team2 = teams.find(t => t.name === preloadedResult.team2Name);
+                        const winner = teams.find(t => t.name === preloadedResult.winnerName);
+
+                        if (!team1 || !team2 || !winner) {
+                            return; 
+                        }
+
+                        const matchToUpdate = matchups.find(m =>
+                            (m.team1Id === team1.id && m.team2Id === team2.id) ||
+                            (m.team1Id === team2.id && m.team2Id === team1.id)
+                        );
+
+                        if (matchToUpdate) {
+                            applyPreloadedResult(matchToUpdate, winner.id);
+                        }
+                    });
+                    
+                    calculateBuchholz(); 
+                    
+                    historyStack.push({
+                        roundCompleted: 1,
+                        teamsAtEndOfRound: deepCopy(teams),         
+                        matchupsOfRound: deepCopy(matchups)       
+                    });
+                    
+                    displayedSummaryRound = 1; 
+                    currentRound = 2; 
+                    matchups = generateMatchupsForCurrentRound(); 
+                    
+                } else {
+                    currentRound = 1; 
+                    matchups = generateMatchupsForCurrentRound();
+                }
                 
                 shareResultsButton.style.display = 'none'; 
                 socialShareMenu.style.display = 'none'; 
@@ -1640,6 +1706,7 @@
                 updateControlButtonsState(); 
 
                 newsCarouselSection.style.display = 'block'; 
+                twitchPlayerSection.style.display = 'block';
 
                 if (stageComplete) {
                     shareResultsButton.style.display = 'inline-block';
