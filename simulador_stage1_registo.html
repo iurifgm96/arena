@@ -10,7 +10,6 @@
     <script src="https://embed.twitch.tv/embed/v1.js"></script>
     <style>
         :root {
-            /* Tema Claro (Default) & Cores Base do Arena */
             --cor-arena-azul: #0074FF;
             --cor-arena-azul-hover: #005fcc; 
             --cor-sucesso: #28a745;
@@ -31,7 +30,6 @@
 
         @media (prefers-color-scheme: dark) {
             :root {
-                /* Overrides para Tema Escuro */
                 --cor-arena-azul: #1e88e5; 
                 --cor-arena-azul-hover: #42a5f5;
                 --cor-sucesso: #4caf50;
@@ -902,7 +900,8 @@
                 { team1Name: 'Wildcard', team2Name: 'Metizport', winnerName: 'Wildcard' },
                 { team1Name: 'FlyQuest', team2Name: 'Fluxo', winnerName: 'FlyQuest' },
             ];
-             const preloadedRound2Results = [
+            
+            const preloadedRound2Results = [
                 { team1Name: 'HEROIC', team2Name: 'NRG', winnerName: 'HEROIC' },
                 { team1Name: 'B8', team2Name: 'OG', winnerName: 'B8' },
                 { team1Name: 'FlyQuest', team2Name: 'BetBoom', winnerName: 'FlyQuest' },
@@ -911,6 +910,17 @@
                 { team1Name: 'TYLOO', team2Name: 'Metizport', winnerName: 'TYLOO' },
                 { team1Name: 'Legacy', team2Name: 'Chinggis Warriors', winnerName: 'Legacy' },
                 { team1Name: 'Nemiga', team2Name: 'Imperial', winnerName: 'Nemiga' },
+            ];
+
+            const preloadedRound3Results = [
+                { team1Name: 'BetBoom', team2Name: 'Legacy', winnerName: 'BetBoom' },
+                { team1Name: 'NRG', team2Name: 'Complexity', winnerName: 'NRG' },
+                { team1Name: 'OG', team2Name: 'TYLOO', winnerName: 'OG' },
+                { team1Name: 'Nemiga', team2Name: 'Lynn Vision', winnerName: 'Nemiga' },
+                { team1Name: 'HEROIC', team2Name: 'FlyQuest', winnerName: 'HEROIC' },
+                { team1Name: 'B8', team2Name: 'Wildcard', winnerName: 'B8' },
+                { team1Name: 'Imperial', team2Name: 'Metizport', winnerName: 'Imperial' },
+                { team1Name: 'Chinggis Warriors', team2Name: 'Fluxo', winnerName: 'Chinggis Warriors' },
             ];
 
 
@@ -978,7 +988,6 @@
             
             function applyPreloadedResult(matchToUpdate, winnerId) {
                 if (!matchToUpdate) {
-                    console.warn("Tentativa de aplicar resultado a um confronto indefinido.");
                     return;
                 }
                 
@@ -997,10 +1006,39 @@
 
                     updateTeamStatus(winner);
                     updateTeamStatus(loser);
-                } else {
-                    console.warn("Vencedor ou perdedor não encontrado ao aplicar resultado pré-carregado:", matchToUpdate, winnerId);
                 }
             }
+
+            function applyPreloadedResultsForRound(roundResults, roundNumber) {
+                currentRound = roundNumber;
+                matchups = generateMatchupsForCurrentRound(); 
+
+                roundResults.forEach(preloadedResult => {
+                    const team1 = teams.find(t => t.name === preloadedResult.team1Name);
+                    const team2 = teams.find(t => t.name === preloadedResult.team2Name);
+                    const winner = teams.find(t => t.name === preloadedResult.winnerName);
+
+                    if (!team1 || !team2 || !winner) {
+                        return; 
+                    }
+                    const matchToUpdate = matchups.find(m =>
+                        (m.team1Id === team1.id && m.team2Id === team2.id) ||
+                        (m.team1Id === team2.id && m.team2Id === team1.id)
+                    );
+                    if (matchToUpdate) {
+                        applyPreloadedResult(matchToUpdate, winner.id);
+                    }
+                });
+                
+                calculateBuchholz(); 
+                historyStack.push({
+                    roundCompleted: roundNumber,
+                    teamsAtEndOfRound: deepCopy(teams),         
+                    matchupsOfRound: deepCopy(matchups)       
+                });
+                displayedSummaryRound = roundNumber; 
+            }
+
 
             function initializeStage() {
                 teams = deepCopy(initialTeams).map(team => ({
@@ -1014,85 +1052,23 @@
                 advancedList.innerHTML = ''; 
                 eliminatedList.innerHTML = '';
 
-                // Processar Ronda 1
+                let nextRoundToStart = 1;
+
                 if (preloadedRound1Results && preloadedRound1Results.length > 0) {
-                    currentRound = 1;
-                    matchups = generateMatchupsForCurrentRound(); 
-
-                    preloadedRound1Results.forEach(preloadedResult => {
-                        const team1 = teams.find(t => t.name === preloadedResult.team1Name);
-                        const team2 = teams.find(t => t.name === preloadedResult.team2Name);
-                        const winner = teams.find(t => t.name === preloadedResult.winnerName);
-
-                        if (!team1 || !team2 || !winner) {
-                            console.error("Equipa não encontrada para o resultado pré-carregado da Ronda 1:", preloadedResult);
-                            return; 
-                        }
-
-                        const matchToUpdate = matchups.find(m =>
-                            (m.team1Id === team1.id && m.team2Id === team2.id) ||
-                            (m.team1Id === team2.id && m.team2Id === team1.id)
-                        );
-
-                        if (matchToUpdate) {
-                            applyPreloadedResult(matchToUpdate, winner.id);
-                        } else {
-                             console.warn("Confronto não encontrado para o resultado pré-carregado da Ronda 1:", preloadedResult, "Confrontos gerados:", matchups);
-                        }
-                    });
-                    
-                    calculateBuchholz(); 
-                    
-                    historyStack.push({
-                        roundCompleted: 1,
-                        teamsAtEndOfRound: deepCopy(teams),         
-                        matchupsOfRound: deepCopy(matchups)       
-                    });
-                    displayedSummaryRound = 1; 
+                    applyPreloadedResultsForRound(preloadedRound1Results, 1);
+                    nextRoundToStart = 2;
                 }
-
-                // Processar Ronda 2 se houver resultados para ela
-                if (preloadedRound2Results && preloadedRound2Results.length > 0 && preloadedRound1Results && preloadedRound1Results.length > 0) {
-                    currentRound = 2;
-                    matchups = generateMatchupsForCurrentRound(); 
-
-                    preloadedRound2Results.forEach(preloadedResult => {
-                        const team1 = teams.find(t => t.name === preloadedResult.team1Name);
-                        const team2 = teams.find(t => t.name === preloadedResult.team2Name);
-                        const winner = teams.find(t => t.name === preloadedResult.winnerName);
-
-                        if (!team1 || !team2 || !winner) {
-                            console.error("Equipa não encontrada para o resultado pré-carregado da Ronda 2:", preloadedResult);
-                            return; 
-                        }
-                        
-                        const matchToUpdate = matchups.find(m =>
-                            (m.team1Id === team1.id && m.team2Id === team2.id) ||
-                            (m.team1Id === team2.id && m.team2Id === team1.id)
-                        );
-                        
-                        if (matchToUpdate) {
-                            applyPreloadedResult(matchToUpdate, winner.id);
-                        } else {
-                            console.warn("Confronto não encontrado para o resultado pré-carregado da Ronda 2:", preloadedResult, "Confrontos gerados:", matchups);
-                        }
-                    });
-
-                    calculateBuchholz();
-                    historyStack.push({
-                        roundCompleted: 2,
-                        teamsAtEndOfRound: deepCopy(teams),
-                        matchupsOfRound: deepCopy(matchups)
-                    });
-                    displayedSummaryRound = 2;
-                    currentRound = 3; // Avança para a Ronda 3
-                } else if (preloadedRound1Results && preloadedRound1Results.length > 0) {
-                     currentRound = 2; // Se só a Ronda 1 foi pré-carregada, começa na Ronda 2
-                } else {
-                    currentRound = 1; // Caso contrário, começa na Ronda 1
+                if (nextRoundToStart === 2 && preloadedRound2Results && preloadedRound2Results.length > 0) {
+                    applyPreloadedResultsForRound(preloadedRound2Results, 2);
+                    nextRoundToStart = 3;
+                }
+                if (nextRoundToStart === 3 && preloadedRound3Results && preloadedRound3Results.length > 0) {
+                    applyPreloadedResultsForRound(preloadedRound3Results, 3);
+                    nextRoundToStart = 4;
                 }
                 
-                matchups = generateMatchupsForCurrentRound(); // Gera confrontos para a ronda atual (2 ou 3)
+                currentRound = nextRoundToStart;
+                matchups = generateMatchupsForCurrentRound(); 
                 
                 shareResultsButton.style.display = 'none'; 
                 socialShareMenu.style.display = 'none'; 
@@ -1164,7 +1140,6 @@
                     }
 
                 } catch (error) {
-                    console.error("Erro ao buscar notícias:", error);
                     newsCarouselContainer.innerHTML = '<p style="color: var(--cor-perigo);">Não foi possível carregar as notícias.</p>';
                 }
             }
