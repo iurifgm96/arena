@@ -10,6 +10,7 @@
     <script src="https://embed.twitch.tv/embed/v1.js"></script>
     <style>
         :root {
+            /* Tema Claro (Default) & Cores Base do Arena */
             --cor-arena-azul: #0074FF;
             --cor-arena-azul-hover: #005fcc; 
             --cor-sucesso: #28a745;
@@ -30,6 +31,7 @@
 
         @media (prefers-color-scheme: dark) {
             :root {
+                /* Overrides para Tema Escuro */
                 --cor-arena-azul: #1e88e5; 
                 --cor-arena-azul-hover: #42a5f5;
                 --cor-sucesso: #4caf50;
@@ -923,6 +925,15 @@
                 { team1Name: 'Chinggis Warriors', team2Name: 'Fluxo', winnerName: 'Chinggis Warriors' },
             ];
 
+            const preloadedRound4Results = [
+                 { team1Name: 'TYLOO', team2Name: 'Complexity', winnerName: 'TYLOO' },
+                 { team1Name: 'Legacy', team2Name: 'Imperial', winnerName: 'Legacy' },
+                 { team1Name: 'OG', team2Name: 'NRG', winnerName: 'OG' },
+                 { team1Name: 'Lynn Vision', team2Name: 'Chinggis Warriors', winnerName: 'Lynn Vision'},
+                 { team1Name: 'BetBoom', team2Name: 'Wildcard', winnerName: 'BetBoom' },
+                 { team1Name: 'Nemiga', team2Name: 'FlyQuest', winnerName: 'Nemiga' }
+            ];
+
 
             let teams = [];
             let currentRound = 1; 
@@ -1010,8 +1021,10 @@
             }
 
             function applyPreloadedResultsForRound(roundResults, roundNumber) {
-                currentRound = roundNumber;
-                matchups = generateMatchupsForCurrentRound(); 
+                currentRound = roundNumber; 
+                let generatedMatchupsForPreload = generateMatchupsForCurrentRound();
+
+                let preloadedMatchupsThisRound = [];
 
                 roundResults.forEach(preloadedResult => {
                     const team1 = teams.find(t => t.name === preloadedResult.team1Name);
@@ -1021,12 +1034,18 @@
                     if (!team1 || !team2 || !winner) {
                         return; 
                     }
-                    const matchToUpdate = matchups.find(m =>
+                    
+                    const matchFound = generatedMatchupsForPreload.find(m =>
                         (m.team1Id === team1.id && m.team2Id === team2.id) ||
                         (m.team1Id === team2.id && m.team2Id === team1.id)
                     );
-                    if (matchToUpdate) {
-                        applyPreloadedResult(matchToUpdate, winner.id);
+
+                    if (matchFound) {
+                        const matchDataCopy = deepCopy(matchFound);
+                        matchDataCopy.winnerId = winner.id; 
+                        preloadedMatchupsThisRound.push(matchDataCopy);
+                        
+                        applyPreloadedResult(matchFound, winner.id); 
                     }
                 });
                 
@@ -1034,7 +1053,7 @@
                 historyStack.push({
                     roundCompleted: roundNumber,
                     teamsAtEndOfRound: deepCopy(teams),         
-                    matchupsOfRound: deepCopy(matchups)       
+                    matchupsOfRound: deepCopy(preloadedMatchupsThisRound) 
                 });
                 displayedSummaryRound = roundNumber; 
             }
@@ -1058,13 +1077,17 @@
                     applyPreloadedResultsForRound(preloadedRound1Results, 1);
                     nextRoundToStart = 2;
                 }
-                if (nextRoundToStart === 2 && preloadedRound2Results && preloadedRound2Results.length > 0) {
+                if (preloadedRound2Results && preloadedRound2Results.length > 0 && nextRoundToStart === 2) {
                     applyPreloadedResultsForRound(preloadedRound2Results, 2);
                     nextRoundToStart = 3;
                 }
-                if (nextRoundToStart === 3 && preloadedRound3Results && preloadedRound3Results.length > 0) {
+                if (preloadedRound3Results && preloadedRound3Results.length > 0 && nextRoundToStart === 3) {
                     applyPreloadedResultsForRound(preloadedRound3Results, 3);
                     nextRoundToStart = 4;
+                }
+                if (preloadedRound4Results && preloadedRound4Results.length > 0 && nextRoundToStart === 4) {
+                    applyPreloadedResultsForRound(preloadedRound4Results, 4);
+                    nextRoundToStart = 5;
                 }
                 
                 currentRound = nextRoundToStart;
