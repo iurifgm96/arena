@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Opening Stage - Major</title>
+    <title>Simulador Stage 2 - Major</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
@@ -874,65 +874,28 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const initialTeams = [
-                { id: 1, name: 'Complexity', seed: 1, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Complexity_2025_full_allmode.png' }, 
-                { id: 2, name: 'HEROIC', seed: 2, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Heroic_2023_logo.png' },
-                { id: 3, name: 'B8', seed: 3, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/B8_darkmode.png' }, 
-                { id: 4, name: 'BetBoom', seed: 4, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/BetBoom_Team_2024_allmode.png' },
-                { id: 5, name: 'TYLOO', seed: 5, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/TyLoo_2016_allmode.png' }, 
-                { id: 6, name: 'Lynn Vision', seed: 6, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Lynn_Vision_Gaming_2024_full_allmode.png' },
-                { id: 7, name: 'Wildcard', seed: 7, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/wildcard-seeklogo.png' },
-                { id: 8, name: 'FlyQuest', seed: 8, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Flyquest_logo_2021.png' },
-                { id: 9, name: 'OG', seed: 9, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/OG_RB_allmode.png' }, 
-                { id: 10, name: 'Chinggis Warriors', seed: 10, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/CW_allmode.png' },
-                { id: 11, name: 'Imperial', seed: 11, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/imperial-esports-seeklogo.png' }, 
-                { id: 12, name: 'Nemiga', seed: 12, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/nemiga.png' }, 
-                { id: 13, name: 'NRG', seed: 13, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/NRG_2024_allmode.png' }, 
-                { id: 14, name: 'Legacy', seed: 14, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Legacy_allmode.png' },
-                { id: 15, name: 'Metizport', seed: 15, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Metizport_2023_allmode.png' }, 
-                { id: 16, name: 'Fluxo', seed: 16, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/Fluxo_darkmode.png' },
+                 { id: 1, name: 'Falcons', seed: 1, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FALCONS.png' },
+                 { id: 2, name: 'FaZe', seed: 2, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FAZE.png' },
+                 { id: 3, name: '3DMAX', seed: 3, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/3DMAX.png' },
+                 { id: 4, name: 'Virtus.pro', seed: 4, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/VIRTUS.PRO_.png' },
+                 { id: 5, name: 'paiN', seed: 5, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/PAIN.png' },
+                 { id: 6, name: 'FURIA', seed: 6, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FURIA.png' },
+                 { id: 7, name: 'MIBR', seed: 7, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/MIBR.png' },
+                 { id: 8, name: 'M80', seed: 8, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/M80.png' },
+                 { id: 9, name: 'B8', seed: 9, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/B8.png' },
+                 { id: 10, name: 'HEROIC', seed: 10, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/HEROIC.png' },
+                 { id: 11, name: 'BetBoom', seed: 11, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/BetBoom_Team_2024_allmode.png' },
+                 { id: 12, name: 'OG', seed: 12, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/OG.png' },
+                 { id: 13, name: 'Nemiga', seed: 13, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/NEMIGA.png' },
+                 { id: 14, name: 'Lynn Vision', seed: 14, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/LYNN-VISION.png' },
+                 { id: 15, name: 'Legacy', seed: 15, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/LEGACY.png' },
+                 { id: 16, name: 'TYLOO', seed: 16, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/TYLOO.png' },
             ];
 
-            const preloadedRound1Results = [
-                { team1Name: 'OG', team2Name: 'Complexity', winnerName: 'OG' },
-                { team1Name: 'HEROIC', team2Name: 'Chinggis Warriors', winnerName: 'HEROIC' },
-                { team1Name: 'B8', team2Name: 'Imperial', winnerName: 'B8' },
-                { team1Name: 'BetBoom', team2Name: 'Nemiga', winnerName: 'BetBoom' },
-                { team1Name: 'NRG', team2Name: 'TYLOO', winnerName: 'NRG' },
-                { team1Name: 'Lynn Vision', team2Name: 'Legacy', winnerName: 'Lynn Vision' },
-                { team1Name: 'Wildcard', team2Name: 'Metizport', winnerName: 'Wildcard' },
-                { team1Name: 'FlyQuest', team2Name: 'Fluxo', winnerName: 'FlyQuest' },
-            ];
-            
-            const preloadedRound2Results = [
-                { team1Name: 'HEROIC', team2Name: 'NRG', winnerName: 'HEROIC' },
-                { team1Name: 'B8', team2Name: 'OG', winnerName: 'B8' },
-                { team1Name: 'FlyQuest', team2Name: 'BetBoom', winnerName: 'FlyQuest' },
-                { team1Name: 'Wildcard', team2Name: 'Lynn Vision', winnerName: 'Wildcard' },
-                { team1Name: 'Complexity', team2Name: 'Fluxo', winnerName: 'Complexity' },
-                { team1Name: 'TYLOO', team2Name: 'Metizport', winnerName: 'TYLOO' },
-                { team1Name: 'Legacy', team2Name: 'Chinggis Warriors', winnerName: 'Legacy' },
-                { team1Name: 'Nemiga', team2Name: 'Imperial', winnerName: 'Nemiga' },
-            ];
-
-            const preloadedRound3Results = [
-                { team1Name: 'BetBoom', team2Name: 'Legacy', winnerName: 'BetBoom' },
-                { team1Name: 'NRG', team2Name: 'Complexity', winnerName: 'NRG' },
-                { team1Name: 'OG', team2Name: 'TYLOO', winnerName: 'OG' },
-                { team1Name: 'Nemiga', team2Name: 'Lynn Vision', winnerName: 'Nemiga' },
-                { team1Name: 'HEROIC', team2Name: 'FlyQuest', winnerName: 'HEROIC' },
-                { team1Name: 'B8', team2Name: 'Wildcard', winnerName: 'B8' },
-                { team1Name: 'Imperial', team2Name: 'Metizport', winnerName: 'Imperial' },
-                { team1Name: 'Chinggis Warriors', team2Name: 'Fluxo', winnerName: 'Chinggis Warriors' },
-            ];
-
-            const preloadedRound4Results = [
-                 { team1Name: 'TYLOO', team2Name: 'Complexity', winnerName: 'TYLOO' },
-                 { team1Name: 'Legacy', team2Name: 'Imperial', winnerName: 'Legacy' },
-                 { team1Name: 'OG', team2Name: 'NRG', winnerName: 'OG' },
-                 { team1Name: 'Lynn Vision', team2Name: 'Chinggis Warriors', winnerName: 'Lynn Vision'},
-                 { team1Name: 'BetBoom', team2Name: 'Wildcard', winnerName: 'BetBoom' },
-                 { team1Name: 'Nemiga', team2Name: 'FlyQuest', winnerName: 'Nemiga' }
-            ];
+            const preloadedRound1Results = [];
+            const preloadedRound2Results = [];
+            const preloadedRound3Results = [];
+            const preloadedRound4Results = [];
 
 
             let teams = [];
@@ -1021,7 +984,7 @@
             }
 
             function applyPreloadedResultsForRound(roundResults, roundNumber) {
-                currentRound = roundNumber; 
+                currentRound = roundNumber;
                 let generatedMatchupsForPreload = generateMatchupsForCurrentRound();
 
                 let preloadedMatchupsThisRound = [];
@@ -1053,7 +1016,7 @@
                 historyStack.push({
                     roundCompleted: roundNumber,
                     teamsAtEndOfRound: deepCopy(teams),         
-                    matchupsOfRound: deepCopy(preloadedMatchupsThisRound) 
+                    matchupsOfRound: deepCopy(preloadedMatchupsThisRound)
                 });
                 displayedSummaryRound = roundNumber; 
             }
@@ -1085,7 +1048,7 @@
                     applyPreloadedResultsForRound(preloadedRound3Results, 3);
                     nextRoundToStart = 4;
                 }
-                if (preloadedRound4Results && preloadedRound4Results.length > 0 && nextRoundToStart === 4) {
+                 if (preloadedRound4Results && preloadedRound4Results.length > 0 && nextRoundToStart === 4) {
                     applyPreloadedResultsForRound(preloadedRound4Results, 4);
                     nextRoundToStart = 5;
                 }
