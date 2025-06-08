@@ -823,15 +823,16 @@
             ];
 
             const preloadedRound1Results = [
-                { team1Name: 'FaZe', team2Name: 'HEROIC', winnerName: 'FaZe' },
                 { team1Name: 'B8', team2Name: 'Falcons', winnerName: 'B8' },
-                { team1Name: 'Virtus pro', team2Name: 'OG', winnerName: 'Virtus pro' },
+                { team1Name: 'FaZe', team2Name: 'HEROIC', winnerName: 'FaZe' },
                 { team1Name: '3DMAX', team2Name: 'BetBoom', winnerName: '3DMAX' },
-                { team1Name: 'FURIA', team2Name: 'Lynn Vision', winnerName: 'FURIA' },
+                { team1Name: 'Virtus pro', team2Name: 'OG', winnerName: 'Virtus pro' },
                 { team1Name: 'paiN', team2Name: 'Nemiga', winnerName: 'paiN' },
+                { team1Name: 'FURIA', team2Name: 'Lynn Vision', winnerName: 'FURIA' },
                 { team1Name: 'Legacy', team2Name: 'MIBR', winnerName: 'Legacy' },
-                { team1Name: 'TYLOO', team2Name: 'M80', winnerName: 'TYLOO' },
+                { team1Name: 'TYLOO', team2Name: 'M80', winnerName: 'TYLOO' }
             ];
+            
             const preloadedRound2Results = [
                 { team1Name: 'Virtus pro', team2Name: 'B8', winnerName: 'Virtus pro' },
                 { team1Name: 'paiN', team2Name: 'FURIA', winnerName: 'paiN' },
@@ -840,9 +841,19 @@
                 { team1Name: 'HEROIC', team2Name: 'BetBoom', winnerName: 'HEROIC' },
                 { team1Name: 'Lynn Vision', team2Name: 'Falcons', winnerName: 'Lynn Vision' },
                 { team1Name: 'M80', team2Name: 'OG', winnerName: 'M80' },
-                { team1Name: 'Nemiga', team2Name: 'MIBR', winnerName: 'Nemiga' },
+                { team1Name: 'Nemiga', team2Name: 'MIBR', winnerName: 'Nemiga' }
             ];
-            const preloadedRound3Results = [];
+            
+            const preloadedRound3Results = [
+                { team1Name: 'Legacy', team2Name: 'FaZe', winnerName: 'Legacy' },
+                { team1Name: 'Virtus pro', team2Name: 'paiN', winnerName: 'Virtus pro' },
+                { team1Name: 'FURIA', team2Name: 'M80', winnerName: 'FURIA' },
+                { team1Name: 'Lynn Vision', team2Name: 'TYLOO', winnerName: 'Lynn Vision' },
+                { team1Name: '3DMAX', team2Name: 'Nemiga', winnerName: '3DMAX' },
+                { team1Name: 'B8', team2Name: 'HEROIC', winnerName: 'B8' },
+                { team1Name: 'MIBR', team2Name: 'BetBoom', winnerName: 'MIBR' },
+                { team1Name: 'Falcons', team2Name: 'OG', winnerName: 'Falcons' }
+            ];
             const preloadedRound4Results = [];
 
 
@@ -1639,7 +1650,7 @@
             };
             
             function buildShareMessage() {
-                let resultsSummaryWithEmojis = "🏆 Minha Simulação do BLAST Austin Major �\n\n";
+                let resultsSummaryWithEmojis = "🏆 Minha Simulação do BLAST Austin Major 🏆\n\n";
                 let resultsSummaryWithoutEmojis = "Minha Simulação do BLAST Austin Major\n\n";
                 
                 const advancedTeamElements = advancedList.querySelectorAll('li .team-name-text');
@@ -1715,4 +1726,3 @@
     </script>
 </body>
 </html>
-�
