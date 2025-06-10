@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Stage 2 - Major</title>
+    <title>Simulador Stage 3 - Major</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
@@ -733,7 +733,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Simulador - Stage 2</h1>
+        <h1>Simulador - Stage 3</h1>
 
         <div class="controls">
             <div class="buttons">
@@ -804,62 +804,28 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const initialTeams = [
-                 { id: 1, name: 'Falcons', seed: 1, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FALCONS.png' },
-                 { id: 2, name: 'FaZe', seed: 2, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FAZE.png' },
-                 { id: 3, name: '3DMAX', seed: 3, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/3DMAX.png' },
-                 { id: 4, name: 'Virtus pro', seed: 4, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/VIRTUS.PRO_.png' },
-                 { id: 5, name: 'paiN', seed: 5, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/PAIN.png' },
-                 { id: 6, name: 'FURIA', seed: 6, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FURIA.png' },
-                 { id: 7, name: 'MIBR', seed: 7, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/MIBR.png' },
-                 { id: 8, name: 'M80', seed: 8, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/M80.png' },
-                 { id: 9, name: 'B8', seed: 9, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/B8.png' },
-                 { id: 10, name: 'HEROIC', seed: 10, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/HEROIC.png' },
-                 { id: 11, name: 'BetBoom', seed: 11, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/05/BetBoom_Team_2024_allmode.png' },
-                 { id: 12, name: 'OG', seed: 12, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/OG.png' },
-                 { id: 13, name: 'Nemiga', seed: 13, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/NEMIGA.png' },
-                 { id: 14, name: 'Lynn Vision', seed: 14, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/LYNN-VISION.png' },
-                 { id: 15, name: 'Legacy', seed: 15, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/LEGACY.png' },
-                 { id: 16, name: 'TYLOO', seed: 16, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/TYLOO.png' },
+                { id: 1, name: 'Vitality', seed: 1, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/VITALITY.png' },
+                { id: 2, name: 'MOUZ', seed: 2, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/MOUZ.png' },
+                { id: 3, name: 'Spirit', seed: 3, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/SPIRIT.png' },
+                { id: 4, name: 'G2', seed: 4, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/G2.png' },
+                { id: 5, name: 'MongolZ', seed: 5, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/THE-MONGOLZ.png' },
+                { id: 6, name: 'Aurora', seed: 6, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/AURORA.png' },
+                { id: 7, name: 'NAVI', seed: 7, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/NATUS-VINCERE.png' },
+                { id: 8, name: 'Liquid', seed: 8, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/Liquid.png' },
+                { id: 9, name: 'Legacy', seed: 9, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/LEGACY-1.png' },
+                { id: 10, name: 'Virtus pro', seed: 10, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/VIRTUS.PRO_-1.png' },
+                { id: 11, name: 'paiN', seed: 11, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/PAIN-1.png' },
+                { id: 12, name: '3DMAX', seed: 12, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/3DMAX-1.png' },
+                { id: 13, name: 'FURIA', seed: 13, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FURIA-1.png' },
+                { id: 14, name: 'FaZe', seed: 14, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FAZE.png' },
+                { id: 15, name: 'Nemiga', seed: 15, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/NEMIGA.png' },
+                { id: 16, name: 'Lynn Vision', seed: 16, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/LYNN-VISION.png' },
             ];
 
-            const preloadedRound1Results = [
-                { team1Name: 'B8', team2Name: 'Falcons', winnerName: 'B8' },
-                { team1Name: 'FaZe', team2Name: 'HEROIC', winnerName: 'FaZe' },
-                { team1Name: '3DMAX', team2Name: 'BetBoom', winnerName: '3DMAX' },
-                { team1Name: 'Virtus pro', team2Name: 'OG', winnerName: 'Virtus pro' },
-                { team1Name: 'paiN', team2Name: 'Nemiga', winnerName: 'paiN' },
-                { team1Name: 'FURIA', team2Name: 'Lynn Vision', winnerName: 'FURIA' },
-                { team1Name: 'Legacy', team2Name: 'MIBR', winnerName: 'Legacy' },
-                { team1Name: 'TYLOO', team2Name: 'M80', winnerName: 'TYLOO' }
-            ];
-            const preloadedRound2Results = [
-                { team1Name: 'FaZe', team2Name: 'TYLOO', winnerName: 'FaZe' },
-                { team1Name: 'Legacy', team2Name: '3DMAX', winnerName: 'Legacy' },
-                { team1Name: 'Virtus pro', team2Name: 'B8', winnerName: 'Virtus pro' },
-                { team1Name: 'paiN', team2Name: 'FURIA', winnerName: 'paiN' },
-                { team1Name: 'Lynn Vision', team2Name: 'Falcons', winnerName: 'Lynn Vision' },
-                { team1Name: 'Nemiga', team2Name: 'MIBR', winnerName: 'Nemiga' },
-                { team1Name: 'M80', team2Name: 'OG', winnerName: 'M80' },
-                { team1Name: 'HEROIC', team2Name: 'BetBoom', winnerName: 'HEROIC' }
-            ];
-            const preloadedRound3Results = [
-                { team1Name: 'Legacy', team2Name: 'FaZe', winnerName: 'Legacy' },
-                { team1Name: 'Virtus pro', team2Name: 'paiN', winnerName: 'Virtus pro' },
-                { team1Name: 'FURIA', team2Name: 'M80', winnerName: 'FURIA' },
-                { team1Name: 'Lynn Vision', team2Name: 'TYLOO', winnerName: 'Lynn Vision' },
-                { team1Name: '3DMAX', team2Name: 'Nemiga', winnerName: '3DMAX' },
-                { team1Name: 'B8', team2Name: 'HEROIC', winnerName: 'B8' },
-                { team1Name: 'MIBR', team2Name: 'BetBoom', winnerName: 'MIBR' },
-                { team1Name: 'Falcons', team2Name: 'OG', winnerName: 'Falcons' }
-            ];
-            const preloadedRound4Results = [
-                { team1Name: 'Nemiga', team2Name: 'M80', winnerName: 'Nemiga' },
-                { team1Name: 'HEROIC', team2Name: 'TYLOO', winnerName: 'HEROIC' },
-                { team1Name: 'paiN', team2Name: 'Lynn Vision', winnerName: 'paiN' },
-                { team1Name: 'FURIA', team2Name: 'B8', winnerName: 'FURIA' },
-                { team1Name: 'MIBR', team2Name: 'Falcons', winnerName: 'MIBR' },
-                { team1Name: '3DMAX', team2Name: 'FaZe', winnerName: '3DMAX' }
-            ];
+            const preloadedRound1Results = [];
+            const preloadedRound2Results = [];
+            const preloadedRound3Results = [];
+            const preloadedRound4Results = [];
 
 
             let teams = [];
@@ -1655,6 +1621,17 @@
                 renderAll();
             };
             
+            shareResultsButton.onclick = () => {
+                if(stageComplete) {
+                     socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none';
+                }
+            };
+            
+            closeShareMenuButton.onclick = () => {
+                 socialShareMenu.style.display = 'none';
+            };
+
+
             function buildShareMessage() {
                 let resultsSummaryWithEmojis = "🏆 Minha Simulação do BLAST Austin Major 🏆\n\n";
                 let resultsSummaryWithoutEmojis = "Minha Simulação do BLAST Austin Major\n\n";
@@ -1676,7 +1653,7 @@
                 resultsSummaryWithoutEmojis += "\n";
 
                 const customMessage = "Faz também a tua simulação para o BLAST Austin Major aqui!"; 
-                const shareUrl = "https://arena.rtp.pt/ao-minuto/simulador-major-austin/?v=0.1"; 
+                const shareUrl = "https://arena.rtp.pt/ao-minuto/simulador-major-austin/"; 
                 const hashtagX = " #MAJORnaRTP"; 
 
                 return {
@@ -1686,16 +1663,6 @@
                     fullTextForCopy: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}\n\nLink para o simulador: ${shareUrl}` 
                 };
             }
-
-            shareResultsButton.onclick = () => {
-                if (stageComplete) {
-                    socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none';
-                }
-            };
-
-            closeShareMenuButton.onclick = () => {
-                socialShareMenu.style.display = 'none';
-            };
 
             shareOnXButton.onclick = () => {
                 if (!stageComplete) return;
