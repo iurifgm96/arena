@@ -832,18 +832,16 @@
                 { team1Name: 'Legacy', team2Name: 'MIBR', winnerName: 'Legacy' },
                 { team1Name: 'TYLOO', team2Name: 'M80', winnerName: 'TYLOO' }
             ];
-            
             const preloadedRound2Results = [
+                { team1Name: 'FaZe', team2Name: 'TYLOO', winnerName: 'FaZe' },
+                { team1Name: 'Legacy', team2Name: '3DMAX', winnerName: 'Legacy' },
                 { team1Name: 'Virtus pro', team2Name: 'B8', winnerName: 'Virtus pro' },
                 { team1Name: 'paiN', team2Name: 'FURIA', winnerName: 'paiN' },
-                { team1Name: 'Legacy', team2Name: '3DMAX', winnerName: 'Legacy' },
-                { team1Name: 'FaZe', team2Name: 'TYLOO', winnerName: 'FaZe' },
-                { team1Name: 'HEROIC', team2Name: 'BetBoom', winnerName: 'HEROIC' },
                 { team1Name: 'Lynn Vision', team2Name: 'Falcons', winnerName: 'Lynn Vision' },
+                { team1Name: 'Nemiga', team2Name: 'MIBR', winnerName: 'Nemiga' },
                 { team1Name: 'M80', team2Name: 'OG', winnerName: 'M80' },
-                { team1Name: 'Nemiga', team2Name: 'MIBR', winnerName: 'Nemiga' }
+                { team1Name: 'HEROIC', team2Name: 'BetBoom', winnerName: 'HEROIC' }
             ];
-            
             const preloadedRound3Results = [
                 { team1Name: 'Legacy', team2Name: 'FaZe', winnerName: 'Legacy' },
                 { team1Name: 'Virtus pro', team2Name: 'paiN', winnerName: 'Virtus pro' },
@@ -854,7 +852,14 @@
                 { team1Name: 'MIBR', team2Name: 'BetBoom', winnerName: 'MIBR' },
                 { team1Name: 'Falcons', team2Name: 'OG', winnerName: 'Falcons' }
             ];
-            const preloadedRound4Results = [];
+            const preloadedRound4Results = [
+                { team1Name: 'Nemiga', team2Name: 'M80', winnerName: 'Nemiga' },
+                { team1Name: 'HEROIC', team2Name: 'TYLOO', winnerName: 'HEROIC' },
+                { team1Name: 'paiN', team2Name: 'Lynn Vision', winnerName: 'paiN' },
+                { team1Name: 'FURIA', team2Name: 'B8', winnerName: 'FURIA' },
+                { team1Name: 'MIBR', team2Name: 'Falcons', winnerName: 'MIBR' },
+                { team1Name: '3DMAX', team2Name: 'FaZe', winnerName: '3DMAX' }
+            ];
 
 
             let teams = [];
@@ -1411,11 +1416,12 @@
                         matchupsByPool[poolKey].forEach((match) => { 
                             const originalMatchIndex = matchups.indexOf(match);
                             if(originalMatchIndex === -1) {
+                                console.error("Não foi possível encontrar o índice original do confronto na renderização:", match, "Array de matchups atual:", deepCopy(matchups));
                                 return; 
                             }
 
                             const team1 = getTeamById(match.team1Id); const team2 = getTeamById(match.team2Id);
-                            if (!team1 || !team2) { return; }
+                            if (!team1 || !team2) { console.error("Equipa não encontrada para o confronto:", match); return; }
 
                             const matchDiv = document.createElement('div'); matchDiv.classList.add('matchup');
                            
