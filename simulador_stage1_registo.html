@@ -16,7 +16,7 @@
             --cor-sucesso: #28a745;
             --cor-perigo: #dc3545;
             --cor-aviso: #ffc107;
-           
+            
             --cor-fundo-simulador-body: transparent; 
             --cor-fundo-cartao: #ffffff;
             --cor-texto-principal: #212529; 
@@ -171,7 +171,7 @@
             width: auto; 
             margin-top: 5px; 
         }
-         #closeShareMenuButton:hover {
+        #closeShareMenuButton:hover {
             background-color: color-mix(in srgb, var(--cor-perigo) 80%, black);
         }
 
@@ -181,7 +181,7 @@
             flex-direction: column; 
             gap: 10px; 
         }
-       
+        
         #previousRoundSummarySection { }
         .summary-controls { 
             display: flex;
@@ -240,7 +240,7 @@
             border: 1px solid var(--cor-borda);
             margin-bottom: 15px; 
         }
-       
+        
         #advancedSection::before, #eliminatedSection::before,
         #standingsSection::before, #matchupsSection::before,
         #previousRoundSummarySection::before,
@@ -407,7 +407,7 @@
             overflow: hidden; 
         }
         .matchup .team:first-child { border-right: 1px solid var(--cor-borda); }
-       
+        
         .team-display-container {
             display: flex;
             align-items: center;
@@ -499,7 +499,7 @@
         }
         #standingsTable .team-logo { 
             height: 0.9em; 
-            width: 1.5em;  
+            width: 1.5em;   
             margin-right: 2px; 
         }
         #advancedList li .team-logo, #eliminatedList li .team-logo { 
@@ -524,7 +524,7 @@
         }
         .summary-match-line .team-logo {
             height: 0.9em; 
-            width: 1.4em;  
+            width: 1.4em;   
             margin-right: 3px; 
             margin-left: 1px; 
         }
@@ -608,7 +608,7 @@
                 flex-direction: row; 
                 gap: 15px;
             }
-           
+            
              .section {
                 padding: 12px; 
             }
@@ -676,7 +676,7 @@
              .team-name-text { 
                 margin-left: 0.3em; 
             }
-           
+            
             .team-logo { 
                 height: 1.2em;  
                 width: 2.0em;   
@@ -684,7 +684,7 @@
             }
             #standingsTable .team-logo { 
                 height: 1.1em; 
-                width: 1.8em;  
+                width: 1.8em;   
                 margin-right: 4px; 
             }
             #advancedList li .team-logo, #eliminatedList li .team-logo { 
@@ -722,7 +722,7 @@
             #standingsTable td span.status-text-advanced { color: var(--cor-sucesso); font-weight: 700; }
             #standingsTable td span.status-text-eliminated { color: var(--cor-perigo); font-weight: 700; }
             #standingsTable td span.status-text-active { color: var(--cor-texto-secundario); font-weight: 500; }
-        
+            
             @media (max-width: 767px) {
                 #twitchPlayerSection .section-content-wrapper {
                     max-height: 300px; 
@@ -842,7 +842,17 @@
                 { team1Name: 'Vitality', team2Name: 'Nemiga', winnerName: 'Vitality' },
                 { team1Name: 'FaZe', team2Name: 'MOUZ', winnerName: 'FaZe' },
             ];
-            const preloadedRound3Results = [];
+            // Resultados da Ronda 3 adicionados aqui:
+            const preloadedRound3Results = [
+                { team1Name: 'FURIA', team2Name: 'Virtus pro', winnerName: 'FURIA' },
+                { team1Name: 'Spirit', team2Name: 'NAVI', winnerName: 'Spirit' },
+                { team1Name: 'G2', team2Name: 'Aurora', winnerName: 'G2' },
+                { team1Name: 'FaZe', team2Name: 'Legacy', winnerName: 'FaZe' },
+                { team1Name: 'Vitality', team2Name: '3DMAX', winnerName: 'Vitality' },
+                { team1Name: 'MongolZ', team2Name: 'Lynn Vision', winnerName: 'MongolZ' },
+                { team1Name: 'MOUZ', team2Name: 'Liquid', winnerName: 'MOUZ' },
+                { team1Name: 'paiN', team2Name: 'Nemiga', winnerName: 'paiN' },
+            ];
             const preloadedRound4Results = [];
 
 
@@ -889,7 +899,7 @@
 
             function updateControlButtonsState() {
                 prevRoundButton.disabled = historyStack.length === 0;
-               
+                
                 const allCurrentMatchesDecided = matchups.every(m => m.winnerId !== null);
                 if (stageComplete) {
                     nextRoundButton.disabled = true;
@@ -961,7 +971,7 @@
                 calculateBuchholz(); 
                 historyStack.push({
                     roundCompleted: roundNumber,
-                    teamsAtEndOfRound: deepCopy(teams),         
+                    teamsAtEndOfRound: deepCopy(teams),           
                     matchupsOfRound: deepCopy(preloadedMatchupsThisRound)
                 });
                 displayedSummaryRound = roundNumber; 
@@ -1047,7 +1057,7 @@
                     return a.seed - b.seed;
                 });
             }
-           
+            
             function getMatchFormat(poolRecord) {
                 switch (poolRecord) {
                     case "0-0": case "1-0": case "0-1": case "1-1": return "BO1";
@@ -1055,7 +1065,7 @@
                     default: return "BO1"; 
                 }
             }
-           
+            
             function generatePairingsForPoolRecursive(teamsInPool, currentPairings, allPossibleSolutions, opponentsPlayedData, poolRecordForMatch) {
                 if (teamsInPool.length === 0) {
                     let rematchesInThisSolution = 0;
@@ -1076,7 +1086,7 @@
                 const remainingTeamsForTeam1 = teamsInPool.slice(1);
 
                 if (remainingTeamsForTeam1.length === 0 && teamsInPool.length === 1) { return; }
-               
+                
                 for (let i = remainingTeamsForTeam1.length - 1; i >= 0; i--) { 
                     const team2 = remainingTeamsForTeam1[i];
                     const nextTeamsToPair = remainingTeamsForTeam1.filter((_, idx) => idx !== i);
@@ -1180,14 +1190,14 @@
                 }
                 return generatedMatchups;
             }
-           
+            
             function recordMatchResult(matchIndex, newWinningTeamId) {
                 const match = matchups[matchIndex]; 
                 if (!match || (match.winnerId === newWinningTeamId && match.winnerId !== null) ) {
                     return;
                 }
                 if (stageComplete) { alert("A fase já terminou."); return; }
-               
+                
                 const team1 = getTeamById(match.team1Id);
                 const team2 = getTeamById(match.team2Id);
 
@@ -1199,11 +1209,11 @@
                     if(previousWinner) updateTeamStatus(previousWinner); 
                     if(previousLoser) updateTeamStatus(previousLoser);
                 }
-               
+                
                 match.winnerId = newWinningTeamId; 
                 const newWinner = getTeamById(newWinningTeamId);
                 const newLoser = (newWinningTeamId === team1.id) ? team2 : team1;
-               
+                
                 if(newWinner) newWinner.wins++; 
                 if(newLoser) newLoser.losses++;
 
@@ -1211,7 +1221,7 @@
                     if (!(team1.opponentsPlayed || []).includes(team2.id)) (team1.opponentsPlayed = team1.opponentsPlayed || []).push(team2.id);
                     if (!(team2.opponentsPlayed || []).includes(team1.id)) (team2.opponentsPlayed = team2.opponentsPlayed || []).push(team1.id);
                 }
-               
+                
                 updateTeamStatus(team1); 
                 updateTeamStatus(team2); 
                 calculateBuchholz(); 
@@ -1229,7 +1239,7 @@
                     team.status = 'active';
                 }
             }
-           
+            
             function checkAndFinalizeStageCompletion() {
                 if (stageComplete) return true; 
                 const adv = teams.filter(t=>t.status==='advanced').length;
@@ -1243,7 +1253,7 @@
                 }
                 return stageComplete;
             }
-                       
+                        
             function createTeamDisplay(team, type) { 
                 const teamContainer = document.createElement('span');
                 teamContainer.classList.add('team-display-container'); 
@@ -1284,7 +1294,7 @@
                 if ((!completedRoundsForSelector.find(r => r.roundCompleted === displayedSummaryRound) || displayedSummaryRound === 0) && completedRoundsForSelector.length > 0) {
                      displayedSummaryRound = completedRoundsForSelector[completedRoundsForSelector.length - 1].roundCompleted;
                 }
-               
+                
                 completedRoundsForSelector.forEach(histEntry => {
                     const btn = document.createElement('button');
                     btn.textContent = `R${histEntry.roundCompleted}`; 
@@ -1302,7 +1312,7 @@
 
                 if (roundToShow && roundToShow.matchupsOfRound.every(m => m.winnerId !== null)) {
                     prevRoundSummarySection.setAttribute('data-title', `Resultados da Ronda ${displayedSummaryRound}`);
-                   
+                    
                     const matchupsByPool = {};
                     roundToShow.matchupsOfRound.forEach(match => {
                         const poolKey = match.poolRecord;
@@ -1356,7 +1366,7 @@
                 currentRoundSpan.textContent = stageComplete ? `Final (${currentRound})` : currentRound ;
 
                 let messageP = matchupsContainer.querySelector('p.message-placeholder');
-               
+                
                 let messageText = "";
                 if (stageComplete) {
                      messageText = 'Fase concluída!';
@@ -1408,7 +1418,7 @@
                             if (!team1 || !team2) { console.error("Equipa não encontrada para o confronto:", match); return; }
 
                             const matchDiv = document.createElement('div'); matchDiv.classList.add('matchup');
-                           
+                            
                             const team1Div = document.createElement('div'); team1Div.classList.add('team');
                             team1Div.appendChild(createTeamDisplay(team1, 'matchup'));
                             team1Div.onclick = () => recordMatchResult(originalMatchIndex, team1.id); 
@@ -1461,13 +1471,13 @@
 
                     if (currentStandingIndex >= sortedForDisplay.length) currentStandingIndex = sortedForDisplay.length - 1;
                     if (currentStandingIndex < 0 && sortedForDisplay.length > 0) currentStandingIndex = 0;
-                   
+                    
                     const team = sortedForDisplay[currentStandingIndex];
                      if (!team) { 
                          standingsTableBodyContainer.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Nenhuma equipa selecionada.</td></tr>";
                          return;
-                    }
-                   
+                     }
+                    
                     const tr = document.createElement('tr');
                     const fields = [
                         { label: "Seed", value: team.seed },
@@ -1540,6 +1550,7 @@
                         else if (team.status === 'eliminated') { statusText = `Eliminada`; statusTextSpan.classList.add('status-text-eliminated');}
                         else { statusTextSpan.classList.add('status-text-active'); }
                         statusTextSpan.textContent = statusText;
+                        row.insertCell().appendChild(statusTextSpan);
                     });
                 }
             }
@@ -1557,7 +1568,7 @@
                     const li = document.createElement('li'); 
                     const teamDisplay = createTeamDisplay(team, 'list');
                     li.appendChild(teamDisplay);
-                   
+                    
                     const scoreSpan = document.createElement('span');
                     scoreSpan.textContent = ` (${team.wins}-${team.losses})`;
                     scoreSpan.classList.add('score-span'); 
@@ -1576,7 +1587,7 @@
                     eliminatedList.appendChild(li);
                 });
                }
-           
+            
             function renderAll() {
                 renderStandings(); 
                 renderMatchups(); 
@@ -1604,8 +1615,8 @@
                 
                 const stateToSave = {
                     roundCompleted: currentRound,
-                    teamsAtEndOfRound: deepCopy(teams),         
-                    matchupsOfRound: deepCopy(matchups)       
+                    teamsAtEndOfRound: deepCopy(teams),           
+                    matchupsOfRound: deepCopy(matchups)        
                 };
                 historyStack.push(stateToSave);
                 
@@ -1702,7 +1713,7 @@
             };
 
             resetButton.onclick = initializeStage;
-           
+            
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
