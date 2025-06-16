@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Stage 3 - Major</title>
+    <title>Simulador Stage 3 - Major Playoffs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
@@ -244,7 +244,8 @@
         #advancedSection::before, #eliminatedSection::before,
         #standingsSection::before, #matchupsSection::before,
         #previousRoundSummarySection::before,
-        #twitchPlayerSection::before { 
+        #twitchPlayerSection::before,
+        #playoffBracketSection::before { 
             content: attr(data-title); 
             font-weight: 700; 
             font-size: 1em; 
@@ -570,6 +571,122 @@
             margin: 0 auto; 
         }
 
+        /* Playoffs Specific Styles */
+        #playoffBracketContainer {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            padding: 10px 0;
+            overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            padding-bottom: 20px; /* Space for scrollbar */
+        }
+
+        .bracket-round {
+            flex-shrink: 0; /* Prevent rounds from shrinking */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center matches vertically */
+            align-items: center;
+            padding: 10px 5px;
+            min-width: 180px; /* Minimum width for each round column */
+        }
+
+        .bracket-round-title {
+            font-weight: 700;
+            font-size: 0.9em;
+            color: var(--cor-arena-azul);
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--cor-arena-azul);
+            padding-bottom: 5px;
+            width: 100%;
+        }
+
+        .bracket-match {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--border-radius-padrao);
+            background-color: var(--cor-fundo-cartao);
+            margin-bottom: 15px; /* Space between matches */
+            width: 100%;
+            max-width: 250px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .bracket-match-teams {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid var(--cor-borda);
+            padding-top: 5px; /* Added for top spacing */
+        }
+        .bracket-match-teams:last-child {
+            border-bottom: none;
+        }
+        
+        .bracket-team-entry {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            transition: background-color 0.2s, color 0.2s;
+            font-size: 0.8em;
+            height: 2.8em; /* Fixed height for consistent look */
+        }
+
+        .bracket-team-entry.clickable {
+            cursor: pointer;
+        }
+        .bracket-team-entry:not(.clickable) {
+            cursor: default;
+        }
+
+        .bracket-team-entry:first-child {
+            border-bottom: 1px solid var(--cor-borda);
+        }
+
+        .bracket-team-entry.clickable:not(.winner):not(.loser):hover {
+            background-color: color-mix(in srgb, var(--cor-arena-azul) 10%, var(--cor-fundo-cartao));
+            color: var(--cor-arena-azul);
+        }
+
+        .bracket-team-entry.winner {
+            background-color: var(--cor-sucesso);
+            color: white;
+            font-weight: 600;
+        }
+
+        .bracket-team-entry.loser {
+            background-color: var(--cor-fundo-cartao);
+            color: var(--cor-texto-secundario);
+            text-decoration: line-through;
+            opacity: 0.65;
+        }
+
+        .bracket-team-entry .team-logo {
+            height: 1.1em;
+            width: 1.8em;
+            margin-right: 5px;
+        }
+
+        .bracket-match-info {
+            padding: 5px 10px;
+            font-size: 0.7em;
+            color: var(--cor-texto-secundario);
+            text-align: right;
+            border-top: 1px solid var(--cor-borda); /* Separator for info */
+        }
+        /* Hide score span in bracket matches by default, show on hover or for winner/loser */
+        .bracket-team-entry .score-span {
+            font-size: 0.8em;
+            margin-left: auto; /* Push score to the right */
+            color: var(--cor-texto-secundario); /* Default color for score */
+        }
+
+        .bracket-team-entry.winner .score-span {
+            color: white; /* White for winner score */
+        }
 
         @media (min-width: 768px) { 
             body {
@@ -733,13 +850,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Simulador - Stage 3</h1>
+        <h1>Simulador - Stage 3 Playoffs</h1>
 
         <div class="controls">
             <div class="buttons">
                 <button id="resetButton">Reiniciar</button>
-                <button id="prevRoundButton" disabled>Ronda Ant.</button> 
-                <button id="nextRoundButton" disabled>Próx. Ronda</button>
+                <!-- Removidos botões de navegação de ronda -->
                 <button id="shareResultsButton" style="display: none;">Partilhar Resultados</button>
             </div>
             <div id="socialShareMenu" style="display: none;">
@@ -748,46 +864,31 @@
                 <button id="shareOnWhatsAppButton">Partilhar no WhatsApp</button> 
                 <button id="closeShareMenuButton">Fechar</button>
             </div>
-            <div class="round-indicator">Ronda: <span id="currentRound">1</span></div>
+            <div class="round-indicator">Ronda: <span id="currentRound">Quartos-de-final</span></div>
         </div>
 
-        <div class="stage-sections">
-            <div id="matchupsSection" class="section" data-title="Confrontos da Ronda Atual">
-                <div id="matchupsContainer"></div>
-            </div>
+        <div id="playoffBracketSection" class="section" data-title="Chave de Playoffs">
+            <div id="playoffBracketContainer">
+                <!-- Quarterly Final Round -->
+                <div class="bracket-round" id="quarterFinals">
+                    <div class="bracket-round-title">Quartos-de-final</div>
+                    <!-- Matches will be dynamically inserted here -->
+                </div>
 
-            <div id="standingsSection" class="section" data-title="Classificação">
-                <table id="standingsTable">
-                    <thead>
-                        <tr>
-                            <th>Seed</th>
-                            <th>Equipa</th>
-                            <th>V-D</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="standingsTableBodyContainer"></tbody>
-                </table>
-            </div>
-        </div>
+                <!-- Semi Final Round -->
+                <div class="bracket-round" id="semiFinals">
+                    <div class="bracket-round-title">Meias-finais</div>
+                    <!-- Matches will be dynamically inserted here -->
+                </div>
 
-        <div id="previousRoundSummarySection" class="section" data-title="Resultados da Ronda Anterior" style="display: none;">
-            <div class="summary-controls" id="summaryRoundSelector">
-            </div>
-            <div id="previousRoundSummaryContainer">
+                <!-- Grand Final Round -->
+                <div class="bracket-round" id="grandFinal">
+                    <div class="bracket-round-title">Grande Final</div>
+                    <!-- Match will be dynamically inserted here -->
+                </div>
             </div>
         </div>
 
-        <div class="results-sections">
-            <div id="advancedSection" class="section" data-title="Apuradas (3 Vitórias)">
-                <ul id="advancedList"></ul>
-            </div>
-
-            <div id="eliminatedSection" class="section" data-title="Eliminadas (3 Derrotas)">
-                <ul id="eliminatedList"></ul>
-            </div>
-        </div>
-        
         <div id="twitchPlayerSection" class="section" data-title="Assiste em Direto!">
             <div class="section-content-wrapper">
                  <div id="twitch-embed"></div>
@@ -803,239 +904,106 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const initialTeams = [
-                { id: 1, name: 'Vitality', seed: 1, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/VITALITY.png' },
-                { id: 2, name: 'MOUZ', seed: 2, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/MOUZ.png' },
-                { id: 3, name: 'Spirit', seed: 3, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/SPIRIT.png' },
-                { id: 4, name: 'G2', seed: 4, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/G2.png' },
-                { id: 5, name: 'MongolZ', seed: 5, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/THE-MONGOLZ.png' },
-                { id: 6, name: 'Aurora', seed: 6, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/AURORA.png' },
-                { id: 7, name: 'NAVI', seed: 7, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/NATUS-VINCERE.png' },
-                { id: 8, name: 'Liquid', seed: 8, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/Liquid.png' },
-                { id: 9, name: 'Legacy', seed: 9, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/LEGACY-1.png' },
-                { id: 10, name: 'Virtus pro', seed: 10, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/VIRTUS.PRO_-1.png' },
-                { id: 11, name: 'paiN', seed: 11, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/PAIN-1.png' },
-                { id: 12, name: '3DMAX', seed: 12, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/3DMAX-1.png' },
-                { id: 13, name: 'FURIA', seed: 13, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FURIA-1.png' },
-                { id: 14, name: 'FaZe', seed: 14, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FAZE.png' },
-                { id: 15, name: 'Nemiga', seed: 15, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/NEMIGA.png' },
-                { id: 16, name: 'Lynn Vision', seed: 16, logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/LYNN-VISION.png' },
+            // As 8 equipas que avançaram para os Playoffs, incluindo todos os detalhes
+            // A ordem aqui não importa tanto para o emparelhamento, já que será definido explicitamente.
+            const initialPlayoffTeams = [
+                { id: 13, name: 'FURIA', logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FURIA-1.png' },
+                { id: 11, name: 'paiN', logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/PAIN-1.png' },
+                { id: 14, name: 'FaZe', logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/FAZE.png' },
+                { id: 5, name: 'The MongolZ', logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/THE-MONGOLZ.png' },
+                { id: 7, name: 'NAVI', logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/NATUS-VINCERE.png' },
+                { id: 1, name: 'Vitality', logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/VITALITY.png' },
+                { id: 3, name: 'Spirit', logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/SPIRIT.png' },
+                { id: 2, name: 'MOUZ', logoUrl: 'https://arena.rtp.pt/wp-content/uploads/2025/06/MOUZ.png' },
             ];
 
-            const preloadedRound1Results = [
-                { team1Name: 'Spirit', team2Name: 'paiN', winnerName: 'Spirit' },
-                { team1Name: 'NAVI', team2Name: 'Nemiga', winnerName: 'NAVI' },
-                { team1Name: 'FURIA', team2Name: 'MongolZ', winnerName: 'FURIA' },
-                { team1Name: 'Virtus pro', team2Name: 'MOUZ', winnerName: 'Virtus pro' },
-                { team1Name: 'Legacy', team2Name: 'Vitality', winnerName: 'Legacy' },
-                { team1Name: '3DMAX', team2Name: 'G2', winnerName: '3DMAX' },
-                { team1Name: 'Aurora', team2Name: 'FaZe', winnerName: 'Aurora' },
-                { team1Name: 'Lynn Vision', team2Name: 'Liquid', winnerName: 'Lynn Vision' },
-            ];
-            const preloadedRound2Results = [
-                { team1Name: 'Spirit', team2Name: 'Lynn Vision', winnerName: 'Spirit' },
-                { team1Name: 'NAVI', team2Name: '3DMAX', winnerName: 'NAVI' },
-                { team1Name: 'FURIA', team2Name: 'Aurora', winnerName: 'FURIA' },
-                { team1Name: 'Virtus pro', team2Name: 'Legacy', winnerName: 'Virtus pro' },
-                { team1Name: 'MongolZ', team2Name: 'Liquid', winnerName: 'MongolZ' },
-                { team1Name: 'G2', team2Name: 'paiN', winnerName: 'G2' },
-                { team1Name: 'Vitality', team2Name: 'Nemiga', winnerName: 'Vitality' },
-                { team1Name: 'FaZe', team2Name: 'MOUZ', winnerName: 'FaZe' },
-            ];
-            const preloadedRound3Results = [
-                { team1Name: 'FURIA', team2Name: 'Virtus pro', winnerName: 'FURIA' },
-                { team1Name: 'Spirit', team2Name: 'NAVI', winnerName: 'Spirit' },
-                { team1Name: 'G2', team2Name: 'Aurora', winnerName: 'G2' },
-                { team1Name: 'FaZe', team2Name: 'Legacy', winnerName: 'FaZe' },
-                { team1Name: 'Vitality', team2Name: '3DMAX', winnerName: 'Vitality' },
-                { team1Name: 'MongolZ', team2Name: 'Lynn Vision', winnerName: 'MongolZ' },
-                { team1Name: 'MOUZ', team2Name: 'Liquid', winnerName: 'MOUZ' },
-                { team1Name: 'paiN', team2Name: 'Nemiga', winnerName: 'paiN' },
-            ];
-            // Resultados da Ronda 4 adicionados aqui:
-            const preloadedRound4Results = [
-                { team1Name: 'Vitality', team2Name: 'Virtus pro', winnerName: 'Vitality' },
-                { team1Name: 'FaZe', team2Name: 'MongolZ', winnerName: 'FaZe' },
-                { team1Name: 'NAVI', team2Name: 'G2', winnerName: 'NAVI' },
-                { team1Name: 'MOUZ', team2Name: 'Aurora', winnerName: 'MOUZ' },
-                { team1Name: 'Legacy', team2Name: 'Lynn Vision', winnerName: 'Legacy' },
-                { team1Name: 'paiN', team2Name: '3DMAX', winnerName: 'paiN' },
-            ];
+            let teams = []; // Current teams in the simulator, with status and winners
+            let currentRoundIndex = 0; // 0: Quartos, 1: Semis, 2: Final
+            let playoffBracket = []; // Bracket structure: array of rounds, each round is an array of matches
+            let historyStack = []; // For undo functionality
 
+            const roundNames = ["Quartos-de-final", "Meias-finais", "Grande Final", "Campeão"]; // Round names for display
 
-            let teams = [];
-            let currentRound = 1; 
-            let matchups = [];
-            let stageComplete = false;
-            let historyStack = []; 
-            let displayedSummaryRound = 0; 
-            let currentStandingIndex = 0; 
-
-            const matchupsContainer = document.getElementById('matchupsContainer');
-            const standingsTableBodyContainer = document.getElementById('standingsTableBodyContainer'); 
-            const advancedList = document.getElementById('advancedList');
-            const eliminatedList = document.getElementById('eliminatedList');
+            const quarterFinalsDiv = document.getElementById('quarterFinals');
+            const semiFinalsDiv = document.getElementById('semiFinals');
+            const grandFinalDiv = document.getElementById('grandFinal');
             const currentRoundSpan = document.getElementById('currentRound');
             const resetButton = document.getElementById('resetButton');
-            const prevRoundButton = document.getElementById('prevRoundButton');
-            const nextRoundButton = document.getElementById('nextRoundButton'); 
-            const prevRoundSummarySection = document.getElementById('previousRoundSummarySection');
-            const prevRoundSummaryContainer = document.getElementById('previousRoundSummaryContainer');
-            const summaryRoundSelector = document.getElementById('summaryRoundSelector');
-            
+            // const prevRoundButton = document.getElementById('prevRoundButton'); // Removido
+            // const nextRoundButton = document.getElementById('nextRoundButton'); // Removido
             const shareResultsButton = document.getElementById('shareResultsButton');
             const socialShareMenu = document.getElementById('socialShareMenu');
             const shareOnXButton = document.getElementById('shareOnXButton');
-            const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton'); 
+            const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton');
             const closeShareMenuButton = document.getElementById('closeShareMenuButton');
             const currentYearSpan = document.getElementById('currentYear');
             const twitchPlayerSection = document.getElementById('twitchPlayerSection');
             const twitchEmbedDiv = document.getElementById('twitch-embed');
 
-
-            if (currentYearSpan) {
-                currentYearSpan.textContent = new Date().getFullYear();
-            }
-
-            const POOL_DISPLAY_ORDER = {
-                1: ["0-0"], 2: ["1-0", "0-1"], 3: ["2-0", "1-1", "0-2"],
-                4: ["2-1", "1-2"], 5: ["2-2"]
-            };
-
+            // --- Utility Functions ---
             function deepCopy(obj) { return JSON.parse(JSON.stringify(obj)); }
 
-            function updateControlButtonsState() {
-                prevRoundButton.disabled = historyStack.length === 0;
-                
-                const allCurrentMatchesDecided = matchups.every(m => m.winnerId !== null);
-                if (stageComplete) {
-                    nextRoundButton.disabled = true;
-                } else if (matchups.length === 0 && currentRound > 0) { 
-                    const activeTeams = teams.filter(t => t.status === 'active');
-                    if(activeTeams.length < 2) {
-                        nextRoundButton.disabled = true; 
-                    } else {
-                        nextRoundButton.disabled = true; 
-                    }
-                }
-                else {
-                    nextRoundButton.disabled = !allCurrentMatchesDecided && matchups.length > 0;
-                }
+            function getTeamById(id) {
+                return teams.find(team => team.id === id);
             }
-            
-            function applyPreloadedResult(matchToUpdate, winnerId) {
-                if (!matchToUpdate) {
-                    return;
-                }
-                
-                matchToUpdate.winnerId = winnerId;
-                const team1 = getTeamById(matchToUpdate.team1Id);
-                const team2 = getTeamById(matchToUpdate.team2Id);
-                const winner = getTeamById(winnerId);
-                const loser = (winnerId === team1.id) ? team2 : team1;
 
-                if (winner && loser) {
-                    winner.wins++;
-                    loser.losses++;
+            // Helper to recursively clear results downstream from a given match
+            function clearDownstreamMatchResultsRecursive(round, matchIndex) {
+                console.log(`[clearDownstream] Clearing downstream from Round ${round}, Match ${matchIndex}`);
+                if (!playoffBracket[round] || !playoffBracket[round][matchIndex]) return;
+
+                const match = playoffBracket[round][matchIndex];
+                if (match.winnerId !== null) {
+                    const winnerTeam = getTeamById(match.winnerId);
+                    if (winnerTeam) winnerTeam.isWinner = false;
+                    const loserTeam = getTeamById(match.loserId);
+                    if (loserTeam) loserTeam.isEliminated = false;
                     
-                    if (!winner.opponentsPlayed.includes(loser.id)) winner.opponentsPlayed.push(loser.id);
-                    if (!loser.opponentsPlayed.includes(winner.id)) loser.opponentsPlayed.push(winner.id);
-
-                    updateTeamStatus(winner);
-                    updateTeamStatus(loser);
+                    match.winnerId = null;
+                    match.loserId = null;
+                    console.log(`[clearDownstream] Match ${round}-${matchIndex} cleared. New state:`, deepCopy(match));
                 }
-            }
+                
+                // If this match is not the final, recursively clear the next one it feeds into
+                if (round < 2) {
+                    const nextRoundMatchIndex = Math.floor(matchIndex / 2); // 0, 1 for SF, 0 for Final
+                    const nextMatch = playoffBracket[round + 1][nextRoundMatchIndex];
 
-            function applyPreloadedResultsForRound(roundResults, roundNumber) {
-                currentRound = roundNumber;
-                let generatedMatchupsForPreload = generateMatchupsForCurrentRound();
-
-                let preloadedMatchupsThisRound = [];
-
-                roundResults.forEach(preloadedResult => {
-                    const team1 = teams.find(t => t.name === preloadedResult.team1Name);
-                    const team2 = teams.find(t => t.name === preloadedResult.team2Name);
-                    const winner = teams.find(t => t.name === preloadedResult.winnerName);
-
-                    if (!team1 || !team2 || !winner) {
-                        return; 
+                    if (nextMatch) {
+                        // Determine which slot this match was feeding and clear it
+                        // QF0 and QF1 feed into SF0 (index 0)
+                        // QF2 and QF3 feed into SF1 (index 1)
+                        if (matchIndex % 2 === 0) { // first match of the pair (0, 2 for QF) -> feeds team1 slot in next round
+                            // Check if team1Id of nextMatch was indeed the winner of current match
+                            const currentMatchWinnerId = match.winnerId;
+                            if (nextMatch.team1Id === currentMatchWinnerId) {
+                                console.log(`[clearDownstream] Clearing team1Id from Round ${round + 1}, Match ${nextRoundMatchIndex}`);
+                                nextMatch.team1Id = null;
+                            }
+                        } else { // second match of the pair (1, 3 for QF) -> feeds team2 slot in next round
+                             // Check if team2Id of nextMatch was indeed the winner of current match
+                             const currentMatchWinnerId = match.winnerId;
+                             if (nextMatch.team2Id === currentMatchWinnerId) {
+                                console.log(`[clearDownstream] Clearing team2Id from Round ${round + 1}, Match ${nextRoundMatchIndex}`);
+                                nextMatch.team2Id = null;
+                             }
+                        }
                     }
-                    
-                    const matchFound = generatedMatchupsForPreload.find(m =>
-                        (m.team1Id === team1.id && m.team2Id === team2.id) ||
-                        (m.team1Id === team2.id && m.team2Id === team1.id)
-                    );
-
-                    if (matchFound) {
-                        const matchDataCopy = deepCopy(matchFound);
-                        matchDataCopy.winnerId = winner.id; 
-                        preloadedMatchupsThisRound.push(matchDataCopy);
-                        
-                        applyPreloadedResult(matchFound, winner.id); 
-                    }
-                });
-                
-                calculateBuchholz(); 
-                historyStack.push({
-                    roundCompleted: roundNumber,
-                    teamsAtEndOfRound: deepCopy(teams),           
-                    matchupsOfRound: deepCopy(preloadedMatchupsThisRound)
-                });
-                displayedSummaryRound = roundNumber; 
+                    // Recursively clear further downstream if the next match was also affected
+                    clearDownstreamMatchResultsRecursive(round + 1, nextRoundMatchIndex);
+                }
             }
 
 
-            function initializeStage() {
-                teams = deepCopy(initialTeams).map(team => ({
-                    ...team, wins: 0, losses: 0, buchholz: 0, opponentsPlayed: [], status: 'active'
-                }));
-                
-                historyStack = []; 
-                stageComplete = false;
-                displayedSummaryRound = 0; 
-                currentStandingIndex = 0; 
-                advancedList.innerHTML = ''; 
-                eliminatedList.innerHTML = '';
-
-                let nextRoundToStart = 1;
-
-                if (preloadedRound1Results && preloadedRound1Results.length > 0) {
-                    applyPreloadedResultsForRound(preloadedRound1Results, 1);
-                    nextRoundToStart = 2;
-                }
-                if (preloadedRound2Results && preloadedRound2Results.length > 0 && nextRoundToStart === 2) {
-                    applyPreloadedResultsForRound(preloadedRound2Results, 2);
-                    nextRoundToStart = 3;
-                }
-                if (preloadedRound3Results && preloadedRound3Results.length > 0 && nextRoundToStart === 3) {
-                    applyPreloadedResultsForRound(preloadedRound3Results, 3);
-                    nextRoundToStart = 4;
-                }
-                 if (preloadedRound4Results && preloadedRound4Results.length > 0 && nextRoundToStart === 4) {
-                    applyPreloadedResultsForRound(preloadedRound4Results, 4);
-                    nextRoundToStart = 5;
-                }
-                
-                currentRound = nextRoundToStart;
-                matchups = generateMatchupsForCurrentRound(); 
-                
-                shareResultsButton.style.display = 'none'; 
-                socialShareMenu.style.display = 'none'; 
-                
-                renderTwitchPlayer();
-                renderAll();
-            }
-
+            // --- UI Rendering Functions ---
             function renderTwitchPlayer(){
-                const twitchEmbedDiv = document.getElementById('twitch-embed');
                 twitchPlayerSection.style.display = 'block'; 
-
                 if (twitchEmbedDiv) { 
                     twitchEmbedDiv.innerHTML = ''; 
                     new Twitch.Embed("twitch-embed", {
                         width: "100%",
                         height: "100%", 
-                        channel: "rtparenacs",
+                        channel: "rtparenacs", // Canal de Twitch
                         layout: "video",
                         autoplay: false, 
                         parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost"]
@@ -1045,621 +1013,361 @@
                 }
             }
 
+            function createTeamDisplay(team) {
+                const teamContainer = document.createElement('div'); // Using div to allow full width for text
+                teamContainer.classList.add('team-display-container');
 
-            function getTeamById(id) { return teams.find(team => team.id === id); }
-
-            function calculateBuchholz() {
-                teams.forEach(team => {
-                    team.buchholz = 0;
-                    (team.opponentsPlayed || []).forEach(opponentId => { 
-                        const opponent = getTeamById(opponentId); 
-                        if (opponent) team.buchholz += (opponent.wins - opponent.losses);
-                    });
-                });
-            }
-
-            function sortTeamsForPairing(teamList) { 
-                return teamList.sort((a, b) => {
-                    if (b.buchholz !== a.buchholz) return b.buchholz - a.buchholz;
-                    return a.seed - b.seed;
-                });
-            }
-            
-            function getMatchFormat(poolRecord) {
-                switch (poolRecord) {
-                    case "0-0": case "1-0": case "0-1": case "1-1": return "BO1";
-                    case "2-0": case "0-2": case "2-1": case "1-2": case "2-2": return "BO3";
-                    default: return "BO1"; 
-                }
-            }
-            
-            function generatePairingsForPoolRecursive(teamsInPool, currentPairings, allPossibleSolutions, opponentsPlayedData, poolRecordForMatch) {
-                if (teamsInPool.length === 0) {
-                    let rematchesInThisSolution = 0;
-                    for (const match of currentPairings) {
-                        const team1Opponents = opponentsPlayedData[match.team1Id] || [];
-                        if (team1Opponents.includes(match.team2Id)) {
-                            rematchesInThisSolution++;
-                        }
-                    }
-                    allPossibleSolutions.push({
-                        matchups: deepCopy(currentPairings),
-                        rematches: rematchesInThisSolution
-                    });
-                    return;
-                }
-
-                const team1 = teamsInPool[0];
-                const remainingTeamsForTeam1 = teamsInPool.slice(1);
-
-                if (remainingTeamsForTeam1.length === 0 && teamsInPool.length === 1) { return; }
-                
-                for (let i = remainingTeamsForTeam1.length - 1; i >= 0; i--) { 
-                    const team2 = remainingTeamsForTeam1[i];
-                    const nextTeamsToPair = remainingTeamsForTeam1.filter((_, idx) => idx !== i);
-                    currentPairings.push({ 
-                        team1Id: team1.id, 
-                        team2Id: team2.id, 
-                    });
-                    generatePairingsForPoolRecursive(nextTeamsToPair, currentPairings, allPossibleSolutions, opponentsPlayedData, poolRecordForMatch);
-                    currentPairings.pop(); 
-                }
-            }
-
-            function generateMatchupsForCurrentRound() {
-                let generatedMatchups = [];
-                if (stageComplete) {
-                    return generatedMatchups;
-                }
-
-                const activeTeams = teams.filter(team => team.status === 'active');
-
-                if (activeTeams.length < 2 && currentRound > 1) {
-                    return generatedMatchups;
-                }
-                if (activeTeams.length === 0 && currentRound >= 1) { 
-                     return generatedMatchups;
-                }
-
-                if (currentRound === 1) {
-                    const poolRecord = "0-0";
-                    const sortedBySeed = [...activeTeams].sort((a, b) => a.seed - b.seed);
-                    if (sortedBySeed.length >= 2) {
-                        const midPoint = Math.floor(sortedBySeed.length / 2);
-                        for (let i = 0; i < midPoint; i++) {
-                            if (sortedBySeed[i] && sortedBySeed[i + midPoint]) {
-                                generatedMatchups.push({ 
-                                    team1Id: sortedBySeed[i].id, 
-                                    team2Id: sortedBySeed[i + midPoint].id, 
-                                    winnerId: null, 
-                                    round: currentRound, 
-                                    poolRecord: poolRecord 
-                                });
-                            }
-                        }
-                    }
-                } else { 
-                    const pools = {};
-                    activeTeams.forEach(team => {
-                        const record = `${team.wins}-${team.losses}`;
-                        if (!pools[record]) pools[record] = [];
-                        pools[record].push(team);
-                    });
-                    
-                    const processOrder = POOL_DISPLAY_ORDER[currentRound] || Object.keys(pools).sort();
-                    const opponentsPlayedData = {};
-                    teams.forEach(t => { opponentsPlayedData[t.id] = [...(t.opponentsPlayed || [])]; });
-
-                    processOrder.forEach(record => {
-                        if (pools[record] && pools[record].length >= 2) {
-                            let poolTeams = sortTeamsForPairing(deepCopy(pools[record]));
-                            const allPossibleSolutions = [];
-                            generatePairingsForPoolRecursive(poolTeams, [], allPossibleSolutions, opponentsPlayedData, record);
-
-                            if (allPossibleSolutions.length > 0) {
-                                allPossibleSolutions.sort((a, b) => {
-                                    if (a.rematches !== b.rematches) return a.rematches - b.rematches;
-                                    let sumSeedsA = 0;
-                                    a.matchups.forEach(m => {
-                                        const t1 = initialTeams.find(t=>t.id===m.team1Id);
-                                        const t2 = initialTeams.find(t=>t.id===m.team2Id);
-                                        if(t1 && t2) sumSeedsA += (t1.seed + t2.seed);
-                                    });
-                                    let sumSeedsB = 0;
-                                    b.matchups.forEach(m => {
-                                        const t1 = initialTeams.find(t=>t.id===m.team1Id);
-                                        const t2 = initialTeams.find(t=>t.id===m.team2Id);
-                                        if(t1 && t2) sumSeedsB += (t1.seed + t2.seed);
-                                    });
-                                    return sumSeedsA - sumSeedsB;
-                                });
-                                allPossibleSolutions[0].matchups.forEach(m => {
-                                    generatedMatchups.push({
-                                        ...m,
-                                        winnerId: null,
-                                        round: currentRound,
-                                        poolRecord: record 
-                                    });
-                                });
-                            } else if (poolTeams.length > 0) { 
-                                let tempPool = [...poolTeams];
-                                while(tempPool.length >=2) {
-                                    let t1 = tempPool.shift();
-                                    let t2 = tempPool.pop();
-                                    generatedMatchups.push({
-                                        team1Id: t1.id, team2Id: t2.id, 
-                                        winnerId: null, round: currentRound, poolRecord: record
-                                    });
-                                }
-                            }
-                        }
-                    });
-                }
-                return generatedMatchups;
-            }
-            
-            function recordMatchResult(matchIndex, newWinningTeamId) {
-                const match = matchups[matchIndex]; 
-                if (!match || (match.winnerId === newWinningTeamId && match.winnerId !== null) ) {
-                    return;
-                }
-                if (stageComplete) { alert("A fase já terminou."); return; }
-                
-                const team1 = getTeamById(match.team1Id);
-                const team2 = getTeamById(match.team2Id);
-
-                if (match.winnerId !== null) { 
-                    const previousWinner = getTeamById(match.winnerId);
-                    const previousLoser = (match.winnerId === team1.id) ? team2 : team1;
-                    if(previousWinner) previousWinner.wins--; 
-                    if(previousLoser) previousLoser.losses--;
-                    if(previousWinner) updateTeamStatus(previousWinner); 
-                    if(previousLoser) updateTeamStatus(previousLoser);
-                }
-                
-                match.winnerId = newWinningTeamId; 
-                const newWinner = getTeamById(newWinningTeamId);
-                const newLoser = (newWinningTeamId === team1.id) ? team2 : team1;
-                
-                if(newWinner) newWinner.wins++; 
-                if(newLoser) newLoser.losses++;
-
-                if (team1 && team2) { 
-                    if (!(team1.opponentsPlayed || []).includes(team2.id)) (team1.opponentsPlayed = team1.opponentsPlayed || []).push(team2.id);
-                    if (!(team2.opponentsPlayed || []).includes(team1.id)) (team2.opponentsPlayed = team2.opponentsPlayed || []).push(team1.id);
-                }
-                
-                updateTeamStatus(team1); 
-                updateTeamStatus(team2); 
-                calculateBuchholz(); 
-                renderAll(); 
-            }
-
-            function updateTeamStatus(team) {
-                if (!team) return; 
-                
-                if (team.wins >= 3) {
-                    team.status = 'advanced';
-                } else if (team.losses >= 3) {
-                    team.status = 'eliminated';
-                } else {
-                    team.status = 'active';
-                }
-            }
-            
-            function checkAndFinalizeStageCompletion() {
-                if (stageComplete) return true; 
-                const adv = teams.filter(t=>t.status==='advanced').length;
-                const elim = teams.filter(t=>t.status==='eliminated').length;
-                const active = teams.filter(t=>t.status==='active').length;
-                
-                let end = (adv >= 8 || elim >= 8 || (adv + elim === initialTeams.length) || (currentRound >= 3 && active < 2 && (adv + elim < initialTeams.length)));
-                
-                if(end && currentRound > 0) { 
-                    stageComplete=true; 
-                }
-                return stageComplete;
-            }
-                        
-            function createTeamDisplay(team, type) { 
-                const teamContainer = document.createElement('span');
-                teamContainer.classList.add('team-display-container'); 
-
-                if (team.logoUrl && team.logoUrl.trim() !== '') { 
+                if (team && team.logoUrl && team.logoUrl.trim() !== '') {
                     const img = document.createElement('img');
                     img.src = team.logoUrl;
-                    img.alt = ``; 
+                    img.alt = `Logo ${team.name}`;
                     img.classList.add('team-logo');
-                    img.onerror = function() { 
-                        this.style.display='none'; 
+                    img.onerror = function() {
+                        this.style.display='none'; // Hide image on error
                     };
                     teamContainer.appendChild(img);
                 }
                 const nameSpan = document.createElement('span');
-                nameSpan.textContent = team.name;
-                nameSpan.classList.add('team-name-text'); 
+                nameSpan.textContent = team ? team.name : 'TBD'; // "To Be Decided"
+                nameSpan.classList.add('team-name-text');
                 teamContainer.appendChild(nameSpan);
                 return teamContainer;
             }
 
-            function renderPreviousRoundSummary() { 
-                prevRoundSummaryContainer.innerHTML = ''; 
-                summaryRoundSelector.innerHTML = ''; 
+            function renderBracket() {
+                console.log("[renderBracket] Rendering bracket. Current Round Index:", currentRoundIndex);
+                quarterFinalsDiv.innerHTML = '<div class="bracket-round-title">Quartos-de-final</div>';
+                semiFinalsDiv.innerHTML = '<div class="bracket-round-title">Meias-finais</div>';
+                grandFinalDiv.innerHTML = '<div class="bracket-round-title">Grande Final</div>';
 
-                const completedRoundsForSelector = historyStack.filter(histEntry =>
-                    histEntry.matchupsOfRound &&
-                    histEntry.matchupsOfRound.length > 0 &&
-                    histEntry.matchupsOfRound.every(m => m.winnerId !== null)
-                );
+                // Display current round name
+                currentRoundSpan.textContent = roundNames[currentRoundIndex] || "Fim do Torneio";
 
-                if (completedRoundsForSelector.length === 0) {
-                    prevRoundSummarySection.style.display = 'none';
+                // Loop through each round in the playoffBracket
+                playoffBracket.forEach((roundMatches, round) => {
+                    const targetDiv = [quarterFinalsDiv, semiFinalsDiv, grandFinalDiv][round];
+
+                    roundMatches.forEach((match, matchIndex) => {
+                        const team1 = getTeamById(match.team1Id);
+                        const team2 = getTeamById(match.team2Id);
+                        
+                        const matchDiv = document.createElement('div');
+                        matchDiv.classList.add('bracket-match');
+                        matchDiv.setAttribute('data-round-index', round);
+                        matchDiv.setAttribute('data-match-index', matchIndex);
+
+                        const teamsDiv = document.createElement('div');
+                        teamsDiv.classList.add('bracket-match-teams');
+
+                        const team1Entry = document.createElement('div');
+                        team1Entry.classList.add('bracket-team-entry');
+                        team1Entry.appendChild(createTeamDisplay(team1));
+                        
+                        const team2Entry = document.createElement('div');
+                        team2Entry.classList.add('bracket-team-entry');
+                        team2Entry.appendChild(createTeamDisplay(team2));
+
+                        // Determine if a team entry is clickable
+                        // A match is clickable if it's in the current round AND both teams are defined (not TBD)
+                        const isMatchClickable = (round === currentRoundIndex) && (team1 !== undefined && team1 !== null) && (team2 !== undefined && team2 !== null);
+                        
+                        if (isMatchClickable) {
+                            team1Entry.classList.add('clickable');
+                            team2Entry.classList.add('clickable');
+                            team1Entry.onclick = () => selectWinner(round, matchIndex, team1.id);
+                            team2Entry.onclick = () => selectWinner(round, matchIndex, team2.id);
+                        } else {
+                            team1Entry.onclick = null; // Ensure no stale click handler
+                            team2Entry.onclick = null; // Ensure no stale click handler
+                            team1Entry.classList.remove('clickable'); // Remove clickable class if not active
+                            team2Entry.classList.remove('clickable'); // Remove clickable class if not active
+                        }
+
+                        // Apply winner/loser classes
+                        if (match.winnerId === team1?.id) {
+                            team1Entry.classList.add('winner');
+                            team2Entry.classList.add('loser');
+                        } else if (match.winnerId === team2?.id) {
+                            team2Entry.classList.add('winner');
+                            team1Entry.classList.add('loser');
+                        } else {
+                            // If no winner, ensure no winner/loser classes are present
+                            team1Entry.classList.remove('winner', 'loser');
+                            team2Entry.classList.remove('winner', 'loser');
+                        }
+
+                        teamsDiv.appendChild(team1Entry);
+                        teamsDiv.appendChild(team2Entry);
+                        matchDiv.appendChild(teamsDiv);
+
+                        const infoDiv = document.createElement('div');
+                        infoDiv.classList.add('bracket-match-info');
+                        // Display date/time if available, otherwise just BO3
+                        infoDiv.textContent = match.dateTime ? `${match.dateTime} - BO3` : `BO3`;
+                        matchDiv.appendChild(infoDiv);
+
+                        targetDiv.appendChild(matchDiv);
+                    });
+                });
+                console.log("[renderBracket] Current playoffBracket state:", deepCopy(playoffBracket));
+                updateControlButtonsState();
+            }
+
+            // --- Logic Functions ---
+            function generateBracket() {
+                // Initialize teams for the bracket based on the defined playoff teams
+                teams = deepCopy(initialPlayoffTeams).map(team => ({
+                    ...team,
+                    isEliminated: false,
+                    isWinner: false
+                }));
+
+                playoffBracket = []; // Clear previous bracket
+                currentRoundIndex = 0;
+
+                // Create a map for quick ID lookup by team name
+                const teamMap = new Map(teams.map(t => [t.name, t.id]));
+                const getIdByName = (name) => {
+                    const id = teamMap.get(name);
+                    if (id === undefined) console.error(`Team "${name}" not found in initialPlayoffTeams!`);
+                    return id;
+                };
+
+                // Round 0: Quarter-finals - Specific pairings and times
+                // Order to ensure correct semi-final progression:
+                // SF0: (Winner QF0 vs Winner QF1)
+                // SF1: (Winner QF2 vs Winner QF3)
+                let quarterFinalsMatches = [
+                    { 
+                        team1Id: getIdByName('FURIA'), team2Id: getIdByName('paiN'), 
+                        winnerId: null, loserId: null, dateTime: "Sexta-feira 00:30" 
+                    }, // QF0
+                    { 
+                        team1Id: getIdByName('FaZe'), team2Id: getIdByName('The MongolZ'), 
+                        winnerId: null, loserId: null, dateTime: "Sexta-feira 23:30" 
+                    }, // QF1
+                    { 
+                        team1Id: getIdByName('NAVI'), team2Id: getIdByName('Vitality'), 
+                        winnerId: null, loserId: null, dateTime: "Sexta-feira 19:00" 
+                    }, // QF2
+                    { 
+                        team1Id: getIdByName('Spirit'), team2Id: getIdByName('MOUZ'), 
+                        winnerId: null, loserId: null, dateTime: "Quinta-feira 20:00" 
+                    } // QF3
+                ];
+                playoffBracket.push(quarterFinalsMatches);
+
+                // Round 1: Semi-finals (placeholders)
+                playoffBracket.push([
+                    // SF0: Winner of (QF0) vs Winner of (QF1)
+                    { team1Id: null, team2Id: null, winnerId: null, loserId: null, dateTime: "Sábado 19:00" },
+                    // SF1: Winner of (QF2) vs Winner of (QF3)
+                    { team1Id: null, team2Id: null, winnerId: null, loserId: null, dateTime: "Sábado 23:30" }
+                ]);
+
+                // Round 2: Grand Final (placeholder)
+                playoffBracket.push([
+                    { team1Id: null, team2Id: null, winnerId: null, loserId: null, dateTime: "Domingo 20:30" }
+                ]);
+                console.log("[generateBracket] Initial playoffBracket generated:", deepCopy(playoffBracket));
+            }
+
+            function selectWinner(round, matchIndex, winnerTeamId) {
+                console.log(`[selectWinner] Attempting to select winner for Round ${round}, Match ${matchIndex}, Winner ID: ${winnerTeamId}`);
+                // Prevent selection if it's not the current active round or if the winner ID is invalid (TBD)
+                if (round !== currentRoundIndex || winnerTeamId === undefined || winnerTeamId === null) {
+                    alert("Ainda não pode selecionar um vencedor para este confronto. Avance as rondas ou certifique-se que as equipas estão definidas.");
+                    console.warn("[selectWinner] Selection prevented: Not current round or TBD team.", { round, currentRoundIndex, winnerTeamId });
                     return;
                 }
-                prevRoundSummarySection.style.display = 'block';
+                
+                let match = playoffBracket[round][matchIndex];
+                // Additional check in case the UI allowed a click on TBD due to a race condition or bug
+                if (!match.team1Id || !match.team2Id) {
+                    alert("As equipas deste confronto ainda não foram definidas. Por favor, complete os jogos anteriores.");
+                    console.warn("[selectWinner] Selection prevented: Teams not defined for match.", match);
+                    return;
+                }
 
-                if ((!completedRoundsForSelector.find(r => r.roundCompleted === displayedSummaryRound) || displayedSummaryRound === 0) && completedRoundsForSelector.length > 0) {
-                     displayedSummaryRound = completedRoundsForSelector[completedRoundsForSelector.length - 1].roundCompleted;
+                // If clicking the currently selected winner, do nothing
+                if (match.winnerId === winnerTeamId) {
+                    console.log("[selectWinner] Already selected this winner. No change needed.");
+                    return;
+                }
+
+                // Save current state before making changes
+                historyStack.push(deepCopy({
+                    playoffBracket: playoffBracket,
+                    teams: teams,
+                    currentRoundIndex: currentRoundIndex
+                }));
+                console.log("[selectWinner] State saved to historyStack. History length:", historyStack.length);
+
+                // If changing a previous winner, clear its downstream effects
+                if (match.winnerId !== null) {
+                    console.log("[selectWinner] Previous winner detected. Clearing downstream results.");
+                    clearDownstreamMatchResultsRecursive(round, matchIndex); // Clear this match and any further matches it affected
                 }
                 
-                completedRoundsForSelector.forEach(histEntry => {
-                    const btn = document.createElement('button');
-                    btn.textContent = `R${histEntry.roundCompleted}`; 
-                    btn.onclick = () => {
-                        displayedSummaryRound = histEntry.roundCompleted;
-                        renderPreviousRoundSummary(); 
-                    };
-                    if (histEntry.roundCompleted === displayedSummaryRound) {
-                        btn.classList.add('active');
+                // Update current match result
+                match.winnerId = winnerTeamId;
+                match.loserId = (winnerTeamId === match.team1Id) ? match.team2Id : match.team1Id;
+                console.log(`[selectWinner] Match ${round}-${matchIndex} updated. New match state:`, deepCopy(match));
+
+                // Update team status (isWinner, isEliminated)
+                const winnerTeam = getTeamById(winnerTeamId);
+                const loserTeam = getTeamById(match.loserId);
+
+                if (winnerTeam) winnerTeam.isWinner = true;
+                if (loserTeam) loserTeam.isEliminated = true;
+
+                // Propagate winner to the next round 
+                if (round < 2) { // If not the final round
+                    const nextRoundMatchIndex = Math.floor(matchIndex / 2);
+                    const nextRoundMatch = playoffBracket[round + 1][nextRoundMatchIndex];
+
+                    console.log(`[selectWinner] Propagating winner ${winnerTeamId} from Round ${round}, Match ${matchIndex} to Round ${round + 1}, Match ${nextRoundMatchIndex}`);
+                    console.log("[selectWinner] Next Round Match BEFORE propagation:", deepCopy(nextRoundMatch));
+
+                    if (matchIndex % 2 === 0) { // First match of the pair feeds into team1 slot of next match
+                        nextRoundMatch.team1Id = winnerTeamId;
+                    } else { // Second match of the pair feeds into team2 slot of next match
+                        nextRoundMatch.team2Id = winnerTeamId;
                     }
-                    summaryRoundSelector.appendChild(btn);
-                });
+                    console.log("[selectWinner] Next Round Match AFTER propagation:", deepCopy(nextRoundMatch));
+                }
 
-                const roundToShow = historyStack.find(r => r.roundCompleted === displayedSummaryRound);
+                // Re-render the bracket immediately after a selection
+                renderBracket();
 
-                if (roundToShow && roundToShow.matchupsOfRound.every(m => m.winnerId !== null)) {
-                    prevRoundSummarySection.setAttribute('data-title', `Resultados da Ronda ${displayedSummaryRound}`);
-                    
-                    const matchupsByPool = {};
-                    roundToShow.matchupsOfRound.forEach(match => {
-                        const poolKey = match.poolRecord;
-                        if (!matchupsByPool[poolKey]) matchupsByPool[poolKey] = [];
-                        matchupsByPool[poolKey].push(match);
-                    });
+                // Check if all matches in the current round are decided, then auto-advance
+                const currentRoundMatches = playoffBracket[currentRoundIndex];
+                const allCurrentMatchesDecided = currentRoundMatches.every(m => m.winnerId !== null);
 
-                    const displayOrder = POOL_DISPLAY_ORDER[displayedSummaryRound] || Object.keys(matchupsByPool).sort();
-
-                    displayOrder.forEach(poolKey => {
-                        if (matchupsByPool[poolKey] && matchupsByPool[poolKey].length > 0) {
-                            const poolHeaderDiv = document.createElement('div');
-                            poolHeaderDiv.classList.add('summary-pool-header'); 
-                            const matchFormat = getMatchFormat(poolKey); 
-                            poolHeaderDiv.textContent = `Pool ${poolKey} (${matchFormat})`;
-                            prevRoundSummaryContainer.appendChild(poolHeaderDiv);
-
-                            matchupsByPool[poolKey].forEach(match => {
-                                const team1 = initialTeams.find(t => t.id === match.team1Id); 
-                                const team2 = initialTeams.find(t => t.id === match.team2Id);
-                                if (!team1 || !team2) return;
-
-                                const summaryLine = document.createElement('div');
-                                summaryLine.classList.add('summary-match-line');
-                                const winner = (match.winnerId === team1.id) ? team1 : team2;
-                                const loser = (match.winnerId === team1.id) ? team2 : team1;
-                                const winnerDisplay = createTeamDisplay(winner, 'list'); 
-                                const winnerNameSpan = winnerDisplay.querySelector('.team-name-text');
-                                if(winnerNameSpan) winnerNameSpan.classList.add('winner-name');
-                                const loserDisplay = createTeamDisplay(loser, 'list');
-                                const loserNameSpan = loserDisplay.querySelector('.team-name-text');
-                                if(loserNameSpan) loserNameSpan.classList.add('loser-name');
-                                const defeatedText = document.createElement('span');
-                                defeatedText.classList.add('defeated-text');
-                                defeatedText.textContent = 'derrotou';
-                                summaryLine.appendChild(winnerDisplay);
-                                summaryLine.appendChild(defeatedText);
-                                summaryLine.appendChild(loserDisplay);
-                                prevRoundSummaryContainer.appendChild(summaryLine);
-                            });
-                        }
-                    });
-                } else {
-                     prevRoundSummarySection.setAttribute('data-title', `Resultados da Ronda Anterior`); 
-                     prevRoundSummaryContainer.innerHTML = (completedRoundsForSelector.length > 0 && displayedSummaryRound > 0) ? `<p>Resultados para Ronda ${displayedSummaryRound} não disponíveis ou incompletos.</p>` : '<p>Nenhuma ronda anterior para mostrar.</p>';
+                if (allCurrentMatchesDecided && currentRoundIndex < 2) { // Not the final round
+                    console.log("[selectWinner] All matches in current round decided. Auto-advancing to next round.");
+                    // The logic previously in nextRound()
+                    historyStack.push(deepCopy({
+                        playoffBracket: playoffBracket,
+                        teams: teams,
+                        currentRoundIndex: currentRoundIndex
+                    }));
+                    currentRoundIndex++;
+                    renderBracket(); // Re-render for the new round
+                } else if (allCurrentMatchesDecided && currentRoundIndex === 2) { // Final round decided
+                    console.log("[selectWinner] Grand Final decided. Tournament complete.");
+                    // No explicit nextRound call needed, just update buttons
+                    updateControlButtonsState(); 
                 }
             }
 
-            function renderMatchups() { 
-                matchupsContainer.innerHTML = '';
-                currentRoundSpan.textContent = stageComplete ? `Final (${currentRound})` : currentRound ;
+            // `nextRound` and `prevRound` functions are now handled automatically by selectWinner
+            // `prevRound` is still called by the button.
+            function prevRound() {
+                console.log("[prevRound] Attempting to go back a round.");
+                if (historyStack.length === 0) {
+                    // If no history, just reset to initial state
+                    initializePlayoffs();
+                    console.log("[prevRound] History is empty. Re-initializing playoffs.");
+                    return;
+                }
 
-                let messageP = matchupsContainer.querySelector('p.message-placeholder');
+                const restoredState = historyStack.pop();
+                playoffBracket = deepCopy(restoredState.playoffBracket);
+                teams = deepCopy(restoredState.teams);
+                currentRoundIndex = restoredState.currentRoundIndex;
+                console.log("[prevRound] State restored from history. New currentRoundIndex:", currentRoundIndex);
                 
-                let messageText = "";
-                if (stageComplete) {
-                     messageText = 'Fase concluída!';
-                } else if (matchups.length === 0 && currentRound > 0) { 
-                    messageText = 'Nenhum confronto para esta ronda.';
-                    const activeTeams = teams.filter(t => t.status === 'active');
-                    if (activeTeams.length < 2) { 
-                        messageText += ' Não há equipas ativas suficientes.';
-                    }
-                }
-
-                if (messageText) {
-                    if (!messageP) {
-                        messageP = document.createElement('p');
-                        messageP.classList.add('message-placeholder'); 
-                        matchupsContainer.appendChild(messageP);
-                    }
-                    messageP.textContent = messageText;
-                    return; 
-                } else if (messageP && matchupsContainer.contains(messageP)) { 
-                     matchupsContainer.removeChild(messageP);
-                }
-
-                const matchupsByPool = {};
-                matchups.forEach(match => { 
-                    const poolKey = match.poolRecord;
-                    if (!matchupsByPool[poolKey]) matchupsByPool[poolKey] = [];
-                    matchupsByPool[poolKey].push(match);
-                });
-
-                const displayOrder = POOL_DISPLAY_ORDER[currentRound] || Object.keys(matchupsByPool).sort();
-
-                displayOrder.forEach(poolKey => {
-                    if (matchupsByPool[poolKey] && matchupsByPool[poolKey].length > 0) {
-                        const poolHeaderDiv = document.createElement('div');
-                        poolHeaderDiv.classList.add('pool-header');
-                        const matchFormat = getMatchFormat(poolKey);
-                        poolHeaderDiv.textContent = `Confrontos ${poolKey} (${matchFormat})`;
-                        matchupsContainer.appendChild(poolHeaderDiv);
-
-                        matchupsByPool[poolKey].forEach((match) => { 
-                            const originalMatchIndex = matchups.indexOf(match);
-                            if(originalMatchIndex === -1) {
-                                console.error("Não foi possível encontrar o índice original do confronto na renderização:", match, "Array de matchups atual:", deepCopy(matchups));
-                                return; 
-                            }
-
-                            const team1 = getTeamById(match.team1Id); const team2 = getTeamById(match.team2Id);
-                            if (!team1 || !team2) { console.error("Equipa não encontrada para o confronto:", match); return; }
-
-                            const matchDiv = document.createElement('div'); matchDiv.classList.add('matchup');
-                            
-                            const team1Div = document.createElement('div'); team1Div.classList.add('team');
-                            team1Div.appendChild(createTeamDisplay(team1, 'matchup'));
-                            team1Div.onclick = () => recordMatchResult(originalMatchIndex, team1.id); 
-
-                            const team2Div = document.createElement('div'); team2Div.classList.add('team');
-                            team2Div.appendChild(createTeamDisplay(team2, 'matchup'));
-                            team2Div.onclick = () => recordMatchResult(originalMatchIndex, team2.id); 
-
-                            team1Div.classList.remove('winner', 'loser'); team2Div.classList.remove('winner', 'loser');
-                            if (match.winnerId) {
-                                if (team1.id === match.winnerId) { team1Div.classList.add('winner'); team2Div.classList.add('loser'); }
-                                else if (team2.id === match.winnerId) { team2Div.classList.add('winner'); team1Div.classList.add('loser'); }
-                            }
-                            matchDiv.appendChild(team1Div); matchDiv.appendChild(team2Div);
-                            matchupsContainer.appendChild(matchDiv);
-                        });
-                    }
-                });
+                renderBracket();
             }
 
-            function renderStandings() { 
-                standingsTableBodyContainer.innerHTML = ''; 
-                const isMobileView = window.innerWidth < 768;
+            function updateControlButtonsState() {
+                // prevRoundButton is now directly visible/hidden based on historyStack.
+                // It was removed from HTML, so this just manages its logic for potential future re-addition
+                // prevRoundButton.disabled = historyStack.length === 0; 
+                
+                // nextRoundButton is gone, its logic is in selectWinner
 
-                const customSort = (a, b) => { 
-                    const statusOrder = { active: 1, advanced: 2, eliminated: 3 };
-                    if (statusOrder[a.status] !== statusOrder[b.status]) {
-                        return statusOrder[a.status] - statusOrder[b.status];
-                    }
-                    if (b.wins !== a.wins) return b.wins - a.wins;
-                    if (a.losses !== b.losses) return a.losses - b.losses;
-                    if (b.buchholz !== a.buchholz) return b.buchholz - a.buchholz;
-                    return a.seed - b.seed;
-                };
-                const sortedForDisplay = [...teams].sort(customSort); 
+                const finalMatch = playoffBracket[2][0];
+                const isTournamentComplete = finalMatch && finalMatch.winnerId !== null;
 
-                const tableElement = document.getElementById('standingsTable');
-                const theadElement = tableElement.querySelector('thead');
-                const existingNav = document.getElementById('standingsSection').querySelector('.mobile-standings-nav');
-                if(existingNav) existingNav.remove();
-
-
-                if (isMobileView) {
-                    if(theadElement) theadElement.style.display = 'none';
-
-                    if (sortedForDisplay.length === 0) {
-                        standingsTableBodyContainer.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Nenhuma equipa para mostrar.</td></tr>";
-                        return;
-                    }
-
-                    if (currentStandingIndex >= sortedForDisplay.length) currentStandingIndex = sortedForDisplay.length - 1;
-                    if (currentStandingIndex < 0 && sortedForDisplay.length > 0) currentStandingIndex = 0;
-                    
-                    const team = sortedForDisplay[currentStandingIndex];
-                     if (!team) { 
-                         standingsTableBodyContainer.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Nenhuma equipa selecionada.</td></tr>";
-                         return;
-                     }
-                    
-                    const tr = document.createElement('tr');
-                    const fields = [
-                        { label: "Seed", value: team.seed },
-                        { label: "Equipa", value: null, teamData: team, type: 'table' },
-                        { label: "V-D", value: `${team.wins}-${team.losses}` },
-                        { label: "Status", value: null, teamData: team, isStatus: true }
-                    ];
-                    
-                    fields.forEach(field => {
-                        const td = document.createElement('td');
-                        td.setAttribute('data-label', field.label);
-                        if (field.teamData && !field.isStatus) {
-                            const teamCellContainer = document.createElement('div'); 
-                            teamCellContainer.classList.add('team-cell-standings');
-                            teamCellContainer.appendChild(createTeamDisplay(field.teamData, field.type));
-                            td.appendChild(teamCellContainer);
-                        } else if (field.isStatus) {
-                            let statusText = 'Em Jogo';
-                            const statusSpan = document.createElement('span');
-                            if (team.status === 'advanced') { statusText = `Apurada`; statusSpan.classList.add('status-text-advanced'); }
-                            else if (team.status === 'eliminated') { statusText = `Eliminada`; statusSpan.classList.add('status-text-eliminated'); }
-                            else { statusSpan.classList.add('status-text-active'); }
-                            statusSpan.textContent = statusText;
-                            td.appendChild(statusSpan);
-                        } else {
-                            const valueSpan = document.createElement('span'); 
-                            valueSpan.textContent = field.value;
-                            td.appendChild(valueSpan);
-                        }
-                        tr.appendChild(td);
-                    });
-                    standingsTableBodyContainer.appendChild(tr);
-
-                    const navDiv = document.createElement('div');
-                    navDiv.classList.add('mobile-standings-nav');
-                    const leftArrow = document.createElement('button');
-                    leftArrow.innerHTML = '&larr;'; 
-                    leftArrow.disabled = currentStandingIndex === 0;
-                    leftArrow.onclick = () => { if (currentStandingIndex > 0) { currentStandingIndex--; renderStandings(); } };
-                    navDiv.appendChild(leftArrow);
-                    const teamIndicator = document.createElement('span');
-                    teamIndicator.classList.add('mobile-standings-indicator');
-                    teamIndicator.textContent = sortedForDisplay.length > 0 ? `${currentStandingIndex + 1} / ${sortedForDisplay.length}` : '0 / 0';
-                    navDiv.appendChild(teamIndicator);
-                    const rightArrow = document.createElement('button');
-                    rightArrow.innerHTML = '&rarr;'; 
-                    rightArrow.disabled = currentStandingIndex >= sortedForDisplay.length - 1;
-                    rightArrow.onclick = () => { if (currentStandingIndex < sortedForDisplay.length - 1) { currentStandingIndex++; renderStandings(); } };
-                    navDiv.appendChild(rightArrow);
-                    document.getElementById('standingsSection').appendChild(navDiv);
-
-                } else { 
-                    if(theadElement) theadElement.style.display = 'table-header-group'; 
-                    sortedForDisplay.forEach(team => {
-                        const row = standingsTableBodyContainer.insertRow();
-                        row.insertCell().textContent = team.seed;
-                        const nameCell = row.insertCell(); 
-                        const teamCellContainer = document.createElement('div');
-                        teamCellContainer.classList.add('team-cell-standings');
-                        teamCellContainer.appendChild(createTeamDisplay(team, 'table'));
-                        nameCell.appendChild(teamCellContainer);
-
-                        row.insertCell().textContent = `${team.wins}-${team.losses}`;
-                        const statusCell = row.insertCell();
-                        const statusTextSpan = document.createElement('span'); 
-                        statusCell.appendChild(statusTextSpan);
-                        statusTextSpan.classList.remove('status-text-advanced', 'status-text-eliminated', 'status-text-active');
-                        let statusText = 'Em Jogo';
-                        if (team.status === 'advanced') { statusText = `Apurada`; statusTextSpan.classList.add('status-text-advanced'); }
-                        else if (team.status === 'eliminated') { statusText = `Eliminada`; statusTextSpan.classList.add('status-text-eliminated');}
-                        else { statusTextSpan.classList.add('status-text-active'); }
-                        statusTextSpan.textContent = statusText;
-                        row.insertCell().appendChild(statusTextSpan);
-                    });
-                }
-            }
-
-            function renderAdvancedEliminatedLists() { 
-                advancedList.innerHTML = ''; eliminatedList.innerHTML = '';
-                const sortForFinalLists = (a,b) => { 
-                    if(a.wins !== b.wins) return b.wins - a.wins; 
-                    if(a.losses !== b.losses) return a.losses - b.losses;
-                    if (b.buchholz !== a.buchholz && currentRound > 2) return b.buchholz - a.buchholz; 
-                    return a.seed - b.seed;
-                };
-
-                teams.filter(t => t.status === 'advanced').sort(sortForFinalLists).forEach(team => {
-                    const li = document.createElement('li'); 
-                    const teamDisplay = createTeamDisplay(team, 'list');
-                    li.appendChild(teamDisplay);
-                    
-                    const scoreSpan = document.createElement('span');
-                    scoreSpan.textContent = ` (${team.wins}-${team.losses})`;
-                    scoreSpan.classList.add('score-span'); 
-                    li.appendChild(scoreSpan);
-                    advancedList.appendChild(li);
-                });
-                teams.filter(t => t.status === 'eliminated').sort(sortForFinalLists).forEach(team => {
-                    const li = document.createElement('li'); 
-                    const teamDisplay = createTeamDisplay(team, 'list');
-                    li.appendChild(teamDisplay);
-
-                    const scoreSpan = document.createElement('span');
-                    scoreSpan.textContent = ` (${team.wins}-${team.losses})`;
-                    scoreSpan.classList.add('score-span'); 
-                    li.appendChild(scoreSpan);
-                    eliminatedList.appendChild(li);
-                });
-               }
-            
-            function renderAll() {
-                renderStandings(); 
-                renderMatchups(); 
-                renderAdvancedEliminatedLists();
-                renderPreviousRoundSummary(); 
-                updateControlButtonsState(); 
-                twitchPlayerSection.style.display = 'block';
-
-                if (stageComplete) {
+                if (isTournamentComplete) {
                     shareResultsButton.style.display = 'inline-block';
+                    currentRoundSpan.textContent = roundNames[3]; // "Campeão"
+                    console.log("[updateControls] Tournament complete. Share button enabled, Round name updated.");
                 } else {
                     shareResultsButton.style.display = 'none';
-                    socialShareMenu.style.display = 'none'; 
+                    currentRoundSpan.textContent = roundNames[currentRoundIndex]; // Revert if not complete
+                    console.log("[updateControls] Tournament not complete. Share button hidden.");
                 }
             }
 
-            nextRoundButton.onclick = () => {
-                if (stageComplete) return;
 
-                const allDecided = matchups.every(m => m.winnerId !== null);
-                if (matchups.length > 0 && !allDecided) { 
-                    alert("Por favor, decida todos os jogos da ronda atual antes de avançar.");
-                    return;
+            function buildShareMessage() {
+                let message = "🏆 Previsão: Playoffs BLAST Austin Major 🏆\n\n"; // Alterado conforme pedido
+                const grandFinalMatch = playoffBracket[2][0];
+                const champion = getTeamById(grandFinalMatch.winnerId);
+
+                if (champion) {
+                    message += `🎉 CAMPEÃO: ${champion.name} 🎉\n\n`;
+                } else {
+                    message += "Previsão incompleta - Quem será o Campeão?\n\n";
                 }
-                
-                const stateToSave = {
-                    roundCompleted: currentRound,
-                    teamsAtEndOfRound: deepCopy(teams),           
-                    matchupsOfRound: deepCopy(matchups)        
+
+                // Removida a linha "Resultados dos Playoffs:"
+                // message += "Resultados dos Playoffs:\n"; 
+
+                // Add Quarter-finals results
+                playoffBracket[0].forEach((match, index) => {
+                    const team1 = getTeamById(match.team1Id);
+                    const team2 = getTeamById(match.team2Id);
+                    if (team1 && team2 && match.winnerId) {
+                        const winner = getTeamById(match.winnerId);
+                        const loser = (match.winnerId === team1.id) ? team2 : team1;
+                        message += `Q${index + 1}: ${winner.name} > ${loser.name}\n`;
+                    }
+                });
+
+                // Add Semi-finals results
+                playoffBracket[1].forEach((match, index) => {
+                    const team1 = getTeamById(match.team1Id);
+                    const team2 = getTeamById(match.team2Id);
+                    if (team1 && team2 && match.winnerId) {
+                        const winner = getTeamById(match.winnerId);
+                        const loser = (match.winnerId === team1.id) ? team2 : team1;
+                        message += `S${index + 1}: ${winner.name} > ${loser.name}\n`;
+                    }
+                });
+
+                // Add Grand Final result
+                if (grandFinalMatch && grandFinalMatch.team1Id && grandFinalMatch.team2Id && grandFinalMatch.winnerId) {
+                    const winner = getTeamById(grandFinalMatch.winnerId);
+                    const loser = (grandFinalMatch.winnerId === grandFinalMatch.team1Id) ? getTeamById(grandFinalMatch.team2Id) : getTeamById(grandFinalMatch.team1Id);
+                    message += `Final: ${winner.name} > ${loser.name}\n`;
+                }
+
+                const customMessage = "Faz a tua previsão!"; // Alterado conforme pedido
+                const shareUrl = "https://arena.rtp.pt/ao-minuto/simulador-major-austin/?v03"; // Alterado o link de partilha
+                const hashtagX = " #MAJORnaRTP"; // Removido #CS2
+
+                return {
+                    textForX: `${message}${customMessage}${hashtagX}`,
+                    textForWhatsApp: `${message}${customMessage} ${shareUrl}`,
+                    urlForX: shareUrl,
+                    fullTextForCopy: `${message}${customMessage}${hashtagX}\n\nLink para o simulador: ${shareUrl}`
                 };
-                historyStack.push(stateToSave);
-                
-                displayedSummaryRound = currentRound; 
+            }
 
-                currentRound++;
-                matchups = generateMatchupsForCurrentRound(); 
 
-                checkAndFinalizeStageCompletion(); 
-                
-                currentStandingIndex = 0;
-                renderAll();
-            };
-
-            prevRoundButton.onclick = () => {
-                if (historyStack.length === 0) { 
-                    if (currentRound === 1) initializeStage(); 
-                    return;
-                }
-
-                const restoredState = historyStack.pop(); 
-
-                currentRound = restoredState.roundCompleted;
-                teams = deepCopy(restoredState.teamsAtEndOfRound); 
-                matchups = deepCopy(restoredState.matchupsOfRound);  
-
-                stageComplete = false; 
-
-                displayedSummaryRound = historyStack.length > 0 ? historyStack[historyStack.length - 1].roundCompleted : 0;
-                currentStandingIndex = 0;
-                renderAll();
-            };
-            
+            // --- Event Listeners ---
             shareResultsButton.onclick = () => {
-                if(stageComplete) {
-                     socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none';
+                const grandFinalMatch = playoffBracket[2][0];
+                if (grandFinalMatch && grandFinalMatch.winnerId !== null) {
+                    socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none';
+                } else {
+                    // This alert should ideally not be triggered if the button is correctly disabled/hidden
+                    // but it's a good fallback.
+                    alert("Ainda não há um campeão! Complete a Grande Final para partilhar os resultados.");
                 }
             };
             
@@ -1667,70 +1375,50 @@
                  socialShareMenu.style.display = 'none';
             };
 
-
-            function buildShareMessage() {
-                let resultsSummaryWithEmojis = "🏆 Minha Simulação do BLAST Austin Major 🏆\n\n";
-                let resultsSummaryWithoutEmojis = "Minha Simulação do BLAST Austin Major\n\n";
-                
-                const advancedTeamElements = advancedList.querySelectorAll('li .team-name-text');
-                if (advancedTeamElements.length > 0) {
-                    resultsSummaryWithEmojis += "✅ Apurados:\n";
-                    resultsSummaryWithoutEmojis += "Apurados:\n";
-                    advancedTeamElements.forEach(el => {
-                        const teamName = el.textContent.trim();
-                        resultsSummaryWithEmojis += `- ${teamName}\n`;
-                        resultsSummaryWithoutEmojis += `- ${teamName}\n`;
-                    });
-                } else {
-                    resultsSummaryWithEmojis += "✅ Apurados: Nenhuma equipa se apurou neste cenário.\n";
-                    resultsSummaryWithoutEmojis += "Apurados: Nenhuma equipa se apurou neste cenário.\n";
-                }
-                resultsSummaryWithEmojis += "\n";
-                resultsSummaryWithoutEmojis += "\n";
-
-                const customMessage = "Faz também a tua simulação para o BLAST Austin Major aqui!"; 
-                const shareUrl = "https://arena.rtp.pt/ao-minuto/simulador-major-austin/?v02"; 
-                const hashtagX = " #MAJORnaRTP"; 
-
-                return {
-                    textForX: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}`, 
-                    textForWhatsApp: `${resultsSummaryWithoutEmojis}${customMessage} ${shareUrl}`, 
-                    urlForX: shareUrl, 
-                    fullTextForCopy: `${resultsSummaryWithEmojis}${customMessage}${hashtagX}\n\nLink para o simulador: ${shareUrl}` 
-                };
-            }
-
             shareOnXButton.onclick = () => {
-                if (!stageComplete) return;
                 const shareData = buildShareMessage();
-                
                 const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.textForX)}&url=${encodeURIComponent(shareData.urlForX)}`;
                 window.open(xUrl, '_blank');
                 socialShareMenu.style.display = 'none';
             };
 
             shareOnWhatsAppButton.onclick = () => { 
-                if (!stageComplete) return;
                 const shareData = buildShareMessage();
-                
                 const whatsAppUrl = `https://wa.me/?text=${encodeURIComponent(shareData.textForWhatsApp)}`;
-                
                 window.open(whatsAppUrl, '_blank');
                 socialShareMenu.style.display = 'none'; 
             };
 
-            resetButton.onclick = initializeStage;
-            
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    currentStandingIndex = 0; 
-                    renderStandings(); 
-                }, 250); 
-            });
+            resetButton.onclick = initializePlayoffs;
+            // nextRoundButton.onclick = nextRound; // Removido
+            // prevRoundButton.onclick = prevRound; // Removido
 
-            initializeStage(); 
+            // Adicionado manualmente o clique para PrevRound no botão, já que o next é automático
+            const prevRoundBtn = document.getElementById('prevRoundButton');
+            if (prevRoundBtn) {
+                prevRoundBtn.onclick = prevRound;
+            }
+
+
+            // --- Initialization ---
+            function initializePlayoffs() {
+                if (currentYearSpan) {
+                    currentYearSpan.textContent = new Date().getFullYear();
+                }
+                historyStack = [];
+                currentRoundIndex = 0; // Ensure it resets to the first round
+                generateBracket();
+                renderBracket();
+                renderTwitchPlayer();
+                shareResultsButton.style.display = 'none';
+                socialShareMenu.style.display = 'none';
+                // Certifica-se que o botão prevRound está desativado no início
+                if (prevRoundBtn) {
+                    prevRoundBtn.disabled = true;
+                }
+            }
+
+            initializePlayoffs(); // Initial setup
         });
     </script>
 </body>
