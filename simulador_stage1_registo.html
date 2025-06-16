@@ -1158,13 +1158,13 @@
                 playoffBracket.push(quarterFinalsMatches);
 
                 // Round 1: Semi-finals (placeholders)
-                playoffBracket.push([
-                    // SF0: Winner of (QF0) vs Winner of (QF1)
-                    { team1Id: null, team2Id: null, winnerId: null, loserId: null, dateTime: "Sábado 19:00" },
-                    // SF1: Winner of (QF2) vs Winner of (QF3)
-                    { team1Id: null, team2Id: null, winnerId: null, loserId: null, dateTime: "Sábado 23:30" }
-                ]);
-
+                playoffBracket.push([
+                    // SF0: Winner of (QF0) vs Winner of (QF1)
+                    { team1Id: null, team2Id: null, winnerId: null, loserId: null, dateTime: "Sábado 23:30" }, // Hora trocada
+                    // SF1: Winner of (QF2) vs Winner of (QF3)
+                    { team1Id: null, team2Id: null, winnerId: null, loserId: null, dateTime: "Sábado 19:00" }  // Hora trocada
+                ]);
+                
                 // Round 2: Grand Final (placeholder)
                 playoffBracket.push([
                     { team1Id: null, team2Id: null, winnerId: null, loserId: null, dateTime: "Domingo 20:30" }
