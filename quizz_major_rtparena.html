@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Rei do Major na RTP Arena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
+    <style>
+        :root {
+            /* Cores Base */
+            --cor-arena-azul: #0074FF;
+            --cor-arena-azul-hover: #005fcc;
+            --cor-sucesso: #28a745;
+            --cor-perigo: #dc3545;
+            --cor-aviso: #ffc107;
+            --cor-fundo-cartao: #ffffff;
+            --cor-texto-principal: #212529;
+            --cor-texto-secundario: #525f6c;
+            --cor-borda: #dee2e6;
+            --cor-sombra: rgba(0, 0, 0, 0.07);
+
+            --fonte-principal: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            --border-radius-padrao: 8px;
+            --sombra-cartao: 0 4px 12px var(--cor-sombra);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --cor-fundo-cartao: #2c2f3b;
+                --cor-texto-principal: #e4e6eb;
+                --cor-texto-secundario: #b0b3b8;
+                --cor-borda: #424651;
+                --cor-sombra: rgba(0, 0, 0, 0.25);
+            }
+        }
+
+        body {
+            font-family: var(--fonte-principal);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--cor-fundo-simulador-body, #f0f2f5);
+            color: var(--cor-texto-principal);
+            box-sizing: border-box;
+        }
+
+        .container, #twitchPlayerSection {
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto 20px auto;
+            text-align: center;
+        }
+        
+        .screen, .section {
+            background-color: var(--cor-fundo-cartao);
+            padding: 25px 30px;
+            border-radius: var(--border-radius-padrao);
+            box-shadow: var(--sombra-cartao);
+            border: 1px solid var(--cor-borda);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section::before {
+             content: attr(data-title);
+             font-weight: 700;
+             font-size: 1.2em;
+             color: var(--cor-texto-principal);
+             display: block;
+             margin-bottom: 15px;
+             padding-bottom: 5px;
+             border-bottom: 2px solid var(--cor-arena-azul);
+             text-align: left;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2 {
+            color: var(--cor-texto-principal);
+            margin-top: 0;
+            text-align: center;
+        }
+
+        h1 {
+           font-size: 2em;
+           color: var(--cor-arena-azul);
+           margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: var(--cor-texto-secundario);
+        }
+
+        #startScreen p {
+            font-size: 1.2em;
+            font-weight: 500;
+            color: var(--cor-texto-principal);
+            margin-bottom: 25px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: var(--cor-arena-azul);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-padrao);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--cor-arena-azul-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        #quizScreen #questionIndicator {
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--cor-texto-secundario);
+            margin-bottom: 10px;
+        }
+        
+        #quizScreen #questionTimerDisplay {
+             font-size: 1.3em;
+             font-weight: 700;
+             color: var(--cor-perigo);
+             margin: 15px 0;
+             height: 25px; 
+        }
+
+        #answerOptions {
+            margin: 20px 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: color-mix(in srgb, var(--cor-arena-azul) 15%, var(--cor-fundo-cartao));
+            color: var(--cor-arena-azul);
+            border: 1px solid var(--cor-arena-azul);
+            text-align: left;
+            padding: 15px;
+            text-transform: none;
+            font-size: 0.95em;
+        }
+
+        .option-btn.correct {
+            background-color: var(--cor-sucesso);
+            color: white;
+            border-color: var(--cor-sucesso);
+            font-weight: 700;
+        }
+        
+        .option-btn.incorrect {
+            background-color: var(--cor-perigo);
+            color: white;
+            border-color: var(--cor-perigo);
+            font-weight: 700;
+        }
+
+        .option-btn:disabled {
+             opacity: 1;
+        }
+        .option-btn:not(.correct):not(.incorrect):disabled {
+            opacity: 0.6;
+            background-color: var(--cor-borda);
+            color: var(--cor-texto-secundario);
+            border-color: var(--cor-borda);
+        }
+
+        #nextQuestionButton {
+            background-color: var(--cor-sucesso);
+        }
+        
+        #resultsScreen #finalScore {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--cor-arena-azul);
+            margin: 20px 0;
+        }
+        
+        #socialShareMenu {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--cor-borda);
+        }
+        
+        #socialShareMenu button {
+           font-size: 0.8em;
+           padding: 10px 15px;
+           width: 80%;
+           max-width: 250px;
+           margin: 5px auto;
+        }
+
+        #shareOnXButton { background-color: #1DA1F2; }
+        #shareOnWhatsAppButton { background-color: #25D366; }
+        #closeShareMenuButton { background-color: var(--cor-texto-secundario); }
+
+        #twitchPlayerSection .section-content-wrapper {
+             width: 100%;
+             aspect-ratio: 16 / 9;
+             margin: 0 auto;
+        }
+        #twitch-embed {
+             width: 100%;
+             height: 100%;
+        }
+
+        #pageFooter {
+             text-align: center;
+             padding: 20px 10px;
+             margin-top: 30px;
+             border-top: 1px solid var(--cor-borda);
+             font-size: 0.9em;
+             color: var(--cor-texto-secundario);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Ecrã Inicial -->
+        <div id="startScreen" class="screen">
+            <h1>O Rei do Major</h1>
+            <p>na RTP Arena</p>
+            <h2>Escolhe o dia do Quiz:</h2>
+            <div id="day-selection">
+                <button id="start-day-1">Dia 1 (Quinta-feira)</button>
+                <button id="start-day-2" disabled title="Em breve">Dia 2 (Sexta-feira)</button>
+                <button id="start-day-3" disabled title="Em breve">Dia 3 (Sábado)</button>
+                <button id="start-day-4" disabled title="Em breve">Dia 4 (Domingo)</button>
+            </div>
+        </div>
+
+        <!-- Ecrã do Quiz -->
+        <div id="quizScreen" class="screen" style="display: none;">
+            <p id="questionIndicator">Pergunta 1/10</p>
+            <div id="questionTimerDisplay">Tempo: 15s</div>
+            <h2 id="questionText">Qual é a pergunta?</h2>
+            <div id="answerOptions"></div>
+            <button id="nextQuestionButton" style="display: none;">Próxima Pergunta</button>
+        </div>
+
+        <!-- Ecrã de Resultados -->
+        <div id="resultsScreen" class="screen" style="display: none;">
+            <h1>Quiz Terminado!</h1>
+            <p>Obrigado por participar. A sua pontuação final foi:</p>
+            <p id="finalScore">8/10</p>
+            <button id="restartButton">Jogar Novamente</button>
+            <button id="shareResultsButton">Partilhar Resultado</button>
+            
+            <div id="socialShareMenu" style="display: none;">
+                <button id="shareOnXButton">Partilhar no X</button>
+                <button id="shareOnWhatsAppButton">Partilhar no WhatsApp</button>
+                <button id="closeShareMenuButton">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="twitchPlayerSection" class="section" data-title="Assiste em Direto!" style="display: none;">
+        <div class="section-content-wrapper">
+             <div id="twitch-embed"></div>
+        </div>
+   </div>
+
+    <footer id="pageFooter" style="display: none;">
+        <p>Idealizado e produzido por: Iúri Martins</p>
+        <p>&copy; <span id="currentYear"></span> Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // ELEMENTOS DO DOM
+        const startScreen = document.getElementById('startScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultsScreen = document.getElementById('resultsScreen');
+
+        const startDay1Button = document.getElementById('start-day-1');
+        
+        const questionIndicator = document.getElementById('questionIndicator');
+        const questionText = document.getElementById('questionText');
+        const answerOptions = document.getElementById('answerOptions');
+        const nextQuestionButton = document.getElementById('nextQuestionButton');
+        const questionTimerDisplay = document.getElementById('questionTimerDisplay');
+        
+        const finalScore = document.getElementById('finalScore');
+        const restartButton = document.getElementById('restartButton');
+
+        const shareResultsButton = document.getElementById('shareResultsButton');
+        const socialShareMenu = document.getElementById('socialShareMenu');
+        const shareOnXButton = document.getElementById('shareOnXButton');
+        const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton');
+        const closeShareMenuButton = document.getElementById('closeShareMenuButton');
+        
+        const twitchPlayerSection = document.getElementById('twitchPlayerSection');
+        const pageFooter = document.getElementById('pageFooter');
+        const currentYearSpan = document.getElementById('currentYear');
+
+        const quizData = {
+            quinta: [
+                { pergunta: "Qual destes mapas NÃO está na rotação competitiva atual do CS?", opcoes: ["Mirage", "Inferno", "Dust 2", "Train"], respostaCorreta: "Train" },
+                { pergunta: "Qual é o prémio total (prize pool) de um Major de CS?", opcoes: ["$500,000", "$1,000,000", "$1,250,000", "$2,000,000"], respostaCorreta: "$1,250,000" },
+                { pergunta: "Que jogador é conhecido como 'El Pistolero'?", opcoes: ["s1mple", "ZywOo", "dev1ce", "coldzera"], respostaCorreta: "dev1ce" },
+                { pergunta: "Qual a nacionalidade da organização FaZe Clan?", opcoes: ["Americana", "Europeia", "Brasileira", "Sueca"], respostaCorreta: "Americana" },
+                { pergunta: "Quantos jogadores compõem uma equipa titular de CS?", opcoes: ["4", "5", "6", "7"], respostaCorreta: "5" },
+                { pergunta: "Qual a arma mais cara do jogo no modo competitivo?", opcoes: ["AWP", "Negev", "SCAR-20 / G3SG1", "M4A4"], respostaCorreta: "SCAR-20 / G3SG1" },
+                { pergunta: "Em que ano foi o primeiro Major de CS:GO?", opcoes: ["2012", "2013", "2014", "2015"], respostaCorreta: "2013" },
+                { pergunta: "Qual equipa venceu o primeiro Major de sempre (DreamHack Winter 2013)?", opcoes: ["Ninjas in Pyjamas", "VeryGames", "Fnatic", "Natus Vincere"], respostaCorreta: "Fnatic" },
+                { pergunta: "O que significa a sigla 'CT' no jogo?", opcoes: ["Counter-Terrorist", "Critical Team", "Combat Troop", "Central Tactic"], respostaCorreta: "Counter-Terrorist" },
+                { pergunta: "Qual o número máximo de rondas num jogo regulamentar (sem overtime)?", opcoes: ["16", "24", "30", "15"], respostaCorreta: "24" }
+            ],
+        };
+
+        // ESTADO DO JOGO
+        let currentQuiz = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questionTimer;
+        let nextQuestionTimer;
+
+        // FUNÇÕES GERAIS
+        function renderTwitchPlayer(){
+            twitchPlayerSection.style.display = 'block';
+            pageFooter.style.display = 'block';
+            if(currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+
+            new Twitch.Embed("twitch-embed", {
+                width: "100%",
+                height: "100%",
+                channel: "rtparenacs",
+                layout: "video",
+                autoplay: false,
+                parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost"]
+            });
+        }
+
+        function startQuiz(dayKey) {
+            currentQuiz = quizData[dayKey];
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            startScreen.style.display = 'none';
+            resultsScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+            renderTwitchPlayer();
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            clearTimers();
+            nextQuestionButton.style.display = 'none';
+            answerOptions.innerHTML = '';
+
+            const question = currentQuiz[currentQuestionIndex];
+            questionIndicator.textContent = `Pergunta ${currentQuestionIndex + 1}/${currentQuiz.length}`;
+            questionText.textContent = question.pergunta;
+
+            question.opcoes.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.onclick = () => selectAnswer(button, option);
+                answerOptions.appendChild(button);
+            });
+
+            startQuestionTimer(15);
+        }
+
+        function selectAnswer(selectedButton, selectedOption) {
+            clearTimers(); 
+            const question = currentQuiz[currentQuestionIndex];
+            const isCorrect = selectedOption === question.respostaCorreta;
+
+            if (isCorrect) {
+                score++;
+                selectedButton.classList.add('correct');
+            } else {
+                selectedButton.classList.add('incorrect');
+                Array.from(answerOptions.children).forEach(btn => {
+                    if (btn.textContent === question.respostaCorreta) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            Array.from(answerOptions.children).forEach(btn => btn.disabled = true);
+            nextQuestionButton.style.display = 'block';
+            startNextQuestionAdvanceTimer(5);
+        }
+
+        function handleTimeUp() {
+            clearTimers();
+            Array.from(answerOptions.children).forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === currentQuiz[currentQuestionIndex].respostaCorreta) {
+                    btn.classList.add('correct');
+                }
+            });
+            nextQuestionButton.style.display = 'block';
+            startNextQuestionAdvanceTimer(5);
+        }
+        
+        function startQuestionTimer(seconds) {
+            let timeLeft = seconds;
+            questionTimerDisplay.textContent = `Tempo: ${timeLeft}s`;
+            questionTimer = setInterval(() => {
+                timeLeft--;
+                questionTimerDisplay.textContent = `Tempo: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+        
+        function startNextQuestionAdvanceTimer(seconds) {
+            let timeLeft = seconds;
+            nextQuestionButton.textContent = `Próxima Pergunta (${timeLeft})`;
+            nextQuestionTimer = setInterval(() => {
+                timeLeft--;
+                nextQuestionButton.textContent = `Próxima Pergunta (${timeLeft})`;
+                if (timeLeft <= 0) {
+                    showNextQuestion();
+                }
+            }, 1000);
+        }
+
+        function showNextQuestion() {
+            clearTimers();
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuiz.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            finalScore.textContent = `${score}/${currentQuiz.length}`;
+        }
+        
+        function buildShareMessage(finalScoreText) {
+            const linkDoArtigo = "https://arena.rtp.pt/artigo-do-major"; 
+            const text = `Fiz ${finalScoreText} pontos no Quiz da RTP Arena para o Major de CS. Testa os teus conhecimentos e participa na transmissão #MAJORnaRTP`;
+            
+            return {
+                textForX: `${text}`,
+                textForWhatsApp: `${text} ${linkDoArtigo}`,
+                urlForX: linkDoArtigo
+            };
+        }
+
+        function clearTimers() {
+            clearInterval(questionTimer);
+            clearInterval(nextQuestionTimer);
+        }
+
+        // EVENT LISTENERS
+        startDay1Button.onclick = () => startQuiz('quinta');
+        nextQuestionButton.onclick = showNextQuestion;
+        
+        restartButton.onclick = () => {
+            socialShareMenu.style.display = 'none';
+            resultsScreen.style.display = 'none';
+            startScreen.style.display = 'block';
+            twitchPlayerSection.style.display = 'none';
+            pageFooter.style.display = 'none';
+        };
+        
+        shareResultsButton.onclick = () => {
+            socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none';
+        };
+        
+        closeShareMenuButton.onclick = () => socialShareMenu.style.display = 'none';
+
+        shareOnXButton.onclick = () => {
+            const shareData = buildShareMessage(finalScore.textContent);
+            const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.textForX)}&url=${encodeURIComponent(shareData.urlForX)}`;
+            window.open(xUrl, '_blank');
+        };
+
+        shareOnWhatsAppButton.onclick = () => {
+            const shareData = buildShareMessage(finalScore.textContent);
+            const whatsAppUrl = `https://wa.me/?text=${encodeURIComponent(shareData.textForWhatsApp)}`;
+            window.open(whatsAppUrl, '_blank');
+        };
+
+    });
+    </script>
+</body>
+</html>
