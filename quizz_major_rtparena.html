@@ -47,7 +47,7 @@
             box-sizing: border-box;
         }
 
-        .container, #twitchPlayerSection {
+        .main-panel {
             max-width: 650px;
             width: 100%;
             margin: 0 auto 20px auto;
@@ -254,53 +254,51 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Ecrã Inicial -->
-        <div id="startScreen" class="screen">
-            <h1>O Rei do Major</h1>
-            <p>na RTP Arena</p>
-            <h2>Escolhe o dia do Quiz:</h2>
-            <div id="day-selection">
-                <button id="start-day-1">Dia 1 (Quinta-feira)</button>
-                <button id="start-day-2" disabled title="Em breve">Dia 2 (Sexta-feira)</button>
-                <button id="start-day-3" disabled title="Em breve">Dia 3 (Sábado)</button>
-                <button id="start-day-4" disabled title="Em breve">Dia 4 (Domingo)</button>
-            </div>
-        </div>
-
-        <!-- Ecrã do Quiz -->
-        <div id="quizScreen" class="screen" style="display: none;">
-            <p id="questionIndicator">Pergunta 1/10</p>
-            <div id="questionTimerDisplay">Tempo: 15s</div>
-            <h2 id="questionText">Qual é a pergunta?</h2>
-            <div id="answerOptions"></div>
-            <button id="nextQuestionButton" style="display: none;">Próxima Pergunta</button>
-        </div>
-
-        <!-- Ecrã de Resultados -->
-        <div id="resultsScreen" class="screen" style="display: none;">
-            <h1>Quiz Terminado!</h1>
-            <p>A sua pontuação final foi:</p>
-            <p id="finalScore">0/10</p>
-            <p id="finalMessage"></p>
-            <button id="restartButton">Jogar Novamente</button>
-            <button id="shareResultsButton">Partilhar Resultado</button>
-            
-            <div id="socialShareMenu" style="display: none;">
-                <button id="shareOnXButton">Partilhar no X</button>
-                <button id="shareOnWhatsAppButton">Partilhar no WhatsApp</button>
-                <button id="closeShareMenuButton">Fechar</button>
-            </div>
+    <!-- Ecrã Inicial -->
+    <div id="startScreen" class="screen main-panel">
+        <h1>O Rei do Major</h1>
+        <p>na RTP Arena</p>
+        <h2>Escolhe o dia do Quiz:</h2>
+        <div id="day-selection">
+            <button id="start-day-1">Dia 1 (Quinta-feira)</button>
+            <button id="start-day-2" disabled title="Em breve">Dia 2 (Sexta-feira)</button>
+            <button id="start-day-3" disabled title="Em breve">Dia 3 (Sábado)</button>
+            <button id="start-day-4" disabled title="Em breve">Dia 4 (Domingo)</button>
         </div>
     </div>
 
-    <div id="twitchPlayerSection" class="section" data-title="Assiste em Direto!">
+    <!-- Ecrã do Quiz -->
+    <div id="quizScreen" class="screen main-panel" style="display: none;">
+        <p id="questionIndicator">Pergunta 1/10</p>
+        <div id="questionTimerDisplay">Tempo: 15s</div>
+        <h2 id="questionText">Qual é a pergunta?</h2>
+        <div id="answerOptions"></div>
+        <button id="nextQuestionButton" style="display: none;">Próxima Pergunta</button>
+    </div>
+
+    <!-- Ecrã de Resultados -->
+    <div id="resultsScreen" class="screen main-panel" style="display: none;">
+        <h1>Quiz Terminado!</h1>
+        <p>A sua pontuação final foi:</p>
+        <p id="finalScore">0/10</p>
+        <p id="finalMessage"></p>
+        <button id="restartButton">Jogar Novamente</button>
+        <button id="shareResultsButton">Partilhar Resultado</button>
+        
+        <div id="socialShareMenu" style="display: none;">
+            <button id="shareOnXButton">Partilhar no X</button>
+            <button id="shareOnWhatsAppButton">Partilhar no WhatsApp</button>
+            <button id="closeShareMenuButton">Fechar</button>
+        </div>
+    </div>
+
+    <div id="twitchPlayerSection" class="section main-panel" data-title="Assiste em Direto!">
         <div class="section-content-wrapper">
              <div id="twitch-embed"></div>
         </div>
    </div>
 
-    <footer id="pageFooter">
+    <footer id="pageFooter" class="main-panel">
         <p>Idealizado e produzido por: Iúri Martins</p>
         <p>&copy; <span id="currentYear"></span> Todos os direitos reservados.</p>
     </footer>
@@ -330,10 +328,6 @@
         const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton');
         const closeShareMenuButton = document.getElementById('closeShareMenuButton');
         
-        const twitchPlayerSection = document.getElementById('twitchPlayerSection');
-        const pageFooter = document.getElementById('pageFooter');
-        const currentYearSpan = document.getElementById('currentYear');
-
         const quizData = {
             quinta: [
                 { pergunta: "Qual destes mapas NÃO está na rotação competitiva atual do CS?", opcoes: ["Mirage", "Inferno", "Dust 2", "Train"], respostaCorreta: "Train" },
@@ -358,6 +352,7 @@
 
         // FUNÇÕES GERAIS
         function renderTwitchPlayer(){
+            const currentYearSpan = document.getElementById('currentYear');
             if(currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
 
             new Twitch.Embed("twitch-embed", {
@@ -476,13 +471,14 @@
             finalScore.textContent = `${score}/${currentQuiz.length}`;
 
             let message = "";
-            if (score === 10) {
+            const percentage = score / currentQuiz.length;
+            if (percentage === 1) {
                 message = "👑 Incrível! Coroado Rei (ou Rainha) do Major! És uma verdadeira lenda!";
-            } else if (score >= 8) {
+            } else if (percentage >= 0.8) {
                 message = "🔥 Excelente pontuação! Estás quase no topo.";
-            } else if (score >= 5) {
+            } else if (percentage >= 0.5) {
                 message = "👍 Nada mau! Mostraste que percebes do assunto.";
-            } else if (score >= 1) {
+            } else if (percentage > 0) {
                 message = "🤔 Ainda há margem para melhorar, mas foi um bom começo!";
             } else {
                 message = "😂 Para a próxima corre melhor! O importante é participar.";
@@ -490,13 +486,26 @@
             finalMessage.textContent = message;
         }
         
-        function buildShareMessage(finalScoreText) {
+        function buildShareMessage(userScore, totalQuestions) {
             const linkDoArtigo = "https://arena.rtp.pt/artigo-do-major"; 
-            const text = `Fiz ${finalScoreText} pontos no Quiz da RTP Arena para o Major de CS. Testa os teus conhecimentos e participa na transmissão #MAJORnaRTP`;
-            
+            let messageIntro = "";
+            const percentage = userScore / totalQuestions;
+
+            if (percentage === 1) {
+                messageIntro = `Acertei ${userScore}/${totalQuestions} e sou o Rei do Major! 👑 Achas que consegues fazer melhor?`;
+            } else if (percentage >= 0.8) {
+                messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz do Major! 🔥 Quase perfeito!`;
+            } else if (percentage >= 0.5) {
+                messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz da #MAJORnaRTP. 👍 Um resultado sólido! E tu, quantos pontos fazes?`;
+            } else {
+                messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz da #MAJORnaRTP. 😂 Preciso de ver mais a transmissão para aprender! Tenta a tua sorte!`;
+            }
+
+            const fullText = `${messageIntro} Testa os teus conhecimentos e participa na transmissão #MAJORnaRTP`;
+
             return {
-                textForX: `${text}`,
-                textForWhatsApp: `${text} ${linkDoArtigo}`,
+                textForX: fullText,
+                textForWhatsApp: `${fullText} ${linkDoArtigo}`,
                 urlForX: linkDoArtigo
             };
         }
@@ -513,6 +522,7 @@
         restartButton.onclick = () => {
             socialShareMenu.style.display = 'none';
             resultsScreen.style.display = 'none';
+            quizScreen.style.display = 'none';
             startScreen.style.display = 'block';
         };
         
@@ -523,19 +533,22 @@
         closeShareMenuButton.onclick = () => socialShareMenu.style.display = 'none';
 
         shareOnXButton.onclick = () => {
-            const shareData = buildShareMessage(finalScore.textContent);
+            const shareData = buildShareMessage(score, currentQuiz.length);
             const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.textForX)}&url=${encodeURIComponent(shareData.urlForX)}`;
             window.open(xUrl, '_blank');
         };
 
         shareOnWhatsAppButton.onclick = () => {
-            const shareData = buildShareMessage(finalScore.textContent);
+            const shareData = buildShareMessage(score, currentQuiz.length);
             const whatsAppUrl = `https://wa.me/?text=${encodeURIComponent(shareData.textForWhatsApp)}`;
             window.open(whatsAppUrl, '_blank');
         };
 
         // INICIALIZAÇÃO
         renderTwitchPlayer();
+        // Hide quiz and results screen on initial load
+        quizScreen.style.display = 'none';
+        resultsScreen.style.display = 'none';
     });
     </script>
 </body>
