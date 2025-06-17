@@ -160,13 +160,17 @@
         }
 
         .option-btn {
-            background-color: color-mix(in srgb, var(--cor-arena-azul) 15%, var(--cor-fundo-cartao));
-            color: var(--cor-arena-azul);
+            background-color: var(--cor-arena-azul);
+            color: white;
             border: 1px solid var(--cor-arena-azul);
             text-align: left;
             padding: 15px;
             text-transform: none;
             font-size: 0.95em;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: var(--cor-arena-azul-hover);
         }
 
         .option-btn.correct {
