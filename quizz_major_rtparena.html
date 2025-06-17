@@ -42,7 +42,7 @@
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            background-color: var(--cor-fundo-simulador-body, #f0f2f5);
+            background-color: transparent;
             color: var(--cor-texto-principal);
             box-sizing: border-box;
         }
@@ -203,7 +203,15 @@
             font-size: 2.5em;
             font-weight: 700;
             color: var(--cor-arena-azul);
-            margin: 20px 0;
+            margin: 10px 0;
+        }
+        
+        #resultsScreen #finalMessage {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--cor-arena-azul);
+            margin: 15px 0 25px 0;
+            min-height: 50px;
         }
         
         #socialShareMenu {
@@ -272,8 +280,9 @@
         <!-- Ecrã de Resultados -->
         <div id="resultsScreen" class="screen" style="display: none;">
             <h1>Quiz Terminado!</h1>
-            <p>Obrigado por participar. A sua pontuação final foi:</p>
-            <p id="finalScore">8/10</p>
+            <p>A sua pontuação final foi:</p>
+            <p id="finalScore">0/10</p>
+            <p id="finalMessage"></p>
             <button id="restartButton">Jogar Novamente</button>
             <button id="shareResultsButton">Partilhar Resultado</button>
             
@@ -285,13 +294,13 @@
         </div>
     </div>
 
-    <div id="twitchPlayerSection" class="section" data-title="Assiste em Direto!" style="display: none;">
+    <div id="twitchPlayerSection" class="section" data-title="Assiste em Direto!">
         <div class="section-content-wrapper">
              <div id="twitch-embed"></div>
         </div>
    </div>
 
-    <footer id="pageFooter" style="display: none;">
+    <footer id="pageFooter">
         <p>Idealizado e produzido por: Iúri Martins</p>
         <p>&copy; <span id="currentYear"></span> Todos os direitos reservados.</p>
     </footer>
@@ -312,6 +321,7 @@
         const questionTimerDisplay = document.getElementById('questionTimerDisplay');
         
         const finalScore = document.getElementById('finalScore');
+        const finalMessage = document.getElementById('finalMessage');
         const restartButton = document.getElementById('restartButton');
 
         const shareResultsButton = document.getElementById('shareResultsButton');
@@ -348,8 +358,6 @@
 
         // FUNÇÕES GERAIS
         function renderTwitchPlayer(){
-            twitchPlayerSection.style.display = 'block';
-            pageFooter.style.display = 'block';
             if(currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
 
             new Twitch.Embed("twitch-embed", {
@@ -358,7 +366,7 @@
                 channel: "rtparenacs",
                 layout: "video",
                 autoplay: false,
-                parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost"]
+                parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost", "cdpn.io"]
             });
         }
 
@@ -370,8 +378,7 @@
             startScreen.style.display = 'none';
             resultsScreen.style.display = 'none';
             quizScreen.style.display = 'block';
-            renderTwitchPlayer();
-
+            
             showQuestion();
         }
 
@@ -467,6 +474,20 @@
             quizScreen.style.display = 'none';
             resultsScreen.style.display = 'block';
             finalScore.textContent = `${score}/${currentQuiz.length}`;
+
+            let message = "";
+            if (score === 10) {
+                message = "👑 Incrível! Coroado Rei (ou Rainha) do Major! És uma verdadeira lenda!";
+            } else if (score >= 8) {
+                message = "🔥 Excelente pontuação! Estás quase no topo.";
+            } else if (score >= 5) {
+                message = "👍 Nada mau! Mostraste que percebes do assunto.";
+            } else if (score >= 1) {
+                message = "🤔 Ainda há margem para melhorar, mas foi um bom começo!";
+            } else {
+                message = "😂 Para a próxima corre melhor! O importante é participar.";
+            }
+            finalMessage.textContent = message;
         }
         
         function buildShareMessage(finalScoreText) {
@@ -493,8 +514,6 @@
             socialShareMenu.style.display = 'none';
             resultsScreen.style.display = 'none';
             startScreen.style.display = 'block';
-            twitchPlayerSection.style.display = 'none';
-            pageFooter.style.display = 'none';
         };
         
         shareResultsButton.onclick = () => {
@@ -515,6 +534,8 @@
             window.open(whatsAppUrl, '_blank');
         };
 
+        // INICIALIZAÇÃO
+        renderTwitchPlayer();
     });
     </script>
 </body>
