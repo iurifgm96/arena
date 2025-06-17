@@ -328,16 +328,16 @@
         
         const quizData = {
             quinta: [
-                { pergunta: "Qual destes mapas NÃO está na rotação competitiva atual do CS?", opcoes: ["Mirage", "Inferno", "Dust 2", "Train"], respostaCorreta: "Train" },
-                { pergunta: "Qual é o prémio total (prize pool) de um Major de CS?", opcoes: ["$500,000", "$1,000,000", "$1,250,000", "$2,000,000"], respostaCorreta: "$1,250,000" },
-                { pergunta: "Que jogador é conhecido como 'El Pistolero'?", opcoes: ["s1mple", "ZywOo", "dev1ce", "coldzera"], respostaCorreta: "dev1ce" },
-                { pergunta: "Qual a nacionalidade da organização FaZe Clan?", opcoes: ["Americana", "Europeia", "Brasileira", "Sueca"], respostaCorreta: "Americana" },
-                { pergunta: "Quantos jogadores compõem uma equipa titular de CS?", opcoes: ["4", "5", "6", "7"], respostaCorreta: "5" },
-                { pergunta: "Qual a arma mais cara do jogo no modo competitivo?", opcoes: ["AWP", "Negev", "SCAR-20 / G3SG1", "M4A4"], respostaCorreta: "SCAR-20 / G3SG1" },
-                { pergunta: "Em que ano foi o primeiro Major de CS:GO?", opcoes: ["2012", "2013", "2014", "2015"], respostaCorreta: "2013" },
-                { pergunta: "Qual equipa venceu o primeiro Major de sempre (DreamHack Winter 2013)?", opcoes: ["Ninjas in Pyjamas", "VeryGames", "Fnatic", "Natus Vincere"], respostaCorreta: "Fnatic" },
-                { pergunta: "O que significa a sigla 'CT' no jogo?", opcoes: ["Counter-Terrorist", "Critical Team", "Combat Troop", "Central Tactic"], respostaCorreta: "Counter-Terrorist" },
-                { pergunta: "Qual o número máximo de rondas num jogo regulamentar (sem overtime)?", opcoes: ["16", "24", "30", "15"], respostaCorreta: "24" }
+                { pergunta: "Quem venceu o último Major de CS2?", opcoes: ["FaZe", "Spirit", "Vitality", "MOUZ"], respostaCorreta: "Spirit" },
+                { pergunta: "Quais foram as equipas que ficaram 3-0 no Stage 1 do Major de Austin?", opcoes: ["Legacy e HEROIC", "B8 e HEROIC", "BetBoom e OG", "Nemiga e HEROIC"], respostaCorreta: "B8 e HEROIC" },
+                { pergunta: "Contra quem foi o melhor mapa de s1mple no Major?", opcoes: ["HEROIC", "Legacy", "The MongolZ", "MIBR"], respostaCorreta: "HEROIC" },
+                { pergunta: "Quantas vitórias consecutivas a Vitality conseguiu?", opcoes: ["33", "30", "28", "25"], respostaCorreta: "30" },
+                { pergunta: "Qual a equipa com mais finais de Major disputadas?", opcoes: ["Astralis", "NIP", "fnatic", "NAVI"], respostaCorreta: "NAVI" },
+                { pergunta: "Quem foi o melhor AWPer do Stage 3 do Major de Austin?", opcoes: ["s1mple", "molodoy", "sh1ro", "ultimate"], respostaCorreta: "s1mple" },
+                { pergunta: "Qual o prémio para o vencedor do Major?", opcoes: ["350,000$", "600,000$", "450,000$", "500,000$"], respostaCorreta: "500,000$" },
+                { pergunta: "Quantos torneios Major foram jogados nos Estados Unidos?", opcoes: ["2", "3", "5", "4"], respostaCorreta: "4" },
+                { pergunta: "Qual a equipa com mais rondas ganhas no Stage 3 do Major de Austin?", opcoes: ["paiN", "MOUZ", "G2", "MongolZ"], respostaCorreta: "MOUZ" },
+                { pergunta: "Qual o Major com maior prize pool de sempre?", opcoes: ["PGL Major Estocolmo 2021", "BLAST.tv Paris Major 2023", "FACEIT Major 2018", "ELEAGUE Major 2017"], respostaCorreta: "PGL Major Estocolmo 2021" }
             ],
         };
 
@@ -485,7 +485,7 @@
         }
         
         function buildShareMessage(userScore, totalQuestions) {
-            const linkDoArtigo = "https://arena.rtp.pt/artigo-do-major"; 
+            const linkDoArtigo = "https://arena.rtp.pt/ao-minuto/quiz-major/"; 
             let messageIntro = "";
             const percentage = userScore / totalQuestions;
 
