@@ -324,8 +324,14 @@
     </style>
 </head>
 <body>
+    <!-- Ecrã de Loading -->
+     <div id="loadingScreen" class="screen main-panel">
+        <h2>A Carregar o Quiz...</h2>
+        <p>Por favor, aguarde.</p>
+    </div>
+
     <!-- Ecrã de Username -->
-    <div id="usernameScreen" class="screen main-panel">
+    <div id="usernameScreen" class="screen main-panel" style="display: none;">
         <h2>Bem-vindo ao Quiz do Major!</h2>
         <p>Introduz um nome de utilizador para apareceres na tabela classificativa.</p>
         <input type="text" id="usernameInput" placeholder="O teu nome de jogador..." maxlength="20">
@@ -360,7 +366,7 @@
             <p>A sua pontuação final foi:</p>
             <p id="finalScore">0/10</p>
             <p id="finalMessage"></p>
-            <button id="restartButton">Jogar Novamente</button>
+            <button id="restartButton">Voltar ao Menu Principal</button>
             <button id="shareResultsButton">Partilhar Resultado</button>
             <div id="socialShareMenu" style="display: none;">
                 <button id="shareOnXButton">Partilhar no X</button>
@@ -403,7 +409,7 @@
                 <p id="leaderboardLoadingGlobal" style="display: none;">A carregar...</p>
             </div>
         </div>
-        <button id="backToStartButton" style="display: none;">Voltar</button>
+        <button id="backToStartButton" style="display: none;">Voltar ao Menu Principal</button>
     </div>
 
     <div id="twitchPlayerSection" class="section main-panel" data-title="Assiste em Direto!">
@@ -429,7 +435,7 @@
                 const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
                 if (Object.keys(firebaseConfig).length === 0) {
                      console.warn("Configuração do Firebase não encontrada. As funcionalidades da base de dados estarão desativadas.");
-                     return;
+                     return null;
                 }
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
@@ -441,15 +447,17 @@
                     await signInAnonymously(auth);
                 }
                 console.log("Firebase inicializado e utilizador autenticado anonimamente.");
+                return auth.currentUser; // Retorna o utilizador para garantir que está disponível
             } catch (error) {
                 console.error("Erro ao inicializar o Firebase:", error);
+                return null;
             }
         }
         
         document.addEventListener('DOMContentLoaded', async () => {
-            await initFirebase();
             
             // DOM Elements
+            const loadingScreen = document.getElementById('loadingScreen');
             const usernameScreen = document.getElementById('usernameScreen');
             const startScreen = document.getElementById('startScreen');
             const quizScreen = document.getElementById('quizScreen');
@@ -746,7 +754,6 @@
                         const { userId, day, score, username } = data;
                         const userDayKey = `${userId}-${day}`;
                         
-                        // Guarda apenas a pontuação mais alta para um utilizador num determinado dia
                         if (!userDailyScores.has(userDayKey) || score > userDailyScores.get(userDayKey).score) {
                             userDailyScores.set(userDayKey, { userId, username, score });
                         }
@@ -780,12 +787,14 @@
                 tableBody.innerHTML = '';
                  scores.forEach((entry, index) => {
                     const row = tableBody.insertRow();
-                    if(entry.userId === currentUid) {
+                    const isCurrentUser = entry.userId === currentUid;
+                    
+                    if(isCurrentUser) {
                        row.classList.add('user-highlight');
                     }
                     
                     const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${currentQuiz.length || 10}`;
-                    const usernameText = entry.userId === currentUid ? `${entry.username} (Tu)` : entry.username;
+                    const usernameText = isCurrentUser ? `${entry.username} (Tu)` : entry.username;
                     
                     row.innerHTML = `
                         <td class="rank-col">${index + 1}</td>
@@ -818,15 +827,20 @@
                 clearInterval(nextQuestionTimer);
             }
             
-            function handleUsername() {
+            function handleUsername(currentUser) {
                 const savedUsername = localStorage.getItem('quizUsername');
-                if (savedUsername) {
+                if (savedUsername && currentUser) {
                     currentUsername = savedUsername;
                     usernameScreen.style.display = 'none';
                     startScreen.style.display = 'block';
-                } else {
+                } else if(currentUser) {
                     usernameScreen.style.display = 'block';
                     startScreen.style.display = 'none';
+                } else {
+                    // Firebase failed, no login/leaderboard
+                     usernameScreen.style.display = 'none';
+                     startScreen.style.display = 'block';
+                     viewLeaderboardsButton.style.display = 'none';
                 }
             }
             
@@ -923,9 +937,20 @@
             };
 
             // INICIALIZAÇÃO
+            const user = await initFirebase();
+            loadingScreen.style.display = 'none';
             renderTwitchPlayer();
             updateDayButtonsState();
-            handleUsername();
+            
+            if (user) {
+                handleUsername(user);
+            } else {
+                // Se o firebase falhar, esconde a parte do nome de utilizador e vai direto para o quiz.
+                // As funcionalidades de leaderboard não irão funcionar.
+                usernameScreen.style.display = 'none';
+                startScreen.style.display = 'block';
+                viewLeaderboardsButton.style.display = 'none';
+            }
             
             // Hide screens not in use initially
             quizScreen.style.display = 'none';
