@@ -78,7 +78,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1, h2 {
+        h1, h2, h3 {
             color: var(--cor-texto-principal);
             margin-top: 0;
             text-align: center;
@@ -94,6 +94,20 @@
             font-size: 1.4em;
             margin-bottom: 20px;
         }
+        
+        h3 {
+            font-size: 1.2em;
+            color: var(--cor-arena-azul);
+            margin-top: 25px;
+            margin-bottom: 10px;
+            border-top: 1px solid var(--cor-borda);
+            padding-top: 20px;
+        }
+        .leaderboard-container h3 {
+             border-top: none;
+             padding-top: 0;
+             margin-top: 0;
+        }
 
         p {
             margin-bottom: 20px;
@@ -101,7 +115,7 @@
             color: var(--cor-texto-secundario);
         }
 
-        #startScreen h2 {
+        #startScreen h2, #usernameScreen h2 {
            margin-top: 10px;
            margin-bottom: 25px;
         }
@@ -134,6 +148,16 @@
             color: #666666;
             opacity: 0.7;
             cursor: not-allowed;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--border-radius-padrao);
+            box-sizing: border-box;
+            margin-bottom: 15px;
         }
         
         #quizScreen #questionIndicator {
@@ -251,17 +275,67 @@
              color: var(--cor-texto-secundario);
         }
 
+        .leaderboards-wrapper {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--cor-borda);
+        }
+
+        .leaderboard-container {
+            flex: 1;
+            min-width: 0; /* Prevents flex items from overflowing */
+        }
+        
+        @media (max-width: 768px) {
+            .leaderboards-wrapper {
+                flex-direction: column;
+            }
+        }
+
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--cor-borda);
+            text-align: left;
+        }
+        .leaderboard-table th {
+            font-weight: 700;
+            color: var(--cor-texto-secundario);
+        }
+        .leaderboard-table .rank-col { width: 40px; text-align: center; }
+        .leaderboard-table .score-col { width: 80px; text-align: right; }
+        .leaderboard-table tr.user-highlight td {
+            font-weight: 700;
+            color: var(--cor-arena-azul);
+        }
+
     </style>
 </head>
 <body>
+    <!-- Ecrã de Username -->
+    <div id="usernameScreen" class="screen main-panel">
+        <h2>Bem-vindo ao Quiz do Major!</h2>
+        <p>Introduz um nome de utilizador para apareceres na tabela classificativa.</p>
+        <input type="text" id="usernameInput" placeholder="O teu nome de jogador..." maxlength="20">
+        <button id="continueButton">Continuar</button>
+    </div>
+
     <!-- Ecrã Inicial -->
-    <div id="startScreen" class="screen main-panel">
+    <div id="startScreen" class="screen main-panel" style="display: none;">
         <h2>Escolhe o dia do Quiz:</h2>
         <div id="day-selection">
-            <button id="start-day-1">Dia 1 (Quinta-feira)</button>
-            <button id="start-day-2" disabled title="Em breve">Dia 2 (Sexta-feira)</button>
-            <button id="start-day-3" disabled title="Em breve">Dia 3 (Sábado)</button>
-            <button id="start-day-4" disabled title="Em breve">Dia 4 (Domingo)</button>
+            <button id="start-day-1" disabled title="Espera pelo dia do quiz">Dia 1 (Quinta-feira)</button>
+            <button id="start-day-2" disabled title="Espera pelo dia do quiz">Dia 2 (Sexta-feira)</button>
+            <button id="start-day-3" disabled title="Espera pelo dia do quiz">Dia 3 (Sábado)</button>
+            <button id="start-day-4" disabled title="Espera pelo dia do quiz">Dia 4 (Domingo)</button>
         </div>
     </div>
 
@@ -288,6 +362,41 @@
             <button id="shareOnWhatsAppButton">Partilhar no WhatsApp</button>
             <button id="closeShareMenuButton">Fechar</button>
         </div>
+        
+        <div class="leaderboards-wrapper">
+            <div class="leaderboard-container">
+                <h3 id="leaderboardTitleDaily">Tabela Diária</h3>
+                <div style="overflow-x:auto;">
+                    <table id="leaderboardTableDaily" class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th class="rank-col">#</th>
+                                <th>Nome</th>
+                                <th class="score-col">Pontos</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p id="leaderboardLoadingDaily" style="display: none;">A carregar...</p>
+            </div>
+            <div class="leaderboard-container">
+                <h3 id="leaderboardTitleGlobal">Tabela Geral</h3>
+                <div style="overflow-x:auto;">
+                    <table id="leaderboardTableGlobal" class="leaderboard-table">
+                         <thead>
+                            <tr>
+                                <th class="rank-col">#</th>
+                                <th>Nome</th>
+                                <th class="score-col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p id="leaderboardLoadingGlobal" style="display: none;">A carregar...</p>
+            </div>
+        </div>
     </div>
 
     <div id="twitchPlayerSection" class="section main-panel" data-title="Assiste em Direto!">
@@ -301,253 +410,439 @@
         <p>&copy; <span id="currentYear"></span> Todos os direitos reservados.</p>
     </footer>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // ELEMENTOS DO DOM
-        const startScreen = document.getElementById('startScreen');
-        const quizScreen = document.getElementById('quizScreen');
-        const resultsScreen = document.getElementById('resultsScreen');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const startDay1Button = document.getElementById('start-day-1');
+        let auth, db;
         
-        const questionIndicator = document.getElementById('questionIndicator');
-        const questionText = document.getElementById('questionText');
-        const answerOptions = document.getElementById('answerOptions');
-        const nextQuestionButton = document.getElementById('nextQuestionButton');
-        const questionTimerDisplay = document.getElementById('questionTimerDisplay');
-        
-        const finalScore = document.getElementById('finalScore');
-        const finalMessage = document.getElementById('finalMessage');
-        const restartButton = document.getElementById('restartButton');
+        async function initFirebase() {
+            try {
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                if (Object.keys(firebaseConfig).length === 0) {
+                     console.warn("Configuração do Firebase não encontrada. As funcionalidades da base de dados estarão desativadas.");
+                     return;
+                }
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-        const shareResultsButton = document.getElementById('shareResultsButton');
-        const socialShareMenu = document.getElementById('socialShareMenu');
-        const shareOnXButton = document.getElementById('shareOnXButton');
-        const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton');
-        const closeShareMenuButton = document.getElementById('closeShareMenuButton');
-        
-        const quizData = {
-            quinta: [
-                { pergunta: "Quem venceu o último Major de CS2?", opcoes: ["FaZe", "Spirit", "Vitality", "MOUZ"], respostaCorreta: "Spirit" },
-                { pergunta: "Quais foram as equipas que ficaram 3-0 no Stage 1 do Major de Austin?", opcoes: ["Legacy e HEROIC", "B8 e HEROIC", "BetBoom e OG", "Nemiga e HEROIC"], respostaCorreta: "B8 e HEROIC" },
-                { pergunta: "Contra quem foi o melhor mapa de s1mple no Major?", opcoes: ["HEROIC", "Legacy", "The MongolZ", "MIBR"], respostaCorreta: "HEROIC" },
-                { pergunta: "Quantas vitórias consecutivas a Vitality conseguiu?", opcoes: ["33", "30", "28", "25"], respostaCorreta: "30" },
-                { pergunta: "Qual a equipa com mais finais de Major disputadas?", opcoes: ["Astralis", "NIP", "fnatic", "NAVI"], respostaCorreta: "NAVI" },
-                { pergunta: "Quem foi o melhor AWPer do Stage 3 do Major de Austin?", opcoes: ["s1mple", "molodoy", "sh1ro", "ultimate"], respostaCorreta: "s1mple" },
-                { pergunta: "Qual o prémio para o vencedor do Major?", opcoes: ["350,000$", "600,000$", "450,000$", "500,000$"], respostaCorreta: "500,000$" },
-                { pergunta: "Quantos torneios Major foram jogados nos Estados Unidos?", opcoes: ["2", "3", "5", "4"], respostaCorreta: "4" },
-                { pergunta: "Qual a equipa com mais rondas ganhas no Stage 3 do Major de Austin?", opcoes: ["paiN", "MOUZ", "G2", "MongolZ"], respostaCorreta: "MOUZ" },
-                { pergunta: "Qual o Major com maior prize pool de sempre?", opcoes: ["PGL Major Estocolmo 2021", "BLAST.tv Paris Major 2023", "FACEIT Major 2018", "ELEAGUE Major 2017"], respostaCorreta: "PGL Major Estocolmo 2021" }
-            ],
-        };
-
-        // ESTADO DO JOGO
-        let currentQuiz = [];
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let questionTimer;
-        let nextQuestionTimer;
-
-        // FUNÇÕES GERAIS
-        function renderTwitchPlayer(){
-            const currentYearSpan = document.getElementById('currentYear');
-            if(currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
-
-            new Twitch.Embed("twitch-embed", {
-                width: "100%",
-                height: "100%",
-                channel: "rtparenacs",
-                layout: "video",
-                autoplay: false,
-                parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost", "cdpn.io"]
-            });
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                console.log("Firebase inicializado e utilizador autenticado anonimamente.");
+            } catch (error) {
+                console.error("Erro ao inicializar o Firebase:", error);
+            }
         }
-
-        function startQuiz(dayKey) {
-            currentQuiz = quizData[dayKey];
-            currentQuestionIndex = 0;
-            score = 0;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initFirebase();
             
-            startScreen.style.display = 'none';
-            resultsScreen.style.display = 'none';
-            quizScreen.style.display = 'block';
+            // DOM Elements
+            const usernameScreen = document.getElementById('usernameScreen');
+            const startScreen = document.getElementById('startScreen');
+            const quizScreen = document.getElementById('quizScreen');
+            const resultsScreen = document.getElementById('resultsScreen');
             
-            showQuestion();
-        }
+            const usernameInput = document.getElementById('usernameInput');
+            const continueButton = document.getElementById('continueButton');
 
-        function showQuestion() {
-            clearTimers();
-            nextQuestionButton.style.display = 'none';
-            answerOptions.innerHTML = '';
+            const startDay1Button = document.getElementById('start-day-1');
+            const startDay2Button = document.getElementById('start-day-2');
+            const startDay3Button = document.getElementById('start-day-3');
+            const startDay4Button = document.getElementById('start-day-4');
+            
+            const questionIndicator = document.getElementById('questionIndicator');
+            const questionText = document.getElementById('questionText');
+            const answerOptions = document.getElementById('answerOptions');
+            const nextQuestionButton = document.getElementById('nextQuestionButton');
+            const questionTimerDisplay = document.getElementById('questionTimerDisplay');
+            
+            const finalScore = document.getElementById('finalScore');
+            const finalMessage = document.getElementById('finalMessage');
+            const restartButton = document.getElementById('restartButton');
 
-            const question = currentQuiz[currentQuestionIndex];
-            questionIndicator.textContent = `Pergunta ${currentQuestionIndex + 1}/${currentQuiz.length}`;
-            questionText.textContent = question.pergunta;
+            const shareResultsButton = document.getElementById('shareResultsButton');
+            const socialShareMenu = document.getElementById('socialShareMenu');
+            const shareOnXButton = document.getElementById('shareOnXButton');
+            const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton');
+            const closeShareMenuButton = document.getElementById('closeShareMenuButton');
+            
+            const leaderboardTitleDaily = document.getElementById('leaderboardTitleDaily');
+            const leaderboardTableDailyBody = document.querySelector('#leaderboardTableDaily tbody');
+            const leaderboardLoadingDaily = document.getElementById('leaderboardLoadingDaily');
+            
+            const leaderboardTableGlobalBody = document.querySelector('#leaderboardTableGlobal tbody');
+            const leaderboardLoadingGlobal = document.getElementById('leaderboardLoadingGlobal');
+            
+            const quizData = {
+                quinta: [
+                    { pergunta: "Quem venceu o último Major de CS2?", opcoes: ["FaZe", "Spirit", "Vitality", "MOUZ"], respostaCorreta: "Spirit" },
+                    { pergunta: "Quais foram as equipas que ficaram 3-0 no Stage 1 do Major de Austin?", opcoes: ["Legacy e HEROIC", "B8 e HEROIC", "BetBoom e OG", "Nemiga e HEROIC"], respostaCorreta: "B8 e HEROIC" },
+                    { pergunta: "Contra quem foi o melhor mapa de s1mple no Major?", opcoes: ["HEROIC", "Legacy", "The MongolZ", "MIBR"], respostaCorreta: "HEROIC" },
+                    { pergunta: "Quantas vitórias consecutivas a Vitality conseguiu?", opcoes: ["33", "30", "28", "25"], respostaCorreta: "30" },
+                    { pergunta: "Qual a equipa com mais finais de Major disputadas?", opcoes: ["Astralis", "NIP", "fnatic", "NAVI"], respostaCorreta: "NAVI" },
+                    { pergunta: "Quem foi o melhor AWPer do Stage 3 do Major de Austin?", opcoes: ["s1mple", "molodoy", "sh1ro", "ultimate"], respostaCorreta: "s1mple" },
+                    { pergunta: "Qual o prémio para o vencedor do Major?", opcoes: ["350,000$", "600,000$", "450,000$", "500,000$"], respostaCorreta: "500,000$" },
+                    { pergunta: "Quantos torneios Major foram jogados nos Estados Unidos?", opcoes: ["2", "3", "5", "4"], respostaCorreta: "4" },
+                    { pergunta: "Qual a equipa com mais rondas ganhas no Stage 3 do Major de Austin?", opcoes: ["paiN", "MOUZ", "G2", "MongolZ"], respostaCorreta: "MOUZ" },
+                    { pergunta: "Qual o Major com maior prize pool de sempre?", opcoes: ["PGL Major Estocolmo 2021", "BLAST.tv Paris Major 2023", "FACEIT Major 2018", "ELEAGUE Major 2017"], respostaCorreta: "PGL Major Estocolmo 2021" }
+                ],
+                sexta: [],
+                sabado: [],
+                domingo: []
+            };
 
-            question.opcoes.forEach(option => {
-                const button = document.createElement('button');
-                button.textContent = option;
-                button.classList.add('option-btn');
-                button.onclick = () => selectAnswer(button, option);
-                answerOptions.appendChild(button);
-            });
+            // Game State
+            let currentQuiz = [];
+            let currentDayKey = '';
+            let currentUsername = '';
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let questionTimer;
+            let nextQuestionTimer;
 
-            startQuestionTimer(15);
-        }
+            // Functions
+            function renderTwitchPlayer(){
+                const currentYearSpan = document.getElementById('currentYear');
+                if(currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+                new Twitch.Embed("twitch-embed", { width: "100%", height: "100%", channel: "rtparenacs", layout: "video", autoplay: false, parent: ["arena.rtp.pt", "www.arena.rtp.pt", "iurifgm96.github.io", "localhost", "cdpn.io"] });
+            }
+            
+            function updateDayButtonsState() {
+                const today = new Date();
+                const quizDates = {
+                    sexta: new Date('2025-06-20T00:00:00'),
+                    sabado: new Date('2025-06-21T00:00:00'),
+                    domingo: new Date('2025-06-22T00:00:00')
+                };
 
-        function selectAnswer(selectedButton, selectedOption) {
-            clearTimers(); 
-            const question = currentQuiz[currentQuestionIndex];
-            const isCorrect = selectedOption === question.respostaCorreta;
+                // Desbloqueia Dia 1 permanentemente
+                if (quizData.quinta.length > 0) { 
+                    startDay1Button.disabled = false; 
+                    startDay1Button.title = 'Jogar o quiz de Quinta-feira';
+                }
 
-            if (isCorrect) {
-                score++;
-                selectedButton.classList.add('correct');
-            } else {
-                selectedButton.classList.add('incorrect');
+                if (today >= quizDates.sexta && quizData.sexta.length > 0) { startDay2Button.disabled = false; startDay2Button.title = 'Jogar o quiz de Sexta-feira'; }
+                if (today >= quizDates.sabado && quizData.sabado.length > 0) { startDay3Button.disabled = false; startDay3Button.title = 'Jogar o quiz de Sábado'; }
+                if (today >= quizDates.domingo && quizData.domingo.length > 0) { startDay4Button.disabled = false; startDay4Button.title = 'Jogar o quiz de Domingo'; }
+            }
+
+            function startQuiz(dayKey) {
+                currentDayKey = dayKey;
+                currentQuiz = quizData[dayKey];
+                currentQuestionIndex = 0;
+                score = 0;
+                
+                startScreen.style.display = 'none';
+                resultsScreen.style.display = 'none';
+                quizScreen.style.display = 'block';
+                
+                showQuestion();
+            }
+
+            function showQuestion() {
+                clearTimers();
+                nextQuestionButton.style.display = 'none';
+                answerOptions.innerHTML = '';
+
+                const question = currentQuiz[currentQuestionIndex];
+                questionIndicator.textContent = `Pergunta ${currentQuestionIndex + 1}/${currentQuiz.length}`;
+                questionText.textContent = question.pergunta;
+
+                question.opcoes.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.classList.add('option-btn');
+                    button.onclick = () => selectAnswer(button, option);
+                    answerOptions.appendChild(button);
+                });
+
+                startQuestionTimer(15);
+            }
+
+            function selectAnswer(selectedButton, selectedOption) {
+                clearTimers(); 
+                const question = currentQuiz[currentQuestionIndex];
+                const isCorrect = selectedOption === question.respostaCorreta;
+
+                if (isCorrect) {
+                    score++;
+                    selectedButton.classList.add('correct');
+                } else {
+                    selectedButton.classList.add('incorrect');
+                    Array.from(answerOptions.children).forEach(btn => {
+                        if (btn.textContent === question.respostaCorreta) {
+                            btn.classList.add('correct');
+                        }
+                    });
+                }
+
+                Array.from(answerOptions.children).forEach(btn => btn.disabled = true);
+                nextQuestionButton.style.display = 'block';
+                startNextQuestionAdvanceTimer(5);
+            }
+
+            function handleTimeUp() {
+                clearTimers();
+                questionTimerDisplay.textContent = "Tempo Esgotado!";
+                
                 Array.from(answerOptions.children).forEach(btn => {
-                    if (btn.textContent === question.respostaCorreta) {
+                    btn.disabled = true;
+                    if (btn.textContent === currentQuiz[currentQuestionIndex].respostaCorreta) {
                         btn.classList.add('correct');
                     }
                 });
+                nextQuestionButton.style.display = 'block';
+                startNextQuestionAdvanceTimer(5);
             }
-
-            Array.from(answerOptions.children).forEach(btn => btn.disabled = true);
-            nextQuestionButton.style.display = 'block';
-            startNextQuestionAdvanceTimer(5);
-        }
-
-        function handleTimeUp() {
-            clearTimers();
-            Array.from(answerOptions.children).forEach(btn => {
-                btn.disabled = true;
-                if (btn.textContent === currentQuiz[currentQuestionIndex].respostaCorreta) {
-                    btn.classList.add('correct');
-                }
-            });
-            nextQuestionButton.style.display = 'block';
-            startNextQuestionAdvanceTimer(5);
-        }
-        
-        function startQuestionTimer(seconds) {
-            let timeLeft = seconds;
-            questionTimerDisplay.textContent = `Tempo: ${timeLeft}s`;
-            questionTimer = setInterval(() => {
-                timeLeft--;
+            
+            function startQuestionTimer(seconds) {
+                let timeLeft = seconds;
                 questionTimerDisplay.textContent = `Tempo: ${timeLeft}s`;
-                if (timeLeft <= 0) {
-                    handleTimeUp();
-                }
-            }, 1000);
-        }
-        
-        function startNextQuestionAdvanceTimer(seconds) {
-            let timeLeft = seconds;
-            nextQuestionButton.textContent = `Próxima Pergunta (${timeLeft})`;
-            nextQuestionTimer = setInterval(() => {
-                timeLeft--;
+                questionTimer = setInterval(() => {
+                    timeLeft--;
+                    questionTimerDisplay.textContent = `Tempo: ${timeLeft}s`;
+                    if (timeLeft < 0) { handleTimeUp(); }
+                }, 1000);
+            }
+            
+            function startNextQuestionAdvanceTimer(seconds) {
+                let timeLeft = seconds;
                 nextQuestionButton.textContent = `Próxima Pergunta (${timeLeft})`;
-                if (timeLeft <= 0) {
-                    showNextQuestion();
+                nextQuestionTimer = setInterval(() => {
+                    timeLeft--;
+                    nextQuestionButton.textContent = `Próxima Pergunta (${timeLeft})`;
+                    if (timeLeft < 0) { showNextQuestion(); }
+                }, 1000);
+            }
+
+            function showNextQuestion() {
+                clearTimers();
+                currentQuestionIndex++;
+                if (currentQuestionIndex < currentQuiz.length) {
+                    showQuestion();
+                } else {
+                    showResults();
                 }
-            }, 1000);
-        }
-
-        function showNextQuestion() {
-            clearTimers();
-            currentQuestionIndex++;
-            if (currentQuestionIndex < currentQuiz.length) {
-                showQuestion();
-            } else {
-                showResults();
-            }
-        }
-
-        function showResults() {
-            quizScreen.style.display = 'none';
-            resultsScreen.style.display = 'block';
-            finalScore.textContent = `${score}/${currentQuiz.length}`;
-
-            let message = "";
-            const percentage = score / currentQuiz.length;
-            if (percentage === 1) {
-                message = "👑 Incrível! Coroado Rei (ou Rainha) do Major! És uma verdadeira lenda!";
-            } else if (percentage >= 0.8) {
-                message = "🔥 Excelente pontuação! Estás quase no topo.";
-            } else if (percentage >= 0.5) {
-                message = "👍 Nada mau! Mostraste que percebes do assunto.";
-            } else if (percentage > 0) {
-                message = "🤔 Ainda há margem para melhorar, mas foi um bom começo!";
-            } else {
-                message = "😂 Para a próxima corre melhor! O importante é participar.";
-            }
-            finalMessage.textContent = message;
-        }
-        
-        function buildShareMessage(userScore, totalQuestions) {
-            const linkDoArtigo = "https://arena.rtp.pt/ao-minuto/quiz-major/"; 
-            let messageIntro = "";
-            const percentage = userScore / totalQuestions;
-
-            if (percentage === 1) {
-                messageIntro = `Acertei ${userScore}/${totalQuestions} e sou o Rei do Major! 👑 Achas que consegues fazer melhor?`;
-            } else if (percentage >= 0.8) {
-                messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz do Major! 🔥 Quase perfeito!`;
-            } else if (percentage >= 0.5) {
-                messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz da #MAJORnaRTP. 👍 Um resultado sólido! E tu, quantos pontos fazes?`;
-            } else {
-                messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz da #MAJORnaRTP. 😂 Preciso de ver mais a transmissão para aprender! Tenta a tua sorte!`;
             }
 
-            const fullText = `${messageIntro} Testa os teus conhecimentos e participa na transmissão #MAJORnaRTP`;
+            async function showResults() {
+                quizScreen.style.display = 'none';
+                resultsScreen.style.display = 'block';
+                finalScore.textContent = `${score}/${currentQuiz.length}`;
 
-            return {
-                textForX: fullText,
-                textForWhatsApp: `${fullText} ${linkDoArtigo}`,
-                urlForX: linkDoArtigo
+                let message = "";
+                const percentage = score / currentQuiz.length;
+                if (percentage === 1) { message = "👑 Incrível! Coroado Rei (ou Rainha) do Major! És uma verdadeira lenda!"; } 
+                else if (percentage >= 0.8) { message = "🔥 Excelente pontuação! Estás quase no topo."; } 
+                else if (percentage >= 0.5) { message = "👍 Nada mau! Mostraste que percebes do assunto."; } 
+                else if (percentage > 0) { message = "🤔 Ainda há margem para melhorar, mas foi um bom começo!"; } 
+                else { message = "😂 Para a próxima corre melhor! O importante é participar."; }
+                finalMessage.textContent = message;
+
+                await saveScoreToFirestore();
+                displayDailyLeaderboard(currentDayKey);
+                displayGlobalLeaderboard();
+            }
+
+            async function saveScoreToFirestore() {
+                 if (!db || !auth || !auth.currentUser) {
+                    console.warn("Firestore não está disponível. O resultado não será guardado.");
+                    return;
+                }
+                 try {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    // Scores são públicos para a tabela classificativa
+                    const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
+                    
+                    await addDoc(scoresCollection, {
+                        day: currentDayKey,
+                        username: currentUsername,
+                        score: score,
+                        totalQuestions: currentQuiz.length,
+                        timestamp: serverTimestamp(),
+                        userId: auth.currentUser.uid
+                    });
+                    console.log("Resultado guardado com sucesso no Firestore.");
+                } catch (error) {
+                    console.error("Erro ao guardar o resultado no Firestore:", error);
+                }
+            }
+            
+            async function displayDailyLeaderboard(dayKey) {
+                if (!db) { leaderboardLoadingDaily.textContent = "Tabela indisponível."; return; }
+                
+                leaderboardLoadingDaily.style.display = 'block';
+                leaderboardTableDailyBody.innerHTML = '';
+                
+                const dayTitles = { quinta: "Dia 1", sexta: "Dia 2", sabado: "Dia 3", domingo: "Dia 4" };
+                leaderboardTitleDaily.textContent = `Tabela - ${dayTitles[dayKey] || ''}`;
+
+                try {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
+                    const q = query(scoresCollection, where("day", "==", dayKey));
+                    
+                    const querySnapshot = await getDocs(q);
+                    let scores = [];
+                    querySnapshot.forEach((doc) => scores.push(doc.data()));
+
+                    scores.sort((a, b) => b.score - a.score || (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+
+                    const topScores = scores.slice(0, 10);
+                    populateLeaderboard(leaderboardTableDailyBody, topScores, false);
+                } catch (error) {
+                    console.error("Erro a obter a tabela diária:", error);
+                    leaderboardTableDailyBody.innerHTML = `<tr><td colspan="3">Não foi possível carregar a tabela.</td></tr>`;
+                } finally {
+                    leaderboardLoadingDaily.style.display = 'none';
+                }
+            }
+
+            async function displayGlobalLeaderboard() {
+                if (!db) { leaderboardLoadingGlobal.textContent = "Tabela indisponível."; return; }
+
+                leaderboardLoadingGlobal.style.display = 'block';
+                leaderboardTableGlobalBody.innerHTML = '';
+
+                try {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
+                    const querySnapshot = await getDocs(scoresCollection);
+                    
+                    const userScores = new Map();
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const { userId, username, score } = data;
+                        if (userScores.has(userId)) {
+                            userScores.get(userId).totalScore += score;
+                        } else {
+                            userScores.set(userId, { userId, username, totalScore: score });
+                        }
+                    });
+
+                    const aggregatedScores = Array.from(userScores.values());
+                    aggregatedScores.sort((a, b) => b.totalScore - a.totalScore);
+                    
+                    const topScores = aggregatedScores.slice(0, 10);
+                    populateLeaderboard(leaderboardTableGlobalBody, topScores, true);
+
+                } catch (error) {
+                    console.error("Erro a obter a tabela geral:", error);
+                    leaderboardTableGlobalBody.innerHTML = `<tr><td colspan="3">Não foi possível carregar a tabela.</td></tr>`;
+                } finally {
+                    leaderboardLoadingGlobal.style.display = 'none';
+                }
+            }
+            
+            function populateLeaderboard(tableBody, scores, isGlobal) {
+                tableBody.innerHTML = '';
+                 scores.forEach((entry, index) => {
+                    const row = tableBody.insertRow();
+                    if(entry.userId === auth.currentUser?.uid) {
+                       row.classList.add('user-highlight');
+                    }
+                    
+                    const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${entry.totalQuestions}`;
+                    
+                    row.innerHTML = `
+                        <td class="rank-col">${index + 1}</td>
+                        <td>${entry.username}</td>
+                        <td class="score-col">${scoreText}</td>
+                    `;
+                });
+
+                if (scores.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="3">Ainda não há resultados.</td></tr>`;
+                }
+            }
+            
+            function buildShareMessage(userScore, totalQuestions) {
+                const linkDoArtigo = "https://arena.rtp.pt/ao-minuto/quiz-major/"; 
+                let messageIntro = "";
+                const percentage = userScore / totalQuestions;
+
+                if (percentage === 1) { messageIntro = `Acertei ${userScore}/${totalQuestions} e sou o Rei do Major! 👑 Achas que consegues fazer melhor?`; } 
+                else if (percentage >= 0.8) { messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz do Major! 🔥 Quase perfeito!`; } 
+                else if (percentage >= 0.5) { messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz da #MAJORnaRTP. 👍 Um resultado sólido! E tu, quantos pontos fazes?`; }
+                else { messageIntro = `Fiz ${userScore}/${totalQuestions} no quiz da #MAJORnaRTP. 😂 Preciso de ver mais a transmissão para aprender! Tenta a tua sorte!`; }
+
+                const fullText = `${messageIntro} Testa os teus conhecimentos e participa na transmissão #MAJORnaRTP`;
+                return { textForX: fullText, textForWhatsApp: `${fullText} ${linkDoArtigo}`, urlForX: linkDoArtigo };
+            }
+
+            function clearTimers() {
+                clearInterval(questionTimer);
+                clearInterval(nextQuestionTimer);
+            }
+            
+            function handleUsername() {
+                const savedUsername = localStorage.getItem('quizUsername');
+                if (savedUsername) {
+                    currentUsername = savedUsername;
+                    usernameScreen.style.display = 'none';
+                    startScreen.style.display = 'block';
+                } else {
+                    usernameScreen.style.display = 'block';
+                    startScreen.style.display = 'none';
+                }
+            }
+
+            // EVENT LISTENERS
+            continueButton.onclick = () => {
+                const username = usernameInput.value.trim();
+                if (username) {
+                    currentUsername = username;
+                    localStorage.setItem('quizUsername', username);
+                    usernameScreen.style.display = 'none';
+                    startScreen.style.display = 'block';
+                } else {
+                    alert("Por favor, introduz um nome de utilizador.");
+                }
             };
-        }
+            
+            startDay1Button.onclick = () => startQuiz('quinta');
+            startDay2Button.onclick = () => startQuiz('sexta');
+            startDay3Button.onclick = () => startQuiz('sabado');
+            startDay4Button.onclick = () => startQuiz('domingo');
+            nextQuestionButton.onclick = showNextQuestion;
+            
+            restartButton.onclick = () => {
+                socialShareMenu.style.display = 'none';
+                resultsScreen.style.display = 'none';
+                quizScreen.style.display = 'none';
+                startScreen.style.display = 'block';
+            };
+            
+            shareResultsButton.onclick = () => { socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none'; };
+            closeShareMenuButton.onclick = () => { socialShareMenu.style.display = 'none'; };
 
-        function clearTimers() {
-            clearInterval(questionTimer);
-            clearInterval(nextQuestionTimer);
-        }
+            shareOnXButton.onclick = () => {
+                const shareData = buildShareMessage(score, currentQuiz.length);
+                const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.textForX)}&url=${encodeURIComponent(shareData.urlForX)}`;
+                window.open(xUrl, '_blank');
+            };
 
-        // EVENT LISTENERS
-        startDay1Button.onclick = () => startQuiz('quinta');
-        nextQuestionButton.onclick = showNextQuestion;
-        
-        restartButton.onclick = () => {
-            socialShareMenu.style.display = 'none';
-            resultsScreen.style.display = 'none';
+            shareOnWhatsAppButton.onclick = () => {
+                const shareData = buildShareMessage(score, currentQuiz.length);
+                const whatsAppUrl = `https://wa.me/?text=${encodeURIComponent(shareData.textForWhatsApp)}`;
+                window.open(whatsAppUrl, '_blank');
+            };
+
+            // INICIALIZAÇÃO
+            renderTwitchPlayer();
+            updateDayButtonsState();
+            handleUsername();
+            
+            // Hide screens not in use initially
             quizScreen.style.display = 'none';
-            startScreen.style.display = 'block';
-        };
-        
-        shareResultsButton.onclick = () => {
-            socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none';
-        };
-        
-        closeShareMenuButton.onclick = () => socialShareMenu.style.display = 'none';
-
-        shareOnXButton.onclick = () => {
-            const shareData = buildShareMessage(score, currentQuiz.length);
-            const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.textForX)}&url=${encodeURIComponent(shareData.urlForX)}`;
-            window.open(xUrl, '_blank');
-        };
-
-        shareOnWhatsAppButton.onclick = () => {
-            const shareData = buildShareMessage(score, currentQuiz.length);
-            const whatsAppUrl = `https://wa.me/?text=${encodeURIComponent(shareData.textForWhatsApp)}`;
-            window.open(whatsAppUrl, '_blank');
-        };
-
-        // INICIALIZAÇÃO
-        renderTwitchPlayer();
-        // Hide quiz and results screen on initial load
-        quizScreen.style.display = 'none';
-        resultsScreen.style.display = 'none';
-    });
+            resultsScreen.style.display = 'none';
+        });
     </script>
 </body>
 </html>
