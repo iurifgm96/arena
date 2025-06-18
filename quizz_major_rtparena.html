@@ -447,7 +447,7 @@
                     await signInAnonymously(auth);
                 }
                 console.log("Firebase inicializado e utilizador autenticado anonimamente.");
-                return auth.currentUser; // Retorna o utilizador para garantir que está disponível
+                return auth.currentUser;
             } catch (error) {
                 console.error("Erro ao inicializar o Firebase:", error);
                 return null;
@@ -668,11 +668,8 @@
                 finalMessage.textContent = message;
 
                 const currentUid = auth.currentUser?.uid;
-                if (currentUid) {
-                    await saveScoreToFirestore(currentUid);
-                    displayDailyLeaderboard(currentDayKey, currentUid);
-                    displayGlobalLeaderboard(currentUid);
-                }
+                await saveScoreToFirestore(currentUid);
+                refreshLeaderboards(currentDayKey, currentUid);
             }
 
             async function saveScoreToFirestore(userId) {
@@ -706,40 +703,16 @@
                 }
             }
             
-            async function displayDailyLeaderboard(dayKey, currentUid) {
-                if (!db) { leaderboardLoadingDaily.textContent = "Tabela indisponível."; return; }
-                
-                leaderboardLoadingDaily.style.display = 'block';
-                leaderboardTableDailyBody.innerHTML = '';
-                
-                const dayTitles = { quinta: "Dia 1", sexta: "Dia 2", sabado: "Dia 3", domingo: "Dia 4" };
-                leaderboardTitleDaily.textContent = `Tabela - ${dayTitles[dayKey] || ''}`;
-
-                try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
-                    const q = query(scoresCollection, where("day", "==", dayKey));
-                    
-                    const querySnapshot = await getDocs(q);
-                    let scores = [];
-                    querySnapshot.forEach((doc) => scores.push(doc.data()));
-
-                    scores.sort((a, b) => b.score - a.score || (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
-
-                    const topScores = scores.slice(0, 10);
-                    populateLeaderboard(leaderboardTableDailyBody, topScores, false, currentUid);
-                } catch (error) {
-                    console.error("Erro a obter a tabela diária:", error);
-                    leaderboardTableDailyBody.innerHTML = `<tr><td colspan="3">Não foi possível carregar a tabela.</td></tr>`;
-                } finally {
-                    leaderboardLoadingDaily.style.display = 'none';
+             async function refreshLeaderboards(dayKey, currentUid) {
+                if (!db) {
+                    leaderboardLoadingDaily.textContent = "Tabela indisponível.";
+                    leaderboardLoadingGlobal.textContent = "Tabela indisponível.";
+                    return;
                 }
-            }
 
-            async function displayGlobalLeaderboard(currentUid) {
-                if (!db) { leaderboardLoadingGlobal.textContent = "Tabela indisponível."; return; }
-
+                leaderboardLoadingDaily.style.display = 'block';
                 leaderboardLoadingGlobal.style.display = 'block';
+                leaderboardTableDailyBody.innerHTML = '';
                 leaderboardTableGlobalBody.innerHTML = '';
 
                 try {
@@ -747,45 +720,53 @@
                     const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
                     const querySnapshot = await getDocs(scoresCollection);
                     
-                    const userDailyScores = new Map();
+                    let allScores = [];
+                    querySnapshot.forEach((doc) => allScores.push(doc.data()));
 
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const { userId, day, score, username } = data;
-                        const userDayKey = `${userId}-${day}`;
-                        
-                        if (!userDailyScores.has(userDayKey) || score > userDailyScores.get(userDayKey).score) {
-                            userDailyScores.set(userDayKey, { userId, username, score });
+                    // Process Daily Leaderboard
+                    const dailyScores = allScores.filter(s => s.day === dayKey);
+                    dailyScores.sort((a, b) => b.score - a.score || (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+                    const topDailyScores = dailyScores.slice(0, 10);
+                    const dayTitles = { quinta: "Dia 1", sexta: "Dia 2", sabado: "Dia 3", domingo: "Dia 4" };
+                    leaderboardTitleDaily.textContent = `Tabela - ${dayTitles[dayKey] || ''}`;
+                    populateLeaderboard(leaderboardTableDailyBody, topDailyScores, false, currentUid);
+
+                    // Process Global Leaderboard
+                    const userDailyBest = new Map();
+                    allScores.forEach(s => {
+                        const dayKey = `${s.userId}-${s.day}`;
+                        if (!userDailyBest.has(dayKey) || s.score > userDailyBest.get(dayKey).score) {
+                            userDailyBest.set(dayKey, s);
                         }
                     });
 
                     const userTotalScores = new Map();
-                    userDailyScores.forEach(entry => {
-                        const { userId, username, score } = entry;
-                        if(userTotalScores.has(userId)) {
-                            userTotalScores.get(userId).totalScore += score;
+                    userDailyBest.forEach(s => {
+                        if (userTotalScores.has(s.userId)) {
+                            userTotalScores.get(s.userId).totalScore += s.score;
                         } else {
-                            userTotalScores.set(userId, { userId, username, totalScore: score });
+                            userTotalScores.set(s.userId, { userId: s.userId, username: s.username, totalScore: s.score });
                         }
                     });
 
                     const aggregatedScores = Array.from(userTotalScores.values());
                     aggregatedScores.sort((a, b) => b.totalScore - a.totalScore);
-                    
-                    const topScores = aggregatedScores.slice(0, 10);
-                    populateLeaderboard(leaderboardTableGlobalBody, topScores, true, currentUid);
+                    const topGlobalScores = aggregatedScores.slice(0, 10);
+                    populateLeaderboard(leaderboardTableGlobalBody, topGlobalScores, true, currentUid);
 
                 } catch (error) {
-                    console.error("Erro a obter a tabela geral:", error);
+                    console.error("Erro ao carregar tabelas de classificação:", error);
+                    leaderboardTableDailyBody.innerHTML = `<tr><td colspan="3">Não foi possível carregar a tabela.</td></tr>`;
                     leaderboardTableGlobalBody.innerHTML = `<tr><td colspan="3">Não foi possível carregar a tabela.</td></tr>`;
                 } finally {
+                    leaderboardLoadingDaily.style.display = 'none';
                     leaderboardLoadingGlobal.style.display = 'none';
                 }
             }
-            
+
             function populateLeaderboard(tableBody, scores, isGlobal, currentUid) {
                 tableBody.innerHTML = '';
-                 scores.forEach((entry, index) => {
+                scores.forEach((entry, index) => {
                     const row = tableBody.insertRow();
                     const isCurrentUser = entry.userId === currentUid;
                     
@@ -793,7 +774,7 @@
                        row.classList.add('user-highlight');
                     }
                     
-                    const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${quizData[currentDayKey]?.length || 10}`;
+                    const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${entry.totalQuestions || 10}`;
                     const usernameText = isCurrentUser ? `${entry.username} (Tu)` : entry.username;
                     
                     row.innerHTML = `
@@ -852,10 +833,7 @@
                 const latestDay = !startDay4Button.disabled ? 'domingo' : !startDay3Button.disabled ? 'sabado' : !startDay2Button.disabled ? 'sexta' : 'quinta';
                 
                 const currentUid = auth.currentUser?.uid;
-                if(currentUid) {
-                    await displayDailyLeaderboard(latestDay, currentUid);
-                    await displayGlobalLeaderboard(currentUid);
-                }
+                await refreshLeaderboards(latestDay, currentUid);
             }
 
             // EVENT LISTENERS
