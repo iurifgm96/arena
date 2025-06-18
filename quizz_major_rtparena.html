@@ -136,6 +136,10 @@
             width: 100%;
             margin-top: 10px;
         }
+        #viewLeaderboardsButton {
+            background-color: var(--cor-arena-azul);
+            margin-top: 20px;
+        }
 
         button:hover:not(:disabled) {
             background-color: var(--cor-arena-azul-hover);
@@ -337,6 +341,7 @@
             <button id="start-day-3" disabled title="Espera pelo dia do quiz">Dia 3 (Sábado)</button>
             <button id="start-day-4" disabled title="Espera pelo dia do quiz">Dia 4 (Domingo)</button>
         </div>
+        <button id="viewLeaderboardsButton">Ver Classificações</button>
     </div>
 
     <!-- Ecrã do Quiz -->
@@ -350,17 +355,18 @@
 
     <!-- Ecrã de Resultados -->
     <div id="resultsScreen" class="screen main-panel" style="display: none;">
-        <h1>Quiz Terminado!</h1>
-        <p>A sua pontuação final foi:</p>
-        <p id="finalScore">0/10</p>
-        <p id="finalMessage"></p>
-        <button id="restartButton">Jogar Novamente</button>
-        <button id="shareResultsButton">Partilhar Resultado</button>
-        
-        <div id="socialShareMenu" style="display: none;">
-            <button id="shareOnXButton">Partilhar no X</button>
-            <button id="shareOnWhatsAppButton">Partilhar no WhatsApp</button>
-            <button id="closeShareMenuButton">Fechar</button>
+        <div id="personalResultsWrapper">
+            <h1>Quiz Terminado!</h1>
+            <p>A sua pontuação final foi:</p>
+            <p id="finalScore">0/10</p>
+            <p id="finalMessage"></p>
+            <button id="restartButton">Jogar Novamente</button>
+            <button id="shareResultsButton">Partilhar Resultado</button>
+            <div id="socialShareMenu" style="display: none;">
+                <button id="shareOnXButton">Partilhar no X</button>
+                <button id="shareOnWhatsAppButton">Partilhar no WhatsApp</button>
+                <button id="closeShareMenuButton">Fechar</button>
+            </div>
         </div>
         
         <div class="leaderboards-wrapper">
@@ -397,6 +403,7 @@
                 <p id="leaderboardLoadingGlobal" style="display: none;">A carregar...</p>
             </div>
         </div>
+        <button id="backToStartButton" style="display: none;">Voltar</button>
     </div>
 
     <div id="twitchPlayerSection" class="section main-panel" data-title="Assiste em Direto!">
@@ -462,9 +469,11 @@
             const nextQuestionButton = document.getElementById('nextQuestionButton');
             const questionTimerDisplay = document.getElementById('questionTimerDisplay');
             
+            const personalResultsWrapper = document.getElementById('personalResultsWrapper');
             const finalScore = document.getElementById('finalScore');
             const finalMessage = document.getElementById('finalMessage');
             const restartButton = document.getElementById('restartButton');
+            const backToStartButton = document.getElementById('backToStartButton');
 
             const shareResultsButton = document.getElementById('shareResultsButton');
             const socialShareMenu = document.getElementById('socialShareMenu');
@@ -472,6 +481,8 @@
             const shareOnWhatsAppButton = document.getElementById('shareOnWhatsAppButton');
             const closeShareMenuButton = document.getElementById('closeShareMenuButton');
             
+            const viewLeaderboardsButton = document.getElementById('viewLeaderboardsButton');
+
             const leaderboardTitleDaily = document.getElementById('leaderboardTitleDaily');
             const leaderboardTableDailyBody = document.querySelector('#leaderboardTableDaily tbody');
             const leaderboardLoadingDaily = document.getElementById('leaderboardLoadingDaily');
@@ -634,6 +645,9 @@
             async function showResults() {
                 quizScreen.style.display = 'none';
                 resultsScreen.style.display = 'block';
+                personalResultsWrapper.style.display = 'block';
+                backToStartButton.style.display = 'none';
+                
                 finalScore.textContent = `${score}/${currentQuiz.length}`;
 
                 let message = "";
@@ -646,9 +660,11 @@
                 finalMessage.textContent = message;
 
                 const currentUid = auth.currentUser?.uid;
-                await saveScoreToFirestore(currentUid);
-                displayDailyLeaderboard(currentDayKey, currentUid);
-                displayGlobalLeaderboard(currentUid);
+                if (currentUid) {
+                    await saveScoreToFirestore(currentUid);
+                    displayDailyLeaderboard(currentDayKey, currentUid);
+                    displayGlobalLeaderboard(currentUid);
+                }
             }
 
             async function saveScoreToFirestore(userId) {
@@ -723,18 +739,30 @@
                     const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
                     const querySnapshot = await getDocs(scoresCollection);
                     
-                    const userScores = new Map();
+                    const userDailyScores = new Map();
+
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
-                        const { userId, username, score } = data;
-                        if (userScores.has(userId)) {
-                            userScores.get(userId).totalScore += score;
-                        } else {
-                            userScores.set(userId, { userId, username, totalScore: score });
+                        const { userId, day, score, username } = data;
+                        const userDayKey = `${userId}-${day}`;
+                        
+                        // Guarda apenas a pontuação mais alta para um utilizador num determinado dia
+                        if (!userDailyScores.has(userDayKey) || score > userDailyScores.get(userDayKey).score) {
+                            userDailyScores.set(userDayKey, { userId, username, score });
                         }
                     });
 
-                    const aggregatedScores = Array.from(userScores.values());
+                    const userTotalScores = new Map();
+                    userDailyScores.forEach(entry => {
+                        const { userId, username, score } = entry;
+                        if(userTotalScores.has(userId)) {
+                            userTotalScores.get(userId).totalScore += score;
+                        } else {
+                            userTotalScores.set(userId, { userId, username, totalScore: score });
+                        }
+                    });
+
+                    const aggregatedScores = Array.from(userTotalScores.values());
                     aggregatedScores.sort((a, b) => b.totalScore - a.totalScore);
                     
                     const topScores = aggregatedScores.slice(0, 10);
@@ -756,7 +784,7 @@
                        row.classList.add('user-highlight');
                     }
                     
-                    const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${entry.totalQuestions}`;
+                    const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${currentQuiz.length || 10}`;
                     const usernameText = entry.userId === currentUid ? `${entry.username} (Tu)` : entry.username;
                     
                     row.innerHTML = `
@@ -801,17 +829,63 @@
                     startScreen.style.display = 'none';
                 }
             }
+            
+            async function showLeaderboardsOnly() {
+                startScreen.style.display = 'none';
+                resultsScreen.style.display = 'block';
+                personalResultsWrapper.style.display = 'none';
+                backToStartButton.style.display = 'block';
+
+                const latestDay = !startDay4Button.disabled ? 'domingo' : !startDay3Button.disabled ? 'sabado' : !startDay2Button.disabled ? 'sexta' : 'quinta';
+                
+                const currentUid = auth.currentUser?.uid;
+                if(currentUid) {
+                    await displayDailyLeaderboard(latestDay, currentUid);
+                    await displayGlobalLeaderboard(currentUid);
+                }
+            }
 
             // EVENT LISTENERS
-            continueButton.onclick = () => {
+            continueButton.onclick = async () => {
                 const username = usernameInput.value.trim();
-                if (username) {
+                if (!username) {
+                    alert("Por favor, introduz um nome de utilizador.");
+                    return;
+                }
+
+                if (!db) {
+                    console.warn("Firestore não disponível. A avançar sem verificar nome de utilizador.");
                     currentUsername = username;
                     localStorage.setItem('quizUsername', username);
                     usernameScreen.style.display = 'none';
                     startScreen.style.display = 'block';
-                } else {
-                    alert("Por favor, introduz um nome de utilizador.");
+                    return;
+                }
+
+                continueButton.disabled = true;
+                continueButton.textContent = "A VERIFICAR...";
+
+                try {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
+                    const q = query(scoresCollection, where("username", "==", username));
+                    
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        alert("Esse nome de utilizador já existe. Por favor, escolhe outro.");
+                    } else {
+                        currentUsername = username;
+                        localStorage.setItem('quizUsername', username);
+                        usernameScreen.style.display = 'none';
+                        startScreen.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error("Erro ao verificar nome de utilizador:", error);
+                    alert("Ocorreu um erro ao verificar o nome. Tenta novamente.");
+                } finally {
+                    continueButton.disabled = false;
+                    continueButton.textContent = "Continuar";
                 }
             };
             
@@ -821,13 +895,18 @@
             startDay4Button.onclick = () => startQuiz('domingo');
             nextQuestionButton.onclick = showNextQuestion;
             
-            restartButton.onclick = () => {
-                socialShareMenu.style.display = 'none';
+            const backToStart = () => {
+                 socialShareMenu.style.display = 'none';
                 resultsScreen.style.display = 'none';
                 quizScreen.style.display = 'none';
                 startScreen.style.display = 'block';
             };
+
+            restartButton.onclick = backToStart;
+            backToStartButton.onclick = backToStart;
             
+            viewLeaderboardsButton.onclick = showLeaderboardsOnly;
+
             shareResultsButton.onclick = () => { socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none'; };
             closeShareMenuButton.onclick = () => { socialShareMenu.style.display = 'none'; };
 
