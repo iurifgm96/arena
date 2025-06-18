@@ -793,7 +793,7 @@
                        row.classList.add('user-highlight');
                     }
                     
-                    const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${currentQuiz.length || 10}`;
+                    const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${quizData[currentDayKey]?.length || 10}`;
                     const usernameText = isCurrentUser ? `${entry.username} (Tu)` : entry.username;
                     
                     row.innerHTML = `
@@ -837,7 +837,6 @@
                     usernameScreen.style.display = 'block';
                     startScreen.style.display = 'none';
                 } else {
-                    // Firebase failed, no login/leaderboard
                      usernameScreen.style.display = 'none';
                      startScreen.style.display = 'block';
                      viewLeaderboardsButton.style.display = 'none';
@@ -946,7 +945,6 @@
                 handleUsername(user);
             } else {
                 // Se o firebase falhar, esconde a parte do nome de utilizador e vai direto para o quiz.
-                // As funcionalidades de leaderboard não irão funcionar.
                 usernameScreen.style.display = 'none';
                 startScreen.style.display = 'block';
                 viewLeaderboardsButton.style.display = 'block'; // Garante que o botão está visível
