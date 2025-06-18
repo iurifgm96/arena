@@ -645,36 +645,44 @@
                 else { message = "😂 Para a próxima corre melhor! O importante é participar."; }
                 finalMessage.textContent = message;
 
-                await saveScoreToFirestore();
-                displayDailyLeaderboard(currentDayKey);
-                displayGlobalLeaderboard();
+                const currentUid = auth.currentUser?.uid;
+                await saveScoreToFirestore(currentUid);
+                displayDailyLeaderboard(currentDayKey, currentUid);
+                displayGlobalLeaderboard(currentUid);
             }
 
-            async function saveScoreToFirestore() {
-                 if (!db || !auth || !auth.currentUser) {
-                    console.warn("Firestore não está disponível. O resultado não será guardado.");
+            async function saveScoreToFirestore(userId) {
+                if (!db || !userId) {
+                    console.warn("Firestore ou UserID não disponível. O resultado não será guardado.");
                     return;
                 }
-                 try {
+                
+                try {
                     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    // Scores são públicos para a tabela classificativa
                     const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
                     
-                    await addDoc(scoresCollection, {
-                        day: currentDayKey,
-                        username: currentUsername,
-                        score: score,
-                        totalQuestions: currentQuiz.length,
-                        timestamp: serverTimestamp(),
-                        userId: auth.currentUser.uid
-                    });
-                    console.log("Resultado guardado com sucesso no Firestore.");
+                    const q = query(scoresCollection, where("userId", "==", userId), where("day", "==", currentDayKey));
+                    const querySnapshot = await getDocs(q);
+
+                    if (querySnapshot.empty) {
+                        await addDoc(scoresCollection, {
+                            day: currentDayKey,
+                            username: currentUsername,
+                            score: score,
+                            totalQuestions: currentQuiz.length,
+                            timestamp: serverTimestamp(),
+                            userId: userId
+                        });
+                        console.log("Primeiro resultado do dia guardado com sucesso.");
+                    } else {
+                        console.log("Utilizador já tem um resultado para este dia. Não será guardado novamente.");
+                    }
                 } catch (error) {
                     console.error("Erro ao guardar o resultado no Firestore:", error);
                 }
             }
             
-            async function displayDailyLeaderboard(dayKey) {
+            async function displayDailyLeaderboard(dayKey, currentUid) {
                 if (!db) { leaderboardLoadingDaily.textContent = "Tabela indisponível."; return; }
                 
                 leaderboardLoadingDaily.style.display = 'block';
@@ -695,7 +703,7 @@
                     scores.sort((a, b) => b.score - a.score || (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
 
                     const topScores = scores.slice(0, 10);
-                    populateLeaderboard(leaderboardTableDailyBody, topScores, false);
+                    populateLeaderboard(leaderboardTableDailyBody, topScores, false, currentUid);
                 } catch (error) {
                     console.error("Erro a obter a tabela diária:", error);
                     leaderboardTableDailyBody.innerHTML = `<tr><td colspan="3">Não foi possível carregar a tabela.</td></tr>`;
@@ -704,7 +712,7 @@
                 }
             }
 
-            async function displayGlobalLeaderboard() {
+            async function displayGlobalLeaderboard(currentUid) {
                 if (!db) { leaderboardLoadingGlobal.textContent = "Tabela indisponível."; return; }
 
                 leaderboardLoadingGlobal.style.display = 'block';
@@ -730,7 +738,7 @@
                     aggregatedScores.sort((a, b) => b.totalScore - a.totalScore);
                     
                     const topScores = aggregatedScores.slice(0, 10);
-                    populateLeaderboard(leaderboardTableGlobalBody, topScores, true);
+                    populateLeaderboard(leaderboardTableGlobalBody, topScores, true, currentUid);
 
                 } catch (error) {
                     console.error("Erro a obter a tabela geral:", error);
@@ -740,19 +748,20 @@
                 }
             }
             
-            function populateLeaderboard(tableBody, scores, isGlobal) {
+            function populateLeaderboard(tableBody, scores, isGlobal, currentUid) {
                 tableBody.innerHTML = '';
                  scores.forEach((entry, index) => {
                     const row = tableBody.insertRow();
-                    if(entry.userId === auth.currentUser?.uid) {
+                    if(entry.userId === currentUid) {
                        row.classList.add('user-highlight');
                     }
                     
                     const scoreText = isGlobal ? entry.totalScore : `${entry.score}/${entry.totalQuestions}`;
+                    const usernameText = entry.userId === currentUid ? `${entry.username} (Tu)` : entry.username;
                     
                     row.innerHTML = `
                         <td class="rank-col">${index + 1}</td>
-                        <td>${entry.username}</td>
+                        <td>${usernameText}</td>
                         <td class="score-col">${scoreText}</td>
                     `;
                 });
