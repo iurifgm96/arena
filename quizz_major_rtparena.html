@@ -136,9 +136,11 @@
             width: 100%;
             margin-top: 10px;
         }
-        #viewLeaderboardsButton {
-            background-color: var(--cor-arena-azul);
-            margin-top: 20px;
+        
+        button.secondary-action {
+            background-color: var(--cor-aviso);
+            color: var(--cor-texto-principal);
+            margin-top: 8px;
         }
 
         button:hover:not(:disabled) {
@@ -146,6 +148,11 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+        
+        button.secondary-action:hover:not(:disabled) {
+            background-color: color-mix(in srgb, var(--cor-aviso) 85%, black);
+        }
+
 
         button:disabled {
             background-color: #cccccc;
@@ -341,10 +348,11 @@
     <!-- Ecrã de Username -->
     <div id="usernameScreen" class="screen main-panel" style="display: none;">
         <h2>Bem-vindo ao Quiz do Major!</h2>
-        <p>Introduz um nome de utilizador para apareceres na tabela classificativa.</p>
+        <p>Introduz um nome de utilizador para poderes competir.</p>
         <input type="text" id="usernameInput" placeholder="O teu nome de jogador..." maxlength="20">
         <p id="usernameError" class="error-message" style="display: none;"></p>
         <button id="continueButton">Continuar</button>
+        <button id="viewLeaderboardsFromUsernameButton" class="secondary-action">Ver Classificações</button>
     </div>
 
     <!-- Ecrã Inicial -->
@@ -352,11 +360,11 @@
         <h2>Escolhe o dia do Quiz:</h2>
         <div id="day-selection">
             <button id="start-day-1" disabled title="Espera pelo dia do quiz">Dia 1 (Quinta-feira)</button>
-            <button id="start-day-2" disabled title="Espera pelo dia do quiz">Dia 2 (Sexta-feira)</button>
-            <button id="start-day-3" disabled title="Espera pelo dia do quiz">Dia 3 (Sábado)</button>
-            <button id="start-day-4" disabled title="Espera pelo dia do quiz">Dia 4 (Domingo)</button>
+            <button id="start-day-2" disabled title="Abre às 18h00 de Sexta-feira">Dia 2 (Sexta-feira)</button>
+            <button id="start-day-3" disabled title="Abre às 18h00 de Sábado">Dia 3 (Sábado)</button>
+            <button id="start-day-4" disabled title="Abre às 18h00 de Domingo">Dia 4 (Domingo)</button>
         </div>
-        <button id="viewLeaderboardsButton">Ver Classificações</button>
+        <button id="viewLeaderboardsButton" class="secondary-action">Ver Classificações</button>
     </div>
 
     <!-- Ecrã do Quiz -->
@@ -521,6 +529,7 @@
             const closeShareMenuButton = document.getElementById('closeShareMenuButton');
             
             const viewLeaderboardsButton = document.getElementById('viewLeaderboardsButton');
+            const viewLeaderboardsFromUsernameButton = document.getElementById('viewLeaderboardsFromUsernameButton');
 
             const leaderboardTitleDaily = document.getElementById('leaderboardTitleDaily');
             const leaderboardTableDailyBody = document.querySelector('#leaderboardTableDaily tbody');
@@ -566,9 +575,9 @@
             function updateDayButtonsState() {
                 const today = new Date();
                 const quizDates = {
-                    sexta: new Date('2025-06-20T00:00:00'),
-                    sabado: new Date('2025-06-21T00:00:00'),
-                    domingo: new Date('2025-06-22T00:00:00')
+                    sexta: new Date('2025-06-20T18:00:00'),
+                    sabado: new Date('2025-06-21T18:00:00'),
+                    domingo: new Date('2025-06-22T18:00:00')
                 };
 
                 // Desbloqueia Dia 1 permanentemente
@@ -844,6 +853,7 @@
             
             async function showLeaderboardsOnly() {
                 startScreen.style.display = 'none';
+                usernameScreen.style.display = 'none';
                 resultsScreen.style.display = 'block';
                 personalResultsWrapper.style.display = 'none';
                 backToStartButton.style.display = 'block';
@@ -911,13 +921,14 @@
                  socialShareMenu.style.display = 'none';
                 resultsScreen.style.display = 'none';
                 quizScreen.style.display = 'none';
-                startScreen.style.display = 'block';
+                handleUsername(); // Volta para o ecrã certo (username ou start)
             };
 
             restartButton.onclick = backToStart;
             backToStartButton.onclick = backToStart;
             
             viewLeaderboardsButton.onclick = showLeaderboardsOnly;
+            viewLeaderboardsFromUsernameButton.onclick = showLeaderboardsOnly;
 
             shareResultsButton.onclick = () => { socialShareMenu.style.display = socialShareMenu.style.display === 'none' ? 'block' : 'none'; };
             closeShareMenuButton.onclick = () => { socialShareMenu.style.display = 'none'; };
