@@ -425,32 +425,53 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        let auth, db;
+        let auth, db, currentUser;
         
         async function initFirebase() {
+             const firebaseConfig = {
+                apiKey: "AIzaSyClsfm7qk7zUp0O_n8nEFiYUyscE1vfbKs",
+                authDomain: "quiz-rei-do-major.firebaseapp.com",
+                projectId: "quiz-rei-do-major",
+                storageBucket: "quiz-rei-do-major.appspot.com",
+                messagingSenderId: "944435889357",
+                appId: "1:944435889357:web:c5d43b47c6b3daf29d9584"
+             };
+
+            if (!firebaseConfig.apiKey) {
+                console.warn("Configuração do Firebase não preenchida. As funcionalidades de leaderboard estarão desativadas.");
+                return false;
+            }
+            
             try {
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-                if (Object.keys(firebaseConfig).length === 0) {
-                     console.warn("Configuração do Firebase não encontrada. As funcionalidades da base de dados estarão desativadas.");
-                     return null;
-                }
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                console.log("Firebase inicializado e utilizador autenticado anonimamente.");
-                return auth.currentUser;
+                
+                return new Promise((resolve) => {
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            currentUser = user;
+                             console.log("Utilizador autenticado:", currentUser.uid);
+                            resolve(true);
+                        } else {
+                           try {
+                                const userCredential = await signInAnonymously(auth);
+                                currentUser = userCredential.user;
+                                console.log("Novo utilizador anónimo autenticado:", currentUser.uid);
+                                resolve(true);
+                           } catch (error) {
+                                console.error("Falha na autenticação anónima:", error);
+                                resolve(false);
+                           }
+                        }
+                    });
+                });
             } catch (error) {
                 console.error("Erro ao inicializar o Firebase:", error);
-                return null;
+                return false;
             }
         }
         
@@ -666,23 +687,17 @@
                 else if (percentage > 0) { message = "🤔 Ainda há margem para melhorar, mas foi um bom começo!"; } 
                 else { message = "😂 Para a próxima corre melhor! O importante é participar."; }
                 finalMessage.textContent = message;
-
-                const currentUid = auth.currentUser?.uid;
-                await saveScoreToFirestore(currentUid);
-                refreshLeaderboards(currentDayKey, currentUid);
+                
+                await saveScoreToFirestore();
+                await refreshLeaderboards(currentDayKey, currentUser?.uid);
             }
 
-            async function saveScoreToFirestore(userId) {
-                if (!db || !userId) {
-                    console.warn("Firestore ou UserID não disponível. O resultado não será guardado.");
-                    return;
-                }
+            async function saveScoreToFirestore() {
+                if (!db || !currentUser) return;
                 
                 try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
-                    
-                    const q = query(scoresCollection, where("userId", "==", userId), where("day", "==", currentDayKey));
+                    const scoresCollection = collection(db, 'quiz_scores');
+                    const q = query(scoresCollection, where("userId", "==", currentUser.uid), where("day", "==", currentDayKey));
                     const querySnapshot = await getDocs(q);
 
                     if (querySnapshot.empty) {
@@ -692,7 +707,7 @@
                             score: score,
                             totalQuestions: currentQuiz.length,
                             timestamp: serverTimestamp(),
-                            userId: userId
+                            userId: currentUser.uid
                         });
                         console.log("Primeiro resultado do dia guardado com sucesso.");
                     } else {
@@ -703,7 +718,7 @@
                 }
             }
             
-             async function refreshLeaderboards(dayKey, currentUid) {
+            async function refreshLeaderboards(dayKey, currentUid) {
                 if (!db) {
                     leaderboardLoadingDaily.textContent = "Tabela indisponível.";
                     leaderboardLoadingGlobal.textContent = "Tabela indisponível.";
@@ -712,12 +727,9 @@
 
                 leaderboardLoadingDaily.style.display = 'block';
                 leaderboardLoadingGlobal.style.display = 'block';
-                leaderboardTableDailyBody.innerHTML = '';
-                leaderboardTableGlobalBody.innerHTML = '';
-
+                
                 try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
+                    const scoresCollection = collection(db, 'quiz_scores');
                     const querySnapshot = await getDocs(scoresCollection);
                     
                     let allScores = [];
@@ -734,9 +746,9 @@
                     // Process Global Leaderboard
                     const userDailyBest = new Map();
                     allScores.forEach(s => {
-                        const dayKey = `${s.userId}-${s.day}`;
-                        if (!userDailyBest.has(dayKey) || s.score > userDailyBest.get(dayKey).score) {
-                            userDailyBest.set(dayKey, s);
+                        const dayUserKey = `${s.userId}-${s.day}`;
+                        if (!userDailyBest.has(dayUserKey) || s.score > userDailyBest.get(dayUserKey).score) {
+                            userDailyBest.set(dayUserKey, s);
                         }
                     });
 
@@ -763,7 +775,7 @@
                     leaderboardLoadingGlobal.style.display = 'none';
                 }
             }
-
+            
             function populateLeaderboard(tableBody, scores, isGlobal, currentUid) {
                 tableBody.innerHTML = '';
                 scores.forEach((entry, index) => {
@@ -808,19 +820,15 @@
                 clearInterval(nextQuestionTimer);
             }
             
-            function handleUsername(currentUser) {
+            function handleUsername() {
                 const savedUsername = localStorage.getItem('quizUsername');
-                if (savedUsername && currentUser) {
+                if (savedUsername) {
                     currentUsername = savedUsername;
                     usernameScreen.style.display = 'none';
                     startScreen.style.display = 'block';
-                } else if(currentUser) {
+                } else {
                     usernameScreen.style.display = 'block';
                     startScreen.style.display = 'none';
-                } else {
-                     usernameScreen.style.display = 'none';
-                     startScreen.style.display = 'block';
-                     viewLeaderboardsButton.style.display = 'none';
                 }
             }
             
@@ -832,8 +840,7 @@
 
                 const latestDay = !startDay4Button.disabled ? 'domingo' : !startDay3Button.disabled ? 'sabado' : !startDay2Button.disabled ? 'sexta' : 'quinta';
                 
-                const currentUid = auth.currentUser?.uid;
-                await refreshLeaderboards(latestDay, currentUid);
+                await refreshLeaderboards(latestDay, currentUser?.uid);
             }
 
             // EVENT LISTENERS
@@ -857,8 +864,7 @@
                 continueButton.textContent = "A VERIFICAR...";
 
                 try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    const scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'quiz_scores');
+                    const scoresCollection = collection(db, 'quiz_scores');
                     const q = query(scoresCollection, where("username", "==", username));
                     
                     const querySnapshot = await getDocs(q);
@@ -914,18 +920,18 @@
             };
 
             // INICIALIZAÇÃO
-            const user = await initFirebase();
+            const firebaseReady = await initFirebase();
             loadingScreen.style.display = 'none';
             renderTwitchPlayer();
             updateDayButtonsState();
             
-            if (user) {
-                handleUsername(user);
+            if (firebaseReady) {
+                handleUsername();
             } else {
                 // Se o firebase falhar, esconde a parte do nome de utilizador e vai direto para o quiz.
                 usernameScreen.style.display = 'none';
                 startScreen.style.display = 'block';
-                viewLeaderboardsButton.style.display = 'block'; // Garante que o botão está visível
+                viewLeaderboardsButton.style.display = 'block'; 
             }
             
             // Hide screens not in use initially
