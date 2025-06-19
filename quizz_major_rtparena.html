@@ -164,6 +164,14 @@
             margin-bottom: 15px;
         }
         
+        .error-message {
+            color: var(--cor-perigo);
+            font-weight: 500;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        
         #quizScreen #questionIndicator {
             font-size: 0.9em;
             font-weight: 500;
@@ -335,6 +343,7 @@
         <h2>Bem-vindo ao Quiz do Major!</h2>
         <p>Introduz um nome de utilizador para apareceres na tabela classificativa.</p>
         <input type="text" id="usernameInput" placeholder="O teu nome de jogador..." maxlength="20">
+        <p id="usernameError" class="error-message" style="display: none;"></p>
         <button id="continueButton">Continuar</button>
     </div>
 
@@ -485,6 +494,7 @@
             const resultsScreen = document.getElementById('resultsScreen');
             
             const usernameInput = document.getElementById('usernameInput');
+            const usernameError = document.getElementById('usernameError');
             const continueButton = document.getElementById('continueButton');
 
             const startDay1Button = document.getElementById('start-day-1');
@@ -846,8 +856,11 @@
             // EVENT LISTENERS
             continueButton.onclick = async () => {
                 const username = usernameInput.value.trim();
+                usernameError.style.display = 'none';
+
                 if (!username) {
-                    alert("Por favor, introduz um nome de utilizador.");
+                    usernameError.textContent = "Por favor, introduz um nome de utilizador.";
+                    usernameError.style.display = 'block';
                     return;
                 }
 
@@ -870,7 +883,8 @@
                     const querySnapshot = await getDocs(q);
                     
                     if (!querySnapshot.empty) {
-                        alert("Esse nome de utilizador já existe. Por favor, escolhe outro.");
+                        usernameError.textContent = "Esse nome de utilizador já existe. Por favor, escolhe outro.";
+                        usernameError.style.display = 'block';
                     } else {
                         currentUsername = username;
                         localStorage.setItem('quizUsername', username);
@@ -879,7 +893,8 @@
                     }
                 } catch (error) {
                     console.error("Erro ao verificar nome de utilizador:", error);
-                    alert("Ocorreu um erro ao verificar o nome. Tenta novamente.");
+                    usernameError.textContent = "Ocorreu um erro ao verificar o nome. Tenta novamente.";
+                    usernameError.style.display = 'block';
                 } finally {
                     continueButton.disabled = false;
                     continueButton.textContent = "Continuar";
@@ -931,7 +946,7 @@
                 // Se o firebase falhar, esconde a parte do nome de utilizador e vai direto para o quiz.
                 usernameScreen.style.display = 'none';
                 startScreen.style.display = 'block';
-                viewLeaderboardsButton.style.display = 'block'; 
+                viewLeaderboardsButton.style.display = 'none'; 
             }
             
             // Hide screens not in use initially
