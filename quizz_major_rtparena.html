@@ -605,8 +605,15 @@
             function startQuiz(dayKey) {
                 currentDayKey = dayKey;
                 currentQuiz = quizData[dayKey];
-                currentQuestionIndex = 0;
-                score = 0;
+                
+                const savedProgress = JSON.parse(localStorage.getItem('quizProgress'));
+                if(savedProgress && savedProgress.day === dayKey) {
+                    currentQuestionIndex = savedProgress.index;
+                    score = savedProgress.score;
+                } else {
+                    currentQuestionIndex = 0;
+                    score = 0;
+                }
                 
                 startScreen.style.display = 'none';
                 resultsScreen.style.display = 'none';
@@ -694,9 +701,12 @@
             function showNextQuestion() {
                 clearTimers();
                 currentQuestionIndex++;
+                
                 if (currentQuestionIndex < currentQuiz.length) {
+                    localStorage.setItem('quizProgress', JSON.stringify({ day: currentDayKey, index: currentQuestionIndex, score: score }));
                     showQuestion();
                 } else {
+                    localStorage.removeItem('quizProgress');
                     showResults();
                 }
             }
@@ -929,7 +939,8 @@
             nextQuestionButton.onclick = showNextQuestion;
             
             const backToStart = () => {
-                 socialShareMenu.style.display = 'none';
+                localStorage.removeItem('quizProgress');
+                socialShareMenu.style.display = 'none';
                 resultsScreen.style.display = 'none';
                 quizScreen.style.display = 'none';
                 handleUsername(); // Volta para o ecrã certo (username ou start)
@@ -963,7 +974,13 @@
             updateDayButtonsState();
             
             if (firebaseReady) {
-                handleUsername();
+                const savedState = JSON.parse(localStorage.getItem('quizProgress'));
+                if (savedState) {
+                    // Se houver um quiz em progresso, continua-o
+                    startQuiz(savedState.day);
+                } else {
+                    handleUsername();
+                }
             } else {
                 // Se o firebase falhar, esconde a parte do nome de utilizador e vai direto para o quiz.
                 usernameScreen.style.display = 'none';
@@ -972,8 +989,10 @@
             }
             
             // Hide screens not in use initially
-            quizScreen.style.display = 'none';
-            resultsScreen.style.display = 'none';
+            if (!localStorage.getItem('quizProgress')) {
+                 quizScreen.style.display = 'none';
+                 resultsScreen.style.display = 'none';
+            }
         });
     </script>
 </body>
