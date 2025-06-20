@@ -649,17 +649,17 @@
 
                 if (isCorrect) {
                     score++;
-                    selectedButton.classList.add('correct');
-                } else {
-                    selectedButton.classList.add('incorrect');
-                    Array.from(answerOptions.children).forEach(btn => {
-                        if (btn.textContent === question.respostaCorreta) {
-                            btn.classList.add('correct');
-                        }
-                    });
                 }
+                
+                Array.from(answerOptions.children).forEach(btn => {
+                    btn.disabled = true;
+                    if(btn.textContent === question.respostaCorreta) {
+                        btn.classList.add('correct');
+                    } else if (btn === selectedButton) {
+                        btn.classList.add('incorrect');
+                    }
+                });
 
-                Array.from(answerOptions.children).forEach(btn => btn.disabled = true);
                 nextQuestionButton.style.display = 'block';
                 startNextQuestionAdvanceTimer(5);
             }
@@ -976,19 +976,17 @@
             if (firebaseReady) {
                 const savedState = JSON.parse(localStorage.getItem('quizProgress'));
                 if (savedState) {
-                    // Se houver um quiz em progresso, continua-o
+                    currentUsername = localStorage.getItem('quizUsername');
                     startQuiz(savedState.day);
                 } else {
                     handleUsername();
                 }
             } else {
-                // Se o firebase falhar, esconde a parte do nome de utilizador e vai direto para o quiz.
                 usernameScreen.style.display = 'none';
                 startScreen.style.display = 'block';
                 viewLeaderboardsButton.style.display = 'none'; 
             }
             
-            // Hide screens not in use initially
             if (!localStorage.getItem('quizProgress')) {
                  quizScreen.style.display = 'none';
                  resultsScreen.style.display = 'none';
