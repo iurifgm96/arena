@@ -362,7 +362,7 @@
             <button id="start-day-1" disabled title="Espera pelo dia do quiz">Dia 1 (Quinta-feira)</button>
             <button id="start-day-2" disabled title="Abre às 18h00 de Sexta-feira">Dia 2 (Sexta-feira)</button>
             <button id="start-day-3" disabled title="Abre às 18h00 de Sábado">Dia 3 (Sábado)</button>
-            <button id="start-day-4" disabled title="Abre às 18h00 de Domingo">Dia 4 (Domingo)</button>
+            <button id="start-day-4" disabled title="Abre às 19h30 de Domingo">Dia 4 (Domingo)</button>
         </div>
         <button id="viewLeaderboardsButton" class="secondary-action">Ver Classificações</button>
     </div>
@@ -575,7 +575,18 @@
                     { pergunta: "Em que cidade vai ser disputado o segundo Major do ano?", opcoes: ["Copenhaga", "Cologne", "Budapeste", "Antuérpia"], respostaCorreta: "Budapeste" },
                     { pergunta: "Quem é o jogador com maior número de frags no Major?", opcoes: ["Spinx", "ZywOo", "xertioN", "dav1deus"], respostaCorreta: "Spinx" }
                 ],
-                domingo: []
+                domingo: [
+                    { pergunta: "Quem foi o último jogador a entrar em MongolZ?", opcoes: ["Senzu", "mzinho", "Techno4K", "bLitz"], respostaCorreta: "Senzu" },
+                    { pergunta: "Quantas vezes ZywOo foi considerado o melhor jogador do ano?", opcoes: ["2", "4", "3", "1"], respostaCorreta: "3" },
+                    { pergunta: "Quantos torneios Vitality venceu em 2025?", opcoes: ["5", "7", "6", "3"], respostaCorreta: "6" },
+                    { pergunta: "Quantos mapas a MongolZ perdeu durante este Major?", opcoes: ["2", "4", "6", "3"], respostaCorreta: "3" },
+                    { pergunta: "Quem é o jogador mais jovem em Vitality?", opcoes: ["ZywOo", "mezii", "ropz", "flameZ"], respostaCorreta: "flameZ" },
+                    { pergunta: "Quais os mapas jogados na última final de Major ganha por Vitality?", opcoes: ["Inferno e Nuke", "Overpass e Mirage", "Overpass e Nuke", "Vertigo e Mirage"], respostaCorreta: "Overpass e Nuke" },
+                    { pergunta: "Qual foi a equipa que eliminou MongolZ nas ‘meias’ de Katowice?", opcoes: ["FaZe", "Spirit", "Vitality", "NAVI"], respostaCorreta: "Vitality" },
+                    { pergunta: "Quantos Majors a BLAST já organizou?", opcoes: ["3", "2", "1", "4"], respostaCorreta: "2" },
+                    { pergunta: "Qual foi o pior rating de roman em registo na HLTV?", opcoes: ["0.35", "0.23", "0.21", "0.26"], respostaCorreta: "0.23" },
+                    { pergunta: "Quantas rondas teve a mais longa final de Major?", opcoes: ["88", "81", "97", "105"], respostaCorreta: "97" }
+                ]
             };
 
             // Game State
@@ -599,7 +610,7 @@
                 const quizDates = {
                     sexta: new Date('2025-06-20T18:00:00'),
                     sabado: new Date('2025-06-21T18:00:00'),
-                    domingo: new Date('2025-06-22T18:00:00')
+                    domingo: new Date('2025-06-22T19:30:00')
                 };
 
                 // Desbloqueia Dia 1 permanentemente
@@ -924,7 +935,16 @@
                     
                     const querySnapshot = await getDocs(q);
                     
-                    if (!querySnapshot.empty) {
+                    let isTaken = false;
+                    if(!querySnapshot.empty) {
+                        querySnapshot.forEach(doc => {
+                           if(doc.data().userId !== currentUser.uid) {
+                               isTaken = true;
+                           }
+                        });
+                    }
+
+                    if (isTaken) {
                         usernameError.textContent = "Esse nome de utilizador já existe. Por favor, escolhe outro.";
                         usernameError.style.display = 'block';
                     } else {
