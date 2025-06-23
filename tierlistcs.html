@@ -303,9 +303,8 @@
             const shareUrl = "https://arena.rtp.pt/ao-minuto/tier-list-melhores-piores-cs/";
             document.getElementById('share-x').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(shareUrl)}`;
             document.getElementById('share-whatsapp').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage + ' ' + shareUrl)}`;
-
+            
             const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
             function applyTheme(isDark) {
                 if (isDark) {
                     document.documentElement.classList.add('dark');
@@ -313,12 +312,8 @@
                     document.documentElement.classList.remove('dark');
                 }
             }
-
             applyTheme(colorSchemeQuery.matches);
-
-            colorSchemeQuery.addEventListener('change', e => {
-                applyTheme(e.matches);
-            });
+            colorSchemeQuery.addEventListener('change', e => applyTheme(e.matches));
 
             initializeTiersAndLogos();
         });
