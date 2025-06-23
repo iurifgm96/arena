@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-PT" class="">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,48 +14,22 @@
 
     <style>
         :root {
-            --bg-primary-light: #ffffff;
-            --bg-secondary-light: #f0f2f5;
-            --text-primary-light: #0d121a;
-            --text-secondary-light: #5a6472;
-            --accent-light: #00A3FF;
-            --border-light: #e4e6eb;
-
-            --bg-primary-dark: #13131a;
-            --bg-secondary-dark: #1c1c24;
-            --text-primary-dark: #ffffff;
-            --text-secondary-dark: #a0a0b0;
-            --accent-dark: #00A3FF;
-            --border-dark: #2a2a32;
+            --bg-primary: transparent;
+            --bg-secondary: #1c1c24;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent: #00A3FF;
+            --border-color: #2a2a32;
         }
         
         body {
-            background-color: var(--bg-primary-light);
-            color: var(--text-primary-light);
-        }
-        .dark body {
-            background-color: var(--bg-primary-dark);
-            color: var(--text-primary-dark);
-        }
-
-        .bg-primary { background-color: var(--bg-primary-light); }
-        .dark .bg-primary { background-color: var(--bg-primary-dark); }
-        .bg-secondary { background-color: var(--bg-secondary-light); }
-        .dark .bg-secondary { background-color: var(--bg-secondary-dark); }
-        .text-primary { color: var(--text-primary-light); }
-        .dark .text-primary { color: var(--text-primary-dark); }
-        .text-secondary { color: var(--text-secondary-light); }
-        .dark .text-secondary { color: var(--text-secondary-dark); }
-        .accent-color { color: var(--accent-light); }
-        .dark .accent-color { color: var(--accent-dark); }
-        .bg-accent { background-color: var(--accent-light); }
-        .dark .bg-accent { background-color: var(--accent-dark); }
-        .border-color { border-color: var(--border-light); }
-        .dark .border-color { border-color: var(--border-dark); }
-
-        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .floating-text {
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
         }
 
         .logo {
@@ -85,7 +59,7 @@
 
         .drop-zone.drag-over {
             background-color: rgba(0, 163, 255, 0.1);
-            border: 2px dashed var(--accent-light);
+            border: 2px dashed var(--accent);
         }
         
         .touch-ghost {
@@ -97,37 +71,36 @@
         }
     </style>
 </head>
-<body class="bg-primary text-primary">
+<body>
 
     <div class="container mx-auto max-w-6xl p-4">
         
         <div class="relative text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-primary">As melhores e piores equipas da temporada</h1>
-            <p class="text-secondary mt-2">Arraste os logos e crie o seu ranking da temporada.</p>
+            <p class="text-secondary mt-2 floating-text">Arraste os logos e crie o seu ranking da temporada.</p>
         </div>
 
-        <main id="tier-list-area" class="bg-secondary p-2 md:p-4 rounded-lg shadow-lg">
+        <main id="tier-list-area" style="background-color: var(--bg-secondary);" class="p-2 md:p-4 rounded-lg shadow-lg">
             <div id="tier-container" class="space-y-1 md:space-y-2"></div>
         </main>
         
-        <section class="mt-8 bg-secondary p-2 md:p-4 rounded-lg shadow-lg">
+        <section class="mt-8 p-2 md:p-4 rounded-lg shadow-lg" style="background-color: var(--bg-secondary);">
             <h2 class="text-xl font-semibold mb-4 text-center text-primary">Equipas por Classificar</h2>
-            <div id="logo-pool" class="drop-zone flex flex-wrap justify-center items-center min-h-[100px] bg-primary rounded-md border-2 border-transparent transition-colors duration-300 p-2"></div>
+            <div id="logo-pool" class="drop-zone flex flex-wrap justify-center items-center min-h-[100px] rounded-md border-2 border-transparent transition-colors duration-300 p-2" style="background-color: #13131a;"></div>
         </section>
 
         <div class="controls text-center mt-8 space-y-4">
             <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                 <button id="reset-btn" class="order-2 sm:order-1 border-2 border-color text-primary font-bold py-3 px-8 rounded-md shadow-lg transition-all transform hover:scale-105 hover:opacity-90 w-full sm:w-auto">
+                 <button id="reset-btn" class="order-2 sm:order-1 border-2 font-bold py-3 px-8 rounded-md shadow-lg transition-all transform hover:scale-105 hover:bg-gray-800 w-full sm:w-auto" style="border-color: var(--text-secondary); color: var(--text-secondary);">
                     Reiniciar
                 </button>
-                <button id="save-btn" class="order-1 sm:order-2 bg-accent text-white font-bold py-3 px-8 rounded-md shadow-lg transition-transform transform hover:scale-105 hover:opacity-90 w-full sm:w-auto">
+                <button id="save-btn" class="order-1 sm:order-2 text-white font-bold py-3 px-8 rounded-md shadow-lg transition-transform transform hover:scale-105 hover:opacity-90 w-full sm:w-auto" style="background-color: var(--accent);">
                     Guardar Imagem
                 </button>
             </div>
-            <p id="loading-message" class="text-secondary mt-2 hidden">A gerar a imagem, por favor aguarde...</p>
+            <p id="loading-message" class="text-secondary mt-2 hidden floating-text">A gerar a imagem, por favor aguarde...</p>
 
             <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4">
-                <a id="share-x" href="#" target="_blank" class="flex w-full sm:w-auto justify-center items-center space-x-2 bg-gray-800 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md transition-colors">
+                <a id="share-x" href="#" target="_blank" class="flex w-full sm:w-auto justify-center items-center space-x-2 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition-colors">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
                     <span>Partilhar no X</span>
                 </a>
@@ -138,8 +111,8 @@
             </div>
         </div>
 
-         <footer class="text-center text-secondary mt-12 text-sm">
-            Produzido e idealizado por <a href="https://www.linkedin.com/in/iuri-martins/" target="_blank" rel="noopener noreferrer" class="underline accent-color hover:opacity-80">Iúri Martins</a>
+         <footer class="text-center text-secondary mt-12 text-sm floating-text">
+            Produzido e idealizado por <a href="https://www.linkedin.com/in/iuri-martins/" target="_blank" rel="noopener noreferrer" class="underline" style="color: var(--accent);">Iúri Martins</a>
         </footer>
     </div>
 
@@ -161,7 +134,9 @@
             function initializeTiersAndLogos() {
                 tiers.forEach(tier => {
                     const tierRow = document.createElement('div');
-                    tierRow.className = 'tier-row flex items-stretch min-h-[74px] md:min-h-[90px] bg-primary rounded-md overflow-hidden border border-color';
+                    tierRow.className = 'tier-row flex items-stretch min-h-[74px] md:min-h-[90px] rounded-md overflow-hidden border';
+                    tierRow.style.backgroundColor = 'var(--bg-primary)';
+                    tierRow.style.borderColor = 'var(--border-color)';
                     tierRow.innerHTML = `
                         <div class="tier-label ${tier.color} flex items-center justify-center text-xl md:text-2xl font-bold text-white">${tier.name}</div>
                         <div class="drop-zone flex-1 flex flex-wrap items-center p-1 md:p-2" data-tier="${tier.name}"></div>
@@ -173,7 +148,8 @@
                     const img = document.createElement('img');
                     img.src = url;
                     img.alt = `Logo ${index + 1}`;
-                    img.className = 'logo bg-secondary rounded-md m-1 cursor-grab transition-all duration-200';
+                    img.className = 'logo rounded-md m-1 cursor-grab transition-all duration-200';
+                    img.style.backgroundColor = 'var(--bg-secondary)';
                     img.draggable = true;
                     img.id = `logo-${index}`;
                     img.onerror = () => { img.src = 'https://placehold.co/100x100/333/fff?text=Erro'; };
@@ -268,10 +244,9 @@
                 loadingMessage.classList.remove('hidden');
                 saveBtn.disabled = true;
                 saveBtn.innerText = "A gerar...";
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                const bgColor = isDarkMode ? getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary-dark').trim() : getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary-light').trim();
+                
                 html2canvas(tierListArea, {
-                    backgroundColor: bgColor,
+                    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim(),
                     scale: 2, 
                     useCORS: true 
                 }).then(canvas => {
@@ -304,17 +279,6 @@
             document.getElementById('share-x').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(shareUrl)}`;
             document.getElementById('share-whatsapp').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage + ' ' + shareUrl)}`;
             
-            const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            function applyTheme(isDark) {
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            }
-            applyTheme(colorSchemeQuery.matches);
-            colorSchemeQuery.addEventListener('change', e => applyTheme(e.matches));
-
             initializeTiersAndLogos();
         });
     </script>
